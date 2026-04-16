@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --font-playfair: "Playfair Display", serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+  
+  --color-gold: #D4AF37;
+  --color-navy: #0A1929;
+  
+  --color-bg-primary: var(--bg-primary);
+  --color-text-primary: var(--text-primary);
+  --color-accent-primary: var(--accent-primary);
+
+  --animate-blink: blink 1s step-end infinite;
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+}
+
+:root {
+  /* BloomFrame Inspired Light Mode (Default) */
+  --bg-primary: #FAF8F5;
+  --text-primary: #2C1810;
+  --text-secondary: #5C4033;
+  --accent-primary: #FF4500;
+  --accent-secondary: #D4A574;
+  --accent-tertiary: #FFB6A3;
+  --border-primary: rgba(44, 24, 16, 0.12);
+  --border-secondary: rgba(255, 69, 0, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-hover: rgba(255, 69, 0, 0.04);
+  --muted-text: rgba(92, 64, 51, 0.6);
+  --accent-glow: rgba(255, 69, 0, 0.08);
+  --shadow-primary: rgba(44, 24, 16, 0.1);
+  --shadow-secondary: rgba(255, 69, 0, 0.06);
+}
+
+html[data-color-mode="dark"] {
+  /* Enhanced Black & White Dark Mode */
+  --bg-primary: #030303;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E8E8E8;
+  --accent-primary: #FF6B35;
+  --accent-secondary: #D4AF37;
+  --accent-tertiary: #F0956F;
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 107, 53, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-hover: rgba(255, 107, 53, 0.05);
+  --muted-text: rgba(255, 255, 255, 0.4);
+  --accent-glow: rgba(255, 107, 53, 0.08);
+  --shadow-primary: rgba(0, 0, 0, 0.3);
+  --shadow-secondary: rgba(255, 107, 53, 0.1);
+}
+
+@layer base {
+  html, body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-jetbrains);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .font-playfair  { font-family: var(--font-playfair), serif; }
+  .font-jetbrains { font-family: var(--font-jetbrains), monospace; }
+  
+  .glass-card {
+    backdrop-filter: blur(16px);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-primary);
+    transition: all 0.5s ease;
+  }
+
+  .accent-gradient-text {
+    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
