@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { MusicScreen } from "./MusicScreen";
+import { TerminalScreen } from "./TerminalScreen";
 
 // ─── TYPES ────────────────────────────────────────────────────────
 export type MenuItem = "portfolio" | "terminal" | "resume" | "music";
@@ -25,7 +26,7 @@ const useTypewriter = (
 
   useEffect(() => {
     const currentText = texts[textIndex];
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     if (!isDeleting) {
       if (charIndex < currentText.length) {
@@ -114,7 +115,8 @@ const SpeechBubble = ({
 const MainScreen: React.FC<{
   selectedItem: MenuItem;
   onItemSelect: (item: MenuItem) => void;
-}> = ({ selectedItem, onItemSelect }) => {
+  onActionTrigger: () => void;
+}> = ({ selectedItem, onItemSelect, onActionTrigger }) => {
   const typewriterText = useTypewriter(
     ["a developer", "Aditya Tallhari", "building cool stuff"],
     70,
@@ -126,8 +128,8 @@ const MainScreen: React.FC<{
     selectedItem === "music"
       ? "Hm..? Play a music?"
       : selectedItem === "terminal"
-      ? "Open Terminal!"
-      : null;
+        ? "Open Terminal!"
+        : null;
 
   return (
     <motion.div
@@ -165,16 +167,17 @@ const MainScreen: React.FC<{
         </SpeechBubble>
 
         <SpeechBubble className="min-w-[90px] max-w-[100px] border-[1.5px] shadow-[1.5px_1.5px_0_0_rgba(0,0,0,1)] px-2 py-0.5">
-           <div className="absolute -top-1.5 left-2 bg-black text-white text-[3px] px-1 py-0.5 font-bold uppercase tracking-[0.2em]">
-              Navigation
-           </div>
+          <div className="absolute -top-1.5 left-2 bg-black text-white text-[3px] px-1 py-0.5 font-bold uppercase tracking-[0.2em]">
+            Navigation
+          </div>
           <div className="grid grid-cols-2 gap-x-1 gap-y-0.5 py-0.5">
             {menuItems.map((item) => (
               <span
                 key={item}
                 onClick={() => {
-                   (window as any).__playConsoleClick?.();
-                   onItemSelect(item);
+                  (window as any).__playConsoleClick?.();
+                  onItemSelect(item);
+                  setTimeout(() => onActionTrigger(), 10); // Trigger action immediately
                 }}
                 onMouseEnter={() => (window as any).__playConsoleClick?.()}
                 className="group inline-flex cursor-pointer items-center gap-0.5 text-[4px] font-black uppercase tracking-[0.1em]"
@@ -188,7 +191,7 @@ const MainScreen: React.FC<{
                         exit={{ x: -2, opacity: 0 }}
                         className="text-[#1a1a2e] text-[4px]"
                       >
-                         ▶
+                        ▶
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -214,11 +217,11 @@ const MainScreen: React.FC<{
 // ─── MAIN EXPORT ──────────────────────────────────────────────────
 export const ConsoleScreen = () => {
   const [selectedItem, setSelectedItem] = useState<MenuItem>("portfolio");
-  const [activeScreen, setActiveScreen] = useState<"main" | "music">("main");
+  const [activeScreen, setActiveScreen] = useState<"main" | "music" | "terminal">("main");
   const router = useRouter();
 
   const handleArrowNav = useCallback((dir: ArrowKey) => {
-    if (activeScreen === "music") return; 
+    if (activeScreen !== "main") return;
     setSelectedItem((current) => getNextItem(current, dir));
   }, [activeScreen]);
 
@@ -230,10 +233,12 @@ export const ConsoleScreen = () => {
       }
 
       if (action === "select") {
-        if (activeScreen === "music") return; 
+        if (activeScreen !== "main") return;
 
         if (selectedItem === "music") {
           setActiveScreen("music");
+        } else if (selectedItem === "terminal") {
+          setActiveScreen("terminal");
         } else if (selectedItem === "portfolio") {
           (window as any).__laptopSetNavigating?.();
           router.push("/portfolio");
@@ -250,24 +255,24 @@ export const ConsoleScreen = () => {
       const isNavKey = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Backspace"].includes(e.key);
       if (isNavKey) (window as any).__playConsoleClick?.();
 
-      if (e.key === "ArrowUp")    handleArrowNav("up");
-      if (e.key === "ArrowDown")  handleArrowNav("down");
-      if (e.key === "ArrowLeft")  handleArrowNav("left");
+      if (e.key === "ArrowUp") handleArrowNav("up");
+      if (e.key === "ArrowDown") handleArrowNav("down");
+      if (e.key === "ArrowLeft") handleArrowNav("left");
       if (e.key === "ArrowRight") handleArrowNav("right");
-      if (e.key === "Enter")      handleAction("select");
-      if (e.key === "Backspace")  handleAction("back");
+      if (e.key === "Enter") handleAction("select");
+      if (e.key === "Backspace" && activeScreen === "main") handleAction("back");
     };
 
     window.addEventListener("keydown", handleKeyDown);
     (window as any).__consoleHandleArrow = handleArrowNav;
     (window as any).__consoleHandleAction = handleAction;
-    
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       delete (window as any).__consoleHandleArrow;
       delete (window as any).__consoleHandleAction;
     };
-  }, [handleArrowNav, handleAction]);
+  }, [handleArrowNav, handleAction, activeScreen]);
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-black z-10">
@@ -277,9 +282,12 @@ export const ConsoleScreen = () => {
             key="main"
             selectedItem={selectedItem}
             onItemSelect={setSelectedItem}
+            onActionTrigger={() => handleAction("select")}
           />
-        ) : (
+        ) : activeScreen === "music" ? (
           <MusicScreen key="music" onBack={() => setActiveScreen("main")} />
+        ) : (
+          <TerminalScreen key="terminal" onBack={() => setActiveScreen("main")} />
         )}
       </AnimatePresence>
       <ScanlineOverlay />

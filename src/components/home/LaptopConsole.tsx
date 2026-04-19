@@ -57,6 +57,12 @@ export const LaptopConsole: React.FC<LaptopConsoleProps> = ({
         return;
       }
 
+      // If user is typing in an input/textarea, don't trigger global console actions
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if (isInput && (e.key === "Backspace" || e.key === "Enter" || e.key.startsWith("Arrow"))) {
+        return;
+      }
+
       switch (e.key) {
         case "ArrowUp":    playClick(); onArrowKeyPress?.("up"); break;
         case "ArrowDown":  playClick(); onArrowKeyPress?.("down"); break;

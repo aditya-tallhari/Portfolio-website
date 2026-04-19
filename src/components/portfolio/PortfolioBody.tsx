@@ -8,6 +8,7 @@ import { TechStack } from './TechStack';
 import { Experience } from './Experience';
 import { Projects } from './Projects';
 import { Achievements } from './Achievements';
+import {GithubStats} from './GithubStats';
 import { ContactSection } from './ContactSection';
 import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger);
@@ -77,29 +78,29 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
         // 0.98 -> 1.0 : Clone fades out, About Image fades in
         
         if (progress <= 0) {
-          gsap.set(profileImageRef.current, { opacity: 1 });
+          if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 1 });
           gsap.set(clone, { opacity: 0 });
           if (aboutImg) gsap.set(aboutImg, { opacity: 0 });
         } 
         else if (progress > 0 && progress < 0.02) {
           const p = progress / 0.02;
-          gsap.set(profileImageRef.current, { opacity: 1 - p });
+          if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 1 - p });
           gsap.set(clone, { opacity: p });
           if (aboutImg) gsap.set(aboutImg, { opacity: 0 });
         }
         else if (progress >= 0.02 && progress <= 0.98) {
-          gsap.set(profileImageRef.current, { opacity: 0 });
+          if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 0 });
           gsap.set(clone, { opacity: 1 });
           if (aboutImg) gsap.set(aboutImg, { opacity: 0 });
         }
         else if (progress > 0.98 && progress < 1) {
           const p = (progress - 0.98) / 0.02;
-          gsap.set(profileImageRef.current, { opacity: 0 });
+          if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 0 });
           gsap.set(clone, { opacity: 1 - p });
           if (aboutImg) gsap.set(aboutImg, { opacity: p });
         }
         else if (progress >= 1) {
-          gsap.set(profileImageRef.current, { opacity: 0 });
+          if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 0 });
           gsap.set(clone, { opacity: 0 });
           if (aboutImg) gsap.set(aboutImg, { opacity: 1 });
         }
@@ -125,7 +126,7 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
     return () => {
       window.removeEventListener('resize', handleResize);
       if (document.body.contains(clone)) document.body.removeChild(clone);
-      gsap.set(profileImageRef.current, { opacity: 1 });
+      if (profileImageRef.current) gsap.set(profileImageRef.current, { opacity: 1 });
       st.kill();
     };
   }, [profileImageRef, profileDestRef]);
@@ -158,8 +159,9 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
     <>
       <AboutSection profileDestRef={profileDestRef} />
       <TechStack />
-      <Projects />
       <Experience />
+      <Projects />
+      <GithubStats />
       <Achievements />
       <ContactSection />
     </>

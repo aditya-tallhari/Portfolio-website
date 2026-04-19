@@ -3,10 +3,10 @@
 @theme {
   --font-playfair: "Playfair Display", serif;
   --font-jetbrains: "JetBrains Mono", monospace;
-  
+
   --color-gold: #D4AF37;
   --color-navy: #0A1929;
-  
+
   --color-bg-primary: var(--bg-primary);
   --color-text-primary: var(--text-primary);
   --color-accent-primary: var(--accent-primary);
@@ -14,14 +14,22 @@
   --animate-blink: blink 1s step-end infinite;
 
   @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0;
+    }
   }
 }
 
 :root {
-  /* BloomFrame Inspired Light Mode (Default) */
+  /* BloomFrame Inspired Light Mode (Standard) */
   --bg-primary: #FAF8F5;
+  --bg-secondary: #F3F0EC;
   --text-primary: #2C1810;
   --text-secondary: #5C4033;
   --accent-primary: #FF4500;
@@ -35,11 +43,15 @@
   --accent-glow: rgba(255, 69, 0, 0.08);
   --shadow-primary: rgba(44, 24, 16, 0.1);
   --shadow-secondary: rgba(255, 69, 0, 0.06);
+
+  /* Gradient Tokens */
+  --gold-gradient: linear-gradient(135deg, #FF4500 0%, #D4A574 100%);
 }
 
 html[data-color-mode="dark"] {
-  /* Enhanced Black & White Dark Mode */
+  /* Enhanced Black & White with Warm Tones */
   --bg-primary: #030303;
+  --bg-secondary: #0A0A0A;
   --text-primary: #FFFFFF;
   --text-secondary: #E8E8E8;
   --accent-primary: #FF6B35;
@@ -53,17 +65,26 @@ html[data-color-mode="dark"] {
   --accent-glow: rgba(255, 107, 53, 0.08);
   --shadow-primary: rgba(0, 0, 0, 0.3);
   --shadow-secondary: rgba(255, 107, 53, 0.1);
+
+  /* Premium Liquid Gold Gradient */
+  --gold-gradient: linear-gradient(135deg, #FF6B35 0%, #FFB643 50%, #FFD700 100%);
 }
 
 @layer base {
-  html, body {
+
+  html,
+  body {
+    transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+  }
+
+  html,
+  body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-jetbrains);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
   }
 
   body {
@@ -72,9 +93,14 @@ html[data-color-mode="dark"] {
 }
 
 @layer utilities {
-  .font-playfair  { font-family: var(--font-playfair), serif; }
-  .font-jetbrains { font-family: var(--font-jetbrains), monospace; }
-  
+  .font-playfair {
+    font-family: var(--font-playfair), serif;
+  }
+
+  .font-jetbrains {
+    font-family: var(--font-jetbrains), monospace;
+  }
+
   .glass-card {
     backdrop-filter: blur(16px);
     background-color: var(--card-bg);
@@ -82,9 +108,30 @@ html[data-color-mode="dark"] {
     transition: all 0.5s ease;
   }
 
-  .accent-gradient-text {
-    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  .gold-gradient-text {
+    background: var(--gold-gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .accent-gradient-text {
+    color: var(--accent-primary);
+  }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

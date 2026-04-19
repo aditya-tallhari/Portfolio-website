@@ -66,17 +66,16 @@ export const Navbar = () => {
       {/* ── Right Control Center ── */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-           {/* <button className="p-2 text-[var(--text-primary)]/60 hover:text-[var(--accent-primary)] transition-all transform hover:scale-110">
-            <GithubIcon size={20} />
-          </button> */}
-          <button className="p-2 text-[var(--text-primary)]/60 hover:text-[var(--accent-primary)] transition-all transform hover:scale-110">
+          <button className="p-2 text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-all transform hover:scale-110">
             <VolumeIcon size={20} />
           </button>
         </div>
 
         <button
           onClick={toggleMode}
-          className="relative group p-2 rounded-full overflow-hidden hover:bg-[var(--accent-glow)] transition-all active:scale-95 text-[var(--text-primary)]/60 hover:text-[var(--accent-primary)]"
+          className={`relative group p-2 rounded-full overflow-hidden hover:bg-[var(--accent-glow)] transition-all active:scale-95 ${
+            isLight ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)]/60 hover:text-[var(--accent-primary)]'
+          }`}
           aria-label="Toggle Theme"
         >
           <AnimatePresence mode="wait">

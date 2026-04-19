@@ -1,89 +1,126 @@
 'use client';
 
-import React, { useRef } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, Star, Medal, Award, Code2 } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { GraduationCap, MapPin, Calendar, Award, Compass, School } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
-
-const achievements = [
-  { title: 'Best Web Performance 2024', org: 'Standard Awards', icon: Trophy, size: 'large' },
-  { title: 'Innovation Hackathon #1', org: 'Major League Hacking', icon: Medal, size: 'small' },
-  { title: 'Open Source Contributor', org: 'Next.js / Vercel', icon: Code2, size: 'medium' },
-  { title: 'Full Stack Excellence', org: 'Udemy Certified', icon: Award, size: 'small' },
-  { title: 'Top 1% Creator', org: 'Dev.to Community', icon: Star, size: 'medium' },
-  { title: 'Creative Dev of the Year', org: 'Design Awards', icon: Trophy, size: 'large' },
+const educationData = [
+  {
+    id: '01',
+    degree: 'B.Tech in CSE',
+    institution: 'Vignans Institute of Engineering',
+    location: 'AP, India',
+    period: '2021 — 2025',
+    grade: 'CGPA: 0.0',
+    desc: 'Specializing in Machine Learning and Full Stack Systems.',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    id: '02',
+    degree: 'Diploma - CS',
+    institution: 'Government Polytechnic',
+    location: 'AP, India',
+    period: '2018 — 2021',
+    grade: 'Score: 00%',
+    desc: 'Core fundamentals of computer science and hardware architectures.',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    id: '03',
+    degree: 'SSC (10th)',
+    institution: 'School Name',
+    location: 'AP, India',
+    period: '2016 — 2018',
+    grade: 'GPA: 0.0',
+    desc: 'High school education with honors in Mathematics and Science.',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+  }
 ];
 
-
 export const Achievements = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useGSAP(() => {
-    itemRefs.current.forEach((item) => {
-      if (!item) return;
-
-      gsap.fromTo(item,
-        { scale: 0.8, opacity: 0, filter: 'blur(10px)' },
-        {
-          scale: 1,
-          opacity: 1,
-          filter: 'blur(0px)',
-          duration: 1.2,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 90%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse',
-          }
-        }
-      );
-    });
-
-    gsap.from('.achieve-title-reveal', {
-      y: 100,
-      opacity: 0,
-      duration: 1.5,
-      ease: 'expo.out',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top 80%',
-      }
-    });
-  }, { scope: containerRef });
-
   return (
-    <section ref={containerRef} className="py-32 px-6 md:px-20 bg-[var(--bg-primary)] transition-colors duration-500">
-      <div className="max-w-7xl mx-auto">
-        <div className="overflow-hidden mb-32">
-          <h2 className="achieve-title-reveal text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.8]">
-            Hall of/<br/><span className="text-[var(--muted-text)]">Fame</span>
+    <section id="education" className="relative py-24 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden transition-colors duration-500">
+      {/* Background Ornament */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--accent-primary)]/5 blur-[120px] rounded-full pointer-events-none" />
+      
+      <div className="max-w-6xl mx-auto relative z-10">
+        <header className="mb-20">
+          <div className="flex items-center gap-3 mb-4">
+             <div className="w-10 h-[2px] bg-[var(--accent-primary)]" />
+             <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[var(--accent-primary)]">Trajectory</span>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-playfair font-black tracking-tighter uppercase leading-[0.9] text-[var(--text-primary)]">
+            Education <br /> 
+            <span className="opacity-20">Milestones</span>
           </h2>
-        </div>
+        </header>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {achievements.map((ach, i) => (
-            <div
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {educationData.map((edu, i) => (
+            <motion.div 
               key={i}
-              ref={(el) => { itemRefs.current[i] = el; }}
-              className={`break-inside-avoid relative p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--border-primary)] backdrop-blur-md flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-[var(--accent-glow)] transition-colors ${
-                ach.size === 'large' ? 'min-h-[400px]' : ach.size === 'medium' ? 'min-h-[300px]' : 'min-h-[200px]'
-              }`}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
+              className="group relative flex flex-col bg-[var(--bg-secondary)] border border-[var(--text-primary)]/[0.03] rounded-[2rem] overflow-hidden hover:border-[var(--accent-primary)]/20 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
             >
-              <div className="mb-6 p-4 rounded-2xl bg-[var(--border-primary)] group-hover:bg-[var(--accent-primary)] group-hover:text-[var(--bg-primary)] transition-all duration-500 group-hover:scale-110">
-                <ach.icon size={32} strokeWidth={1.5} className="group-hover:scale-110 transition-transform" />
+              {/* Card Number Overlay */}
+              <div className="absolute top-6 left-6 z-20 mix-blend-difference opacity-40 group-hover:opacity-100 transition-opacity">
+                 <span className="text-4xl font-black font-playfair text-white">{edu.id}</span>
               </div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-[var(--muted-text)] mb-2 group-hover:text-[var(--text-primary)]">{ach.org}</p>
-              <h3 className="text-xl font-bold tracking-tight max-w-[200px] leading-tight transition-colors">{ach.title}</h3>
-              
-              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Star size={12} className="text-[var(--accent-primary)] fill-[var(--accent-primary)]" />
+
+              {/* Image Section */}
+              <div className="aspect-[4/3] overflow-hidden relative grayscale group-hover:grayscale-0 transition-all duration-700">
+                 <img 
+                   src={edu.image} 
+                   alt={edu.institution} 
+                   className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-secondary)] via-transparent to-transparent opacity-90" />
+                 
+                 {/* Floating Period Badge */}
+                 <div className="absolute bottom-5 right-6 px-3 py-1 rounded-full bg-[var(--text-primary)]/5 backdrop-blur-md border border-[var(--text-primary)]/10 text-[8px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
+                    {edu.period}
+                 </div>
               </div>
-            </div>
+
+              {/* Content body */}
+              <div className="p-8 pb-10 flex flex-col flex-1 gap-6 relative">
+                <div className="space-y-4">
+                   <div>
+                      <div className="flex items-center gap-2 mb-1 opacity-40 text-[var(--text-secondary)]">
+                         <MapPin size={8} className="text-[var(--accent-primary)]" />
+                         <span className="text-[7px] font-black uppercase tracking-widest">{edu.location}</span>
+                      </div>
+                      <h3 className="text-2xl font-black uppercase tracking-tight leading-tight group-hover:text-[var(--accent-primary)] transition-colors line-clamp-2 text-[var(--text-primary)]">
+                        {edu.degree}
+                      </h3>
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-20 mt-1 line-clamp-1">{edu.institution}</p>
+                   </div>
+                   
+                   <p className="text-xs text-[var(--text-secondary)] font-light leading-relaxed opacity-40 group-hover:opacity-80 transition-opacity">
+                      {edu.desc}
+                   </p>
+                </div>
+
+                <div className="flex items-center justify-between mt-auto pt-6 border-t border-[var(--text-primary)]/5">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--accent-primary)]/5 flex items-center justify-center text-[var(--accent-primary)] border border-[var(--accent-primary)]/10 group-hover:bg-[var(--accent-primary)]/10 transition-colors">
+                         <GraduationCap size={18} />
+                      </div>
+                      <div className="flex flex-col">
+                         <span className="text-[12px] font-black tracking-tighter text-[var(--accent-primary)]">{edu.grade}</span>
+                         <span className="text-[6px] font-black uppercase tracking-widest opacity-20 text-[var(--text-secondary)]">Verified Record</span>
+                      </div>
+                   </div>
+                   
+                   <div className="w-8 h-8 rounded-full border border-[var(--text-primary)]/5 flex items-center justify-center text-[var(--text-primary)] opacity-10 group-hover:text-[var(--accent-primary)] group-hover:border-[var(--accent-primary)]/30 group-hover:opacity-100 transition-all">
+                      <Compass size={14} />
+                   </div>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

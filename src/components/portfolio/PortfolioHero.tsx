@@ -61,9 +61,9 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
           </div>
           <div className="flex flex-col gap-8">
-            <a href="#" className="text-[var(--text-primary)] opacity-30 hover:opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
-            <a href="#" className="text-[var(--text-primary)] opacity-30 hover:opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><MessageCircle size={24} /></a>
-            <a href="#" className="text-[var(--text-primary)] opacity-30 hover:opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaGithub size={24} /></a>
+            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
+            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><MessageCircle size={24} /></a>
+            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaGithub size={24} /></a>
           </div>
         </div>
 
@@ -128,7 +128,7 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
               </div>
 
               <h1 className="text-[7vw] md:text-[5vw] lg:text-[4.8vw] font-playfair font-black tracking-tighter leading-tight mb-6">
-                Hey, I'm <span className="italic gold-gradient-text">Aditya</span>
+                Hey, I'm <span className="">Aditya</span>
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity }}
@@ -144,7 +144,7 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
               <div className="flex flex-wrap items-center gap-6">
                 <Link 
                   href="#contact" 
-                  className="px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-widest hover:bg-[var(--accent-primary)] transition-all flex items-center gap-3"
+                  className="px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3"
                 >
                   Lets Connect <ArrowDownRight size={18} />
                 </Link>

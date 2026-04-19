@@ -1,175 +1,247 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { ExternalLink, Code, Layout, Sparkles, FolderKanban } from 'lucide-react';
 import gsap from 'gsap';
+import { FaGithub } from "react-icons/fa";
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ExternalLink, ArrowUpRight } from 'lucide-react';
-import Image from 'next/image';
-
-const GithubIcon = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-4.51-2-7-2"/></svg>
-);
+import { fetchProjects, Project as ApiProject } from '@/lib/api';
+import { Skeleton } from '../ui/skeleton';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const projects = [
-  {
-    title: 'Nexwave',
-    category: 'Full Stack / AI',
-    desc: 'An intelligent platform for real-time collaboration with integrated AI brainstorming tools.',
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop',
-    link: '#',
-    featured: true
-  },
-  {
-    title: 'Vortex UI',
-    category: 'Design System',
-    desc: 'A high-performance component library built with accessibility and animation at its core.',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop',
-    link: '#'
-  },
-  {
-    title: 'Ethereal',
-    category: 'Web3 / NFT',
-    desc: 'A minimalist marketplace for digital assets with a focus on immersive user experience.',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop',
-    link: '#'
-  }
-];
+// Fixed accent color as requested
+const ACCENT_COLOR = '#FF4500';
 
 export const Projects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [projectsList, setProjectsList] = useState<ApiProject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const data = await fetchProjects();
+        setProjectsList(data);
+      } catch (error) {
+        console.error("Error loading projects:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProjects();
+  }, []);
 
   useGSAP(() => {
-    projectRefs.current.forEach((card) => {
-      if (!card) return;
+    if (isLoading || projectsList.length === 0) return;
 
-      const img = card.querySelector('.project-image') as HTMLElement;
+    const ctx = gsap.context(() => {
+      // ── Header Animation ──
+      const headerTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: 'top 80%',
+          toggleActions: "play none none none",
+        }
+      });
 
-      if (img) {
-        gsap.to(img, {
-          y: -60,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          }
-        });
-      }
+      headerTl.from('.title-word-left', {
+        x: -50,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'expo.out'
+      }, '-=0.3');
+      
+      headerTl.from('.title-word-right', {
+        x: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'expo.out'
+      }, '-=0.8');
 
-      const handleMouseMove = (e: globalThis.MouseEvent) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        gsap.to(card, {
-          rotateY: x / 30,
-          rotateX: -y / 30,
-          duration: 0.5,
-          ease: 'power3.out'
-        });
+      // ── Horizontal Pinning Logic ──
+      const getScrollAmount = () => {
+        if (!gridRef.current) return 0;
+        return gridRef.current.scrollWidth - window.innerWidth;
       };
 
-      const handleMouseLeave = () => {
-        gsap.to(card, {
-          rotateY: 0,
-          rotateX: 0,
-          duration: 0.8,
-          ease: 'elastic.out(1, 0.3)'
+      const scrollTween = gsap.to(gridRef.current, {
+        x: () => -getScrollAmount(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          pin: true,
+          scrub: 1,
+          start: "top top",
+          end: () => `+=${getScrollAmount()}`,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        }
+      });
+
+      // ── Project Interactions ──
+      const sections = gsap.utils.toArray('.project-card');
+      sections.forEach((card: any) => {
+        card.addEventListener('mousemove', (e: any) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          gsap.to(card.querySelector('.card-image-wrap'), {
+            x: (x - centerX) * 0.02,
+            y: (y - centerY) * 0.02,
+            duration: 0.5
+          });
         });
-      };
 
-      card.addEventListener('mousemove', handleMouseMove);
-      card.addEventListener('mouseleave', handleMouseLeave);
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card.querySelector('.card-image-wrap'), { x: 0, y: 0, duration: 0.8 });
+        });
+      });
 
-      return () => {
-        card.removeEventListener('mousemove', handleMouseMove);
-        card.removeEventListener('mouseleave', handleMouseLeave);
-      };
-    });
-
-    gsap.from('.project-reveal', {
-      y: 100,
-      opacity: 0,
-      stagger: 0.2,
-      duration: 1.5,
-      ease: 'expo.out',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top 70%',
-      }
-    });
-
-  }, { scope: containerRef });
+    }, containerRef);
+    return () => ctx.revert();
+  }, [isLoading, projectsList]);
 
   return (
-    <section id="projects" ref={containerRef} className="py-32 px-6 md:px-20 bg-[var(--bg-primary)] perspective-[1500px] transition-colors duration-1000">
-      <div className="max-w-7xl mx-auto">
-        <div className="overflow-hidden mb-32">
-          <h2 className="project-reveal text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.8]">
-            Selected/<br/><span className="text-[var(--accent-primary)] opacity-20">Works</span>
+    <section 
+      ref={containerRef} 
+      id="projects" 
+      className="relative bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden min-h-screen flex flex-col pt-12 pb-20 transition-colors duration-500"
+    >
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--accent-glow)] rounded-full blur-[150px] opacity-10 pointer-events-none" />
+
+      <div className="w-full px-8 md:px-16 lg:px-24 relative z-10 mb-8">
+        {/* Header Section */}
+        <header ref={headerRef}>
+          <h2 className="pt-20 text-5xl md:text-[6rem] font-black tracking-tighter uppercase leading-[0.85] font-playfair mb-3">
+            <span className="title-word-left block">Selected /</span>
+            <span className="title-word-right block gold-gradient-text text-7xl pt-2">Projects</span>
           </h2>
-        </div>
+        </header>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
-          {projects.map((project, i) => (
-            <div
-              key={project.title}
-              ref={(el) => { projectRefs.current[i] = el; }}
-              className={`project-reveal group relative preserve-3d cursor-none ${
-                project.featured ? 'md:col-span-2' : ''
-              }`}
-            >
-              {/* Main Card Shell */}
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[3rem] bg-[var(--card-bg)] border border-[var(--border-primary)] backdrop-blur-sm group-hover:border-[var(--accent-primary)] transition-all duration-700">
-                
-                {/* Parallax Image */}
-                <div className="project-image-container absolute inset-0 overflow-hidden">
-                  <div className="relative w-full h-[120%] -top-[10%]">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="project-image object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  {/* Overlay Gradient - Balanced Fade */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-90" />
+      {/* Horizontal Scroll Area */}
+      <div className="relative flex-1 flex items-center">
+        <div ref={gridRef} className="flex pl-8 md:pl-16 lg:pl-24 pr-8 md:pr-16 lg:pr-24 w-fit h-fit gap-0">
+          {isLoading ? (
+            // Skeleton Loader for Horizontal Area
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="relative h-[550px] md:h-[620px] w-[380px] md:w-[540px] flex flex-col p-8 md:p-12 border border-[var(--border-primary)] mr-0">
+                <div className="flex justify-between items-start mb-8">
+                  <Skeleton className="w-16 h-16 rounded-full bg-[var(--text-primary)] opacity-10" />
+                  <Skeleton className="w-12 h-8 bg-[var(--text-primary)] opacity-10" />
                 </div>
-
-                {/* Content Overlay */}
-                <div className="project-text absolute bottom-0 left-0 right-0 p-8 md:p-12 z-20 pointer-events-none">
-                  <div className="flex justify-between items-end">
-                    <div className="space-y-4 pointer-events-auto">
-                      <p className="text-[10px] uppercase tracking-[0.4em] text-[var(--accent-primary)] font-bold">{project.category}</p>
-                      <h3 className="text-4xl md:text-6xl font-black tracking-tight group-hover:text-[var(--accent-primary)] transition-colors duration-500">{project.title}</h3>
-                      <p className="max-w-md text-sm md:text-base text-[var(--text-secondary)] leading-relaxed font-jetbrains">
-                        {project.desc}
-                      </p>
-                    </div>
-                    <div className="flex gap-4 pointer-events-auto">
-                      <button className="w-14 h-14 rounded-full border border-[var(--border-primary)] flex items-center justify-center bg-[var(--bg-secondary)]/50 text-[var(--text-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--bg-secondary)] transition-all duration-500 backdrop-blur-xl group-hover:scale-110 group-hover:shadow-[0_0_20px_var(--accent-primary)]">
-                        <GithubIcon size={20} />
-                      </button>
-                      <button className="w-14 h-14 rounded-full border border-[var(--border-primary)] flex items-center justify-center bg-[var(--bg-secondary)]/50 text-[var(--text-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--bg-secondary)] transition-all duration-500 backdrop-blur-xl group-hover:scale-110 group-hover:shadow-[0_0_20px_var(--accent-primary)]">
-                        <ArrowUpRight className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cyber Brackets */}
-                <div className="absolute top-8 left-8 text-[10px] font-mono text-[var(--accent-primary)] opacity-20 uppercase tracking-widest hidden md:block">
-                  [ 0{i + 1} // PRJ ]
+                <Skeleton className="w-full h-48 md:h-64 rounded-2xl bg-[var(--text-primary)] opacity-10 mb-8" />
+                <div className="flex-1 space-y-4">
+                  <Skeleton className="w-3/4 h-10 bg-[var(--text-primary)] opacity-20" />
+                  <Skeleton className="w-full h-24 bg-[var(--text-primary)] opacity-10" />
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            projectsList?.map((project, i) => {
+              const accentColor = ACCENT_COLOR;
+              const techArray = Array.isArray(project.techStack) ? project.techStack : [];
+              
+              return (
+                <div 
+                  key={project._id || i}
+                  className="project-card group relative h-[550px] md:h-[620px] w-[380px] md:w-[540px] flex flex-col bg-transparent border border-[var(--border-primary)] hover:border-[var(--accent-primary)] p-8 md:p-12 transition-all duration-700 overflow-hidden"
+                  style={{ '--accent-primary': accentColor } as React.CSSProperties}
+                >
+                  {/* Card Header: Icon & Number */}
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--accent-primary)] group-hover:bg-[var(--accent-primary)] group-hover:text-white group-hover:border-[var(--accent-primary)] transition-all duration-500">
+                        <FolderKanban size={24} strokeWidth={1} />
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-3xl md:text-4xl font-light text-[var(--text-primary)] opacity-20 font-playfair italic">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      {project.isFeatured && (
+                        <div className="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20">
+                          <Sparkles size={10} className="text-[var(--accent-primary)]" />
+                          <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">Featured</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Project Image Block */}
+                  <div className="relative w-full h-[180px] md:h-[240px] mb-8 overflow-hidden rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] shadow-sm group-hover:shadow-xl transition-shadow duration-500">
+                    <div className="card-image-wrap relative w-full h-full">
+                      <Image 
+                        src={project.imageUrl || project.image || 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200'}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover grayscale brightness-90 dark:brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000 ease-out group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-transparent group-hover:bg-transparent transition-colors duration-700" />
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-4 md:mb-6 leading-[1.1] font-playfair">
+                      {project.title}
+                    </h3>
+                    
+                    <div className="w-full h-px bg-[var(--border-primary)] opacity-60 mb-6" />
+
+                    <p className="text-xs md:text-base text-[var(--text-secondary)] font-light leading-relaxed mb-6 line-clamp-3">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  {/* Card Footer */}
+                  <div className="flex items-center justify-between mt-auto">
+                    <div className="flex gap-4">
+                      {project.links?.github && (
+                        <a 
+                          href={project.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all"
+                        >
+                          <FaGithub size={18} />
+                        </a>
+                      )}
+                      {project.links?.live && (
+                        <a 
+                          href={project.links.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all"
+                        >
+                          <ExternalLink size={18} />
+                        </a>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap justify-end gap-2 max-w-[60%]">
+                      {techArray.slice(0, 3).map((t, idx) => (
+                        <span key={idx} className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-40 font-jetbrains">
+                          {t}{idx < techArray.slice(0, 3).length - 1 ? " •" : ""}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Subtle Highlight (Hover Only) */}
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-transparent group-hover:bg-[var(--accent-primary)] transition-all duration-700 pointer-events-none" />
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </section>

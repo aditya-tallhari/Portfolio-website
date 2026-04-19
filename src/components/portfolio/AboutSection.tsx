@@ -81,7 +81,7 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
     >
       {/* ── Background Typography ── */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 z-0">
-        <h2 className="about-bg-text text-[25vw] font-black tracking-tighter opacity-[0.03] select-none pointer-events-none uppercase font-playfair">
+        <h2 className="about-bg-text text-[25vw] font-black tracking-tighter opacity-[0.05] select-none pointer-events-none uppercase font-playfair transition-opacity duration-500">
           About
         </h2>
       </div>
@@ -92,10 +92,10 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
           {/* ── Left Column: Condensed Narrative ── */}
           <div className="flex flex-col space-y-12">
             <div ref={headlineRef} className="space-y-4">
-               <h3 className="headline-part text-[10px] uppercase tracking-[0.6em] font-black text-[var(--accent-primary)] opacity-40">
+               <h3 className="headline-part text-[10px] uppercase tracking-[0.6em] font-black text-[var(--accent-primary)] opacity-60">
                   Mission / Identity
                </h3>
-               <h2 className="headline-part text-6xl md:text-8xl font-playfair font-black tracking-tighter leading-tight italic gold-gradient-text">
+               <h2 className="headline-part text-6xl md:text-8xl font-playfair font-black tracking-tighter leading-tight">
                   About Me.
                </h2>
             </div>
@@ -103,14 +103,14 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
             {/* Condensed Bio Card */}
             <div 
               ref={cardRef}
-              className="bg-[var(--text-primary)]/[0.03] backdrop-blur-3xl border border-[var(--text-primary)]/10 rounded-3xl p-10 md:p-14 w-full lg:max-w-2xl shadow-2xl relative z-10 font-jetbrains"
+              className="bg-[var(--text-primary)]/[0.04] backdrop-blur-3xl border border-[var(--border-primary)] rounded-3xl p-10 md:p-14 w-full lg:max-w-2xl shadow-xl relative z-10 font-jetbrains transition-all duration-500"
             >
               <div className="space-y-8">
                 <p className="text-xl md:text-2xl text-[var(--text-primary)] opacity-90 leading-relaxed italic">
                   I thrive on the intersection of <span className="text-[var(--accent-primary)] font-bold italic">Design</span> & 
                   <span className="text-[var(--accent-primary)] font-bold italic"> Engineering</span>. 
                 </p>
-                <p className="text-base md:text-lg text-[var(--text-primary)] opacity-40 leading-relaxed">
+                <p className="text-base md:text-lg text-[var(--text-primary)] opacity-60 leading-relaxed">
                   With expertise in Next.js and high-end motion design, I transform complex technical 
                   requirements into seamless user journeys. My approach is defined by precision, 
                   performance, and an uncompromising commitment to aesthetic excellence.
@@ -121,7 +121,7 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
  
           {/* ── Right Column: Expanded Identity Card ── */}
           <div ref={phoneRef} className="flex justify-center lg:justify-end">
-            <div className="relative w-[400px] h-[680px] bg-[var(--bg-primary)] rounded-[3.5rem] border border-[var(--text-primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
+            <div className="relative w-[400px] h-[680px] bg-[var(--bg-primary)] rounded-[3.5rem] border border-[var(--border-primary)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-500">
               
               {/* Profile Area (Expanded) */}
               <div className="relative w-full h-[65%] bg-[var(--bg-primary)] brightness-[0.95]">
@@ -157,7 +157,7 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
               </div>
  
               {/* Bezel (Scaled) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[var(--bg-primary)] rounded-b-2xl border-x border-b border-[var(--text-primary)]/10 z-20" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[var(--bg-primary)] rounded-b-2xl border-x border-b border-[var(--border-primary)] z-20" />
             </div>
           </div>
  
