@@ -9,7 +9,8 @@ import Link from 'next/link';
 import { MessageCircle, ArrowDownRight } from 'lucide-react';
 import { FaGithub } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
-import { motion } from "framer-motion";
+import { motion, useMotionValue as motionValue, useSpring, useTransform } from "framer-motion";
+import { recordVisitor, fetchPublicStats, PublicStats } from '@/lib/api';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,7 +20,59 @@ interface PortfolioHeroProps {
 }
 
 export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
-  ({ helloTextRef, profileImageRef }, ref) => {
+      ({ helloTextRef, profileImageRef }, ref) => {
+    const [stats, setStats] = React.useState<PublicStats | null>(null);
+
+    // ── Visitor Recording & Stats Fetching ──
+    React.useEffect(() => {
+      const init = async () => {
+        try {
+          // Record visitor if not already recorded this session
+          const hasVisited = sessionStorage.getItem('v');
+          if (!hasVisited) {
+            await recordVisitor();
+            sessionStorage.setItem('v', '1');
+          }
+          // Fetch stats
+          const data = await fetchPublicStats();
+          setStats(data);
+        } catch (err) {
+          console.error("Failed to initialize hero stats:", err);
+        }
+      };
+      init();
+    }, []);
+
+    // ── Rubber Band / Stretchy Line Logic ──
+    const dragX = motionValue(0);
+    
+    // High-oscillation spring for "more bounce"
+    const springX = useSpring(dragX, {
+      stiffness: 800,
+      damping: 10,
+      mass: 0.2
+    });
+    
+    const handleMouseMove = (e: React.MouseEvent) => {
+      // Only apply hover pluck if not currently dragging
+      const { clientX, currentTarget } = e;
+      const { left, width } = currentTarget.getBoundingClientRect();
+      const centerX = left + width / 2;
+      const deltaX = clientX - centerX;
+      
+      // Subtly deflection on hover (max 30px)
+      const pull = Math.max(Math.min(deltaX, 30), -30);
+      dragX.set(pull);
+    };
+
+    const handleMouseLeave = () => {
+      dragX.set(0);
+    };
+    
+    // Transform spring value into a quadratic bezier path M [start] Q [control] [end]
+    // The control point (Q) moves with the spring, creating the curve
+    const stringPath = useTransform(springX, (x) => `M 0 0 Q ${x} 80 0 160`);
+
     useGSAP(() => {
       if (!ref || typeof ref === 'function') return;
 
@@ -56,9 +109,40 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
       >
         {/* ── Left Side: Socials Sidebar (Reverted) ── */}
         <div className="absolute left-6 md:left-10 lg:left-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-12 z-20 hidden md:flex">
-          <div className="w-px h-40 bg-[var(--accent-primary)] relative opacity-30">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)]" />
+          <div className="relative group py-10 px-6 -mx-6 h-[160px] flex items-center justify-center">
+            {/* The SVG Line */}
+            <svg 
+              width="80" 
+              height="160" 
+              viewBox="-40 0 80 160" 
+              fill="none" 
+              className="text-[var(--accent-primary)] overflow-visible absolute pointer-events-none"
+            >
+              <motion.path 
+                d={stringPath} 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+              />
+              <circle cx="0" cy="2" r="2.5" fill="currentColor" />
+              <circle cx="0" cy="158" r="2.5" fill="currentColor" />
+            </svg>
+
+            {/* Hidden Drag Handle (The interactive part) */}
+            <motion.div
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDrag={(e, info) => dragX.set(info.offset.x)}
+              onDragEnd={() => dragX.set(0)}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ x: dragX }}
+              className="w-12 h-24 cursor-grab active:cursor-grabbing z-30 flex items-center justify-center"
+            >
+              {/* Optional: subtle handle visual or just leave it transparent for "magic" pull */}
+              <div className="w-1 h-8 bg-[var(--accent-primary)] opacity-0 group-hover:opacity-20 rounded-full" />
+            </motion.div>
           </div>
           <div className="flex flex-col gap-8">
             <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
@@ -108,9 +192,9 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                    src="/profile.svg"
                    alt="Aditya Profile"
                    fill
+                   sizes="(max-width: 768px) 70vw, (max-width: 1200px) 40vw, 30vw"
                    className="object-contain object-bottom transition-all duration-700 scale-110 translate-y-4"
                    priority
-                   loading="eager"
                  />
                </div>
             </div>
@@ -161,14 +245,25 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
           </div>
         </div>
 
-        {/* ── Bottom Statistics Bar (New Component) ── */}
         <div className="w-full max-w-[1400px] px-8 md:px-16 lg:px-24 mt-30">
           <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-[var(--text-primary)]/10 pt-6 gap-8">
             {[
-              { num: '18,503+', label: 'Portfolio Views' },
-              { num: '2+', label: 'Years of Experience' },
-              { num: '8+', label: 'Projects Shipped' },
-              { num: '5+', label: 'Happy Clients' }
+              { 
+                num: stats ? `${stats.views.toLocaleString()}+` : '0+', 
+                label: 'Portfolio Views' 
+              },
+              { 
+                num: stats ? `${stats.experience}+` : '0+', 
+                label: 'Years of Experience' 
+              },
+              { 
+                num: stats ? `${stats.projects}+` : '0+', 
+                label: 'Projects Shipped' 
+              },
+              { 
+                num: stats ? `${stats.clients}+` : '0+', 
+                label: 'Happy Clients' 
+              }
             ].map((stat, i) => (
               <div key={i} className="flex flex-col items-center lg:items-start border-r border-[var(--text-primary)]/5 last:border-r-0">
                 <span className="text-3xl md:text-4xl font-playfair font-black mb-1">{stat.num}</span>

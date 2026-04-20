@@ -90,6 +90,7 @@ html[data-color-mode="dark"] {
   body {
     min-height: 100vh;
   }
+
 }
 
 @layer utilities {

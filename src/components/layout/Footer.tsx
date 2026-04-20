@@ -1,54 +1,138 @@
-import React from 'react';
-import { Mail } from 'lucide-react';
+'use client';
 
-const GithubIcon = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.2c3-.3 6-1.5 6-6.5a5.4 5.4 0 0 0-1.5-3.8 5.7 5.7 0 0 0 .1-3.9s-1.2-.4-3.9 1.4a13.3 13.3 0 0 0-7 0C6.2 1.5 5 1.9 5 1.9a5.7 5.7 0 0 0 .1 3.9A5.4 5.4 0 0 0 3 9.6c0 5 3 6.2 6 6.5a4.8 4.8 0 0 0-1 3.2v4"></path>
-  </svg>
-);
+import React, { useRef } from 'react';
+import Link from 'next/link';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Mail, ArrowUpRight } from 'lucide-react';
+import { FaGithub, FaLinkedinIn, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 
-const LinkedinIcon = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-    <rect x="2" y="9" width="4" height="12"></rect>
-    <circle cx="4" cy="4" r="2"></circle>
-  </svg>
-);
-
-const TwitterIcon = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-  </svg>
-);
+gsap.registerPlugin(ScrollTrigger);
 
 export const Footer = () => {
+  const containerRef = useRef<HTMLElement>(null);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top 85%',
+        toggleActions: 'play none none reverse',
+      }
+    });
+
+    tl.from('.footer-item', {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: 'power2.out'
+    });
+  }, { scope: containerRef });
+
   return (
-    <footer className="w-full py-12 px-6 border-t border-white/5 mt-auto">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-center md:text-left">
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            © 2026 Aditya Tallhari. All rights reserved.
-          </p>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1 opacity-60">
-            Made with ❤️ in Next.js
-          </p>
+    <footer 
+      ref={containerRef}
+      className="relative w-full border-t border-[var(--border-primary)] bg-[var(--bg-primary)] pt-24 pb-12 overflow-hidden transition-colors duration-700"
+    >
+      <div className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24">
+        <div className="flex flex-col lg:flex-row justify-between gap-16 mb-20">
+          
+          {/* Left Side: CTA */}
+          <div className="footer-item flex-1 max-w-xl">
+            <h2 className="text-5xl md:text-6xl font-playfair font-black tracking-tighter leading-tight mb-8">
+              Have an idea? <br />
+              <span className="text-[var(--accent-primary)]">Let's Connect.</span>
+            </h2>
+            
+            <a 
+              href="mailto:contact@aditya.dev" 
+              className="group inline-flex items-center gap-4 text-xl font-jetbrains font-bold hover:text-[var(--accent-primary)] transition-all"
+            >
+              contact@aditya.dev
+              <div className="w-12 h-12 rounded-full border border-[var(--text-primary)]/20 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all">
+                <ArrowUpRight size={20} />
+              </div>
+            </a>
+          </div>
+
+          {/* Right Side: Links */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-20">
+            {/* Index */}
+            <div className="footer-item flex flex-col gap-6">
+              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Index</span>
+              <ul className="flex flex-col gap-4 text-sm font-bold uppercase tracking-widest">
+                {['About', 'Projects', 'Experience', 'Contact'].map((item) => (
+                  <li key={item}>
+                    <Link href={`#${item.toLowerCase()}`} className="hover:text-[var(--accent-primary)] transition-colors">
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Socials */}
+            <div className="footer-item flex flex-col gap-6">
+              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Socials</span>
+              <ul className="flex flex-col gap-4 text-sm font-bold uppercase tracking-widest">
+                {[
+                  { name: 'Github', icon: FaGithub, href: '#' },
+                  { name: 'LinkedIn', icon: FaLinkedinIn, href: '#' },
+                  { name: 'Twitter', icon: FaTwitter, href: '#' },
+                  { name: 'Whatsapp', icon: FaWhatsapp, href: '#' }
+                ].map((social) => (
+                  <li key={social.name}>
+                    <a href={social.href} className="flex items-center gap-2 hover:text-[var(--accent-primary)] transition-colors group">
+                      <social.icon size={16} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                      {social.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Status */}
+            <div className="footer-item flex flex-col gap-6 col-span-2 md:col-span-1">
+              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Presence</span>
+              <p className="text-sm font-bold uppercase tracking-widest leading-relaxed opacity-60">
+                Remote / <br />
+                Global Execution
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <a href="#" className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent-cyan)] transition-colors">
-            <GithubIcon size={20} />
-          </a>
-          <a href="#" className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent-cyan)] transition-colors">
-            <LinkedinIcon size={20} />
-          </a>
-          <a href="#" className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent-cyan)] transition-colors">
-            <TwitterIcon size={20} />
-          </a>
-          <a href="#" className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent-cyan)] transition-colors">
-            <Mail size={20} />
-          </a>
+        {/* Bottom bar */}
+        <div className="footer-item flex flex-col md:flex-row justify-between items-center pt-10 border-t border-[var(--text-primary)]/10 gap-8">
+          <div className="flex items-center gap-6">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains">
+              © 2026 Aditya Tallhari
+            </span>
+            <div className="hidden md:block w-1 h-1 rounded-full bg-[var(--accent-primary)] opacity-30" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains">
+              Built with precision.
+            </span>
+          </div>
+
+          <button 
+            onClick={scrollToTop}
+            className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] hover:text-[var(--accent-primary)] transition-all"
+          >
+            Back to Top
+            <div className="w-8 h-8 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all">
+              <ArrowUpRight size={14} className="-rotate-45" />
+            </div>
+          </button>
         </div>
       </div>
     </footer>
   );
 };
+
+

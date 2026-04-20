@@ -141,7 +141,7 @@ const MainScreen: React.FC<{
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
     >
       <img
-        src="/bg-image.jpg"
+        src="/bg-image2.jpg"
         alt="background"
         className="absolute inset-0 w-full h-full object-cover"
       />

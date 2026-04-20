@@ -9,6 +9,7 @@ import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { fetchProjects, Project as ApiProject } from '@/lib/api';
 import { Skeleton } from '../ui/skeleton';
+import ProjectCard from './ProjectCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -130,7 +131,7 @@ export const Projects = () => {
 
       {/* Horizontal Scroll Area */}
       <div className="relative flex-1 flex items-center">
-        <div ref={gridRef} className="flex pl-8 md:pl-16 lg:pl-24 pr-8 md:pr-16 lg:pr-24 w-fit h-fit gap-0">
+        <div ref={gridRef} className="flex pl-8 md:pl-16 lg:pl-24 pr-8 md:pr-16 lg:pr-24 w-fit h-fit gap-12">
           {isLoading ? (
             // Skeleton Loader for Horizontal Area
             Array.from({ length: 4 }).map((_, i) => (
@@ -147,100 +148,13 @@ export const Projects = () => {
               </div>
             ))
           ) : (
-            projectsList?.map((project, i) => {
-              const accentColor = ACCENT_COLOR;
-              const techArray = Array.isArray(project.techStack) ? project.techStack : [];
-              
-              return (
-                <div 
-                  key={project._id || i}
-                  className="project-card group relative h-[550px] md:h-[620px] w-[380px] md:w-[540px] flex flex-col bg-transparent border border-[var(--border-primary)] hover:border-[var(--accent-primary)] p-8 md:p-12 transition-all duration-700 overflow-hidden"
-                  style={{ '--accent-primary': accentColor } as React.CSSProperties}
-                >
-                  {/* Card Header: Icon & Number */}
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--accent-primary)] group-hover:bg-[var(--accent-primary)] group-hover:text-white group-hover:border-[var(--accent-primary)] transition-all duration-500">
-                        <FolderKanban size={24} strokeWidth={1} />
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-3xl md:text-4xl font-light text-[var(--text-primary)] opacity-20 font-playfair italic">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      {project.isFeatured && (
-                        <div className="flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20">
-                          <Sparkles size={10} className="text-[var(--accent-primary)]" />
-                          <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--accent-primary)]">Featured</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Project Image Block */}
-                  <div className="relative w-full h-[180px] md:h-[240px] mb-8 overflow-hidden rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] shadow-sm group-hover:shadow-xl transition-shadow duration-500">
-                    <div className="card-image-wrap relative w-full h-full">
-                      <Image 
-                        src={project.imageUrl || project.image || 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200'}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover grayscale brightness-90 dark:brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000 ease-out group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-transparent group-hover:bg-transparent transition-colors duration-700" />
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="flex-1">
-                    <h3 className="text-2xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-4 md:mb-6 leading-[1.1] font-playfair">
-                      {project.title}
-                    </h3>
-                    
-                    <div className="w-full h-px bg-[var(--border-primary)] opacity-60 mb-6" />
-
-                    <p className="text-xs md:text-base text-[var(--text-secondary)] font-light leading-relaxed mb-6 line-clamp-3">
-                      {project.description}
-                    </p>
-                  </div>
-
-                  {/* Card Footer */}
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex gap-4">
-                      {project.links?.github && (
-                        <a 
-                          href={project.links.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all"
-                        >
-                          <FaGithub size={18} />
-                        </a>
-                      )}
-                      {project.links?.live && (
-                        <a 
-                          href={project.links.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-full border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all"
-                        >
-                          <ExternalLink size={18} />
-                        </a>
-                      )}
-                    </div>
-                    
-                    <div className="flex flex-wrap justify-end gap-2 max-w-[60%]">
-                      {techArray.slice(0, 3).map((t, idx) => (
-                        <span key={idx} className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-40 font-jetbrains">
-                          {t}{idx < techArray.slice(0, 3).length - 1 ? " •" : ""}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Subtle Highlight (Hover Only) */}
-                  <div className="absolute inset-x-0 bottom-0 h-1 bg-transparent group-hover:bg-[var(--accent-primary)] transition-all duration-700 pointer-events-none" />
-                </div>
-              );
-            })
+            projectsList?.map((project, i) => (
+              <ProjectCard 
+                key={project._id || i}
+                project={project}
+                index={i}
+              />
+            ))
           )}
         </div>
       </div>

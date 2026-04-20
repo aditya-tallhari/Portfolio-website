@@ -28,15 +28,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+       <head>
+         <script
+           dangerouslySetInnerHTML={{
+             __html: `
+               (function() {
+                 try {
+                   var savedMode = localStorage.getItem("portfolio-color-mode");
+                   var systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                   var mode = savedMode || (systemPrefersDark ? "dark" : "light");
+                   document.documentElement.setAttribute("data-color-mode", mode);
+                 } catch (e) {}
+               })();
+             `,
+           }}
+         />
+       </head>
        <body className="font-jetbrains min-h-screen flex flex-col antialiased">
         <ColorModeProvider>
           <CustomCursor />
-          <main className="flex-grow relative">
+          <main id="main-app-content" className="flex-grow relative">
             {children}
           </main>
         </ColorModeProvider>
       </body>
-    </html>
+     </html>
   );
 }

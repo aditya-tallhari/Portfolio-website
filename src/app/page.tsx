@@ -6,9 +6,11 @@ import { ConsoleScreen } from "@/components/home/ConsoleScreen";
 import { SocialSidebar } from "@/components/layout/SocialSidebar";
 import { BackgroundNoise } from "@/components/layout/BackgroundEffects";
 import { GridPattern } from "@/components/ui/GridPattern";
+import { PageLoader } from "@/components/layout/PageLoader";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { recordVisitor } from "@/lib/api";
 
 // ─── COMPONENTS FOR HUD ──────────────────────────────────────────
 
@@ -171,6 +173,24 @@ export default function Home() {
 
   const handleAction = useCallback((action: "select" | "back") => {
     (window as any).__consoleHandleAction?.(action);
+  }, []);
+
+  useEffect(() => {
+    const record = async () => {
+      try {
+        const hasVisited = sessionStorage.getItem('v');
+        if (!hasVisited) {
+          await recordVisitor();
+          sessionStorage.setItem('v', '1');
+        }
+      } catch (err) {
+        console.error("Failed to record visitor:", err);
+      }
+    };
+    record();
+
+    // Force remove loading state on main home page to prevent black screen
+    document.documentElement.removeAttribute("data-loading");
   }, []);
 
   return (

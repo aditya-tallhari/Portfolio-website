@@ -4,62 +4,86 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
-gsap.registerPlugin(useGSAP);
-
 interface PageLoaderProps {
   onComplete?: (timeline: gsap.core.Timeline) => void;
 }
 
+const words = [
+  "Hello", "Namaste"
+];
+
 export const PageLoader = ({ onComplete }: PageLoaderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
+  const isCompletedRef = useRef(false);
 
   useGSAP(() => {
+    // 1. Initial State: Hide all words
+    gsap.set("[class^='word-']", { 
+      opacity: 0, 
+      y: 30 
+    });
+
     const tl = gsap.timeline({
+      delay: 0.15, // Small buffer for initial paint
       onComplete: () => {
-        // Optional: you could remove the loader from DOM here if needed
+        const exitTl = gsap.timeline();
+        exitTl.to(loaderRef.current, {
+          yPercent: -100,
+          duration: 0.8,
+          ease: 'power4.inOut',
+          onStart: () => {
+            // Signal completion to parent
+            if (onComplete) onComplete(exitTl);
+          }
+        });
       }
     });
 
-    // Phase 1: Counter Loader
-    const counterObj = { val: 0 };
-    tl.to(counterObj, {
-      val: 100,
-      duration: 1.5,
-      ease: 'power3.inOut',
-      onUpdate: () => {
-        if (counterRef.current) {
-          counterRef.current.innerText = Math.floor(counterObj.val) + '%';
-        }
+    // 2. Sequential Word Animation
+    words.forEach((_, i) => {
+      const isLast = i === words.length - 1;
+      
+      // Entrance
+      tl.to(`.word-${i}`, {
+        opacity: 1, 
+        y: 0, 
+        duration: 0.4, 
+        ease: "power3.out" 
+      });
+
+      // Reading Pause
+      tl.to({}, { duration: 0.5 });
+
+      // Exit (if not last)
+      if (!isLast) {
+        tl.to(`.word-${i}`, {
+          opacity: 0,
+          y: -30,
+          duration: 0.3,
+          ease: "power3.in"
+        });
       }
     });
-
-    // Phase 1 -> 2: Slide out white overlay
-    tl.to(loaderRef.current, {
-      yPercent: -100,
-      duration: 1.5,
-      ease: 'power3.inOut',
-      delay: 0.2,
-      onStart: () => {
-        // When the slide out starts, we can notify the parent to start their animations
-        if (onComplete) {
-          onComplete(tl);
-        }
-      }
-    });
-
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[100] pointer-events-none">
+    <div ref={containerRef} className="fixed inset-0 z-[9999] pointer-events-none">
       <div
         ref={loaderRef}
-        className="absolute inset-0 bg-white flex flex-col justify-end p-8 text-black pointer-events-auto"
-        style={{ transformOrigin: 'top center' }}
+        className="absolute inset-0 bg-[var(--bg-primary)] flex flex-col justify-center items-center pointer-events-auto"
       >
-        <div className="flex justify-between items-end w-full tracking-widest uppercase font-jetbrains font-bold">
-          <span ref={counterRef} className="text-6xl md:text-8xl leading-none">0%</span>
+        <div className="relative h-20 md:h-32 w-full flex justify-center items-center overflow-hidden px-10 text-center">
+          {words.map((word, i) => (
+            <div 
+              key={i} 
+              className={`word-${i} absolute opacity-0 flex justify-center items-center`}
+            >
+              <h1 className="text-5xl md:text-7xl font-playfair font-black text-[var(--text-primary)] lowercase tracking-tighter whitespace-nowrap">
+                {word}
+              </h1>
+            </div>
+          ))}
         </div>
       </div>
     </div>

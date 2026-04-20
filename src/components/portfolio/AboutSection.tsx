@@ -133,6 +133,7 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
                      src="/profile.svg" 
                      alt="Aditya" 
                      fill 
+                     sizes="(max-width: 768px) 100vw, 400px"
                      className="object-cover object-top grayscale hover:grayscale-0 transition-all duration-1000 opacity-0"
                    />
                 </div>

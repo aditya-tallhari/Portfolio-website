@@ -2,10 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
 import { fetchRandomTrack, fetchPlaylist, Song } from "@/lib/api";
-
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as any;
 
 interface MusicScreenProps {
   onBack: () => void;
@@ -62,27 +59,30 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
-  // playerKey forces a full ReactPlayer remount on track change, killing any AbortError
-  const [playerKey, setPlayerKey] = useState(0);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Step 1: On mount, hit /random to get the initial song instantly
+  // Step 1: On mount, load initial random track and playlist
   useEffect(() => {
     const init = async () => {
       try {
-        // Load a random song immediately to show something fast
-        const { track } = await fetchRandomTrack();
-        setCurrentSong(track);
+        setLoading(true);
+        const randomData = await fetchRandomTrack();
+        
+        if (randomData && randomData.track) {
+          setCurrentSong(randomData.track);
+        }
 
-        // In the background, load the full playlist for prev/next navigation
         const full = await fetchPlaylist();
         if (full && full.length > 0) {
           setPlaylist(full);
-          // Find this song in the full list so index is correct
-          const idx = full.findIndex((s) => s.url === track.url);
-          setCurrentIndex(idx >= 0 ? idx : 0);
+          if (randomData && randomData.track) {
+            const idx = full.findIndex((s) => s.url === randomData.track.url);
+            setCurrentIndex(idx >= 0 ? idx : 0);
+          }
         }
       } catch (err) {
-        console.error("Music init error:", err);
+        console.error("Music initialization error:", err);
       } finally {
         setLoading(false);
       }
@@ -90,14 +90,42 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
     init();
   }, []);
 
-  // Whenever index changes (prev/next), update currentSong and force player remount
+  // Sync play/pause with state - Improved for "audible" playback
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Ensure volume is up
+    audio.volume = 1.0;
+
+    const attemptPlay = async () => {
+      if (isPlaying && hasInteracted) {
+        try {
+          // Some browsers need a tiny delay or it might error if src just changed
+          await audio.play();
+        } catch (error: any) {
+          if (error.name !== "AbortError") {
+            console.error("Playback failed:", error);
+            // If it's a cross-origin or codec issue, we might want to skip
+            if (error.name === "NotAllowedError") {
+              setHasInteracted(false); // Reset to show "START" button
+              setIsPlaying(false);
+            }
+          }
+        }
+      } else {
+        audio.pause();
+      }
+    };
+
+    attemptPlay();
+  }, [isPlaying, hasInteracted, currentSong?.url]); // Dependent on url change
+
   const goToIndex = useCallback((idx: number) => {
     if (playlist.length === 0) return;
     const safeIdx = (idx + playlist.length) % playlist.length;
     setCurrentIndex(safeIdx);
     setCurrentSong(playlist[safeIdx]);
-    // Remounting the player prevents the AbortError race condition
-    setPlayerKey((k) => k + 1);
   }, [playlist]);
 
   const nextTrack = useCallback(() => goToIndex(currentIndex + 1), [goToIndex, currentIndex]);
@@ -108,16 +136,14 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
     setIsPlaying((p) => !p);
   };
 
-  // When a song naturally ends, advance and keep playing
   const handleEnded = useCallback(() => {
-    goToIndex(currentIndex + 1);
-    setIsPlaying(true);
-  }, [goToIndex, currentIndex]);
+    nextTrack();
+  }, [nextTrack]);
 
-  // If a video errors (deleted/unavailable), skip it
-  const handleError = useCallback(() => {
-    goToIndex(currentIndex + 1);
-  }, [goToIndex, currentIndex]);
+  const handleError = useCallback((err: any) => {
+    console.warn("Audio error, skipping track:", err);
+    setTimeout(nextTrack, 1000);
+  }, [nextTrack]);
 
   return (
     <motion.div
@@ -171,7 +197,7 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
                 </div>
               ) : (
                 <img
-                  src={currentSong?.cover}
+                  src={currentSong?.cover || "/music-placeholder.jpg"}
                   className="w-full h-full object-cover"
                   alt="cover"
                 />
@@ -220,53 +246,20 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
 
         <div className="mt-2 flex items-center gap-1.5 opacity-60">
           <span className="text-[2.5px] font-mono text-[#FFFCF0] font-black tracking-tighter">
-            SRC: DB_PLAYLIST_JSON // INDEX: {currentIndex}
+            SRC: DEEZER_API // INDEX: {currentIndex}
           </span>
         </div>
       </div>
 
-      {/*
-        Hidden ReactPlayer — positioned off-screen but large enough (250px) that
-        Chrome doesn't auto-mute it as a "background" tab player.
-        The `key` prop forces a full remount on every track change which
-        completely eliminates the AbortError race condition.
-      */}
+      {/* Hidden HTML5 Audio Element */}
       {currentSong && (
-        <div
-          style={{
-            position: "absolute",
-            width: "250px",
-            height: "250px",
-            bottom: "-100px",
-            right: "-100px",
-            opacity: 0.01,
-            pointerEvents: "none",
-          }}
-        >
-          <ReactPlayer
-            key={playerKey}
-            url={currentSong.url}
-            playing={isPlaying}
-            volume={1.0}
-            width="100%"
-            height="100%"
-            playsinline
-            onEnded={handleEnded}
-            onError={handleError}
-            config={{
-              youtube: {
-                playerVars: {
-                  controls: 0,
-                  modestbranding: 1,
-                  origin:
-                    typeof window !== "undefined"
-                      ? window.location.origin
-                      : "",
-                },
-              } as any,
-            }}
-          />
-        </div>
+        <audio
+          ref={audioRef}
+          src={currentSong.url}
+          onEnded={handleEnded}
+          onError={handleError}
+          preload="auto"
+        />
       )}
     </motion.div>
   );

@@ -1,5 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://aditya-tallhari-portfolio.vercel.app/api/v1";
 
+
 // ─── Interfaces ──────────────────────────────────────────────────
 
 export interface Song {
@@ -63,6 +64,13 @@ export interface TechStack {
   category: string;
   icon: string;
   skills: Skill[];
+}
+
+export interface PublicStats {
+  projects: number;
+  experience: number;
+  views: number;
+  clients: number;
 }
 
 // ─── Auth APIs ───────────────────────────────────────────────────
@@ -266,4 +274,11 @@ export const fetchVFS = async (): Promise<VFSResponse> => {
   const response = await fetch(`${API_BASE_URL}/system/vfs`);
   if (!response.ok) throw new Error("Failed to fetch VFS");
   return response.json();
+};
+
+export const fetchPublicStats = async (): Promise<PublicStats> => {
+  const response = await fetch(`${API_BASE_URL}/system/stats`);
+  if (!response.ok) throw new Error("Failed to fetch public stats");
+  const data = await response.json();
+  return data.data;
 };
