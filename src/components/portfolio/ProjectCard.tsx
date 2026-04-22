@@ -19,7 +19,12 @@ interface ProjectCardProps {
 
 const ProjectCard = ({ project, index, onImageLoad }: ProjectCardProps) => {
   const [hasLoaded, setHasLoaded] = useState(false);
-  const techArray = Array.isArray(project.techStack) ? project.techStack : [];
+  // Resilient tech stack extraction
+  const techArray: string[] = Array.isArray(project.techStack) 
+    ? project.techStack 
+    : Array.isArray((project as any)['techStack[]'])
+      ? (project as any)['techStack[]']
+      : [];
 
   const handleLoad = () => {
     if (!hasLoaded) {
@@ -55,20 +60,32 @@ const ProjectCard = ({ project, index, onImageLoad }: ProjectCardProps) => {
 
       <Card className='border-none bg-transparent shadow-none'>
         <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-             <span className="text-sm font-jetbrains font-black text-[var(--accent-primary)] opacity-40">
-               {String(index + 1).padStart(2, '0')} /
-             </span>
-             <CardTitle className="text-2xl md:text-3xl font-playfair font-black text-[var(--text-primary)]">
-                {project.title}
-             </CardTitle>
+          <div className="flex items-center justify-between gap-3">
+             <div className="flex items-center gap-3">
+                <span className="text-sm font-jetbrains font-black text-[var(--accent-primary)] opacity-40">
+                  {String(index + 1).padStart(2, '0')} /
+                </span>
+                <CardTitle className="text-2xl md:text-3xl font-playfair font-black text-[var(--text-primary)]">
+                    {project.title}
+                </CardTitle>
+             </div>
+             {project.isFeatured && (
+               <Badge className="bg-[var(--accent-primary)] text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shrink-0">
+                 Featured
+               </Badge>
+             )}
           </div>
           <div className='text-sm text-muted-foreground flex flex-wrap items-center gap-1.5 pt-2'>
-            {techArray.slice(0, 4).map((tech, i) => (
+            {techArray.slice(0, 6).map((tech, i) => (
               <Badge key={i} variant='outline' className="text-[9px] font-jetbrains border-[var(--border-primary)] text-[var(--text-secondary)]">
                 {tech}
               </Badge>
             ))}
+            {techArray.length > 6 && (
+              <span className="text-[9px] font-jetbrains text-[var(--text-secondary)] opacity-40">
+                +{techArray.length - 6} more
+              </span>
+            )}
           </div>
         </CardHeader>
         

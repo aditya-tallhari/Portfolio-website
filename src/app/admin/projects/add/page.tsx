@@ -69,7 +69,9 @@ export default function AddProjectPage() {
       fd.append('isFeatured', String(form.isFeatured));
       fd.append('links[github]', form.githubUrl);
       fd.append('links[live]', form.liveUrl);
-      form.techStack.forEach(t => fd.append('techStack[]', t));
+      form.techStack.forEach(t => fd.append('techStack', t));
+      
+      console.log('🚀 [DEBUG] Sending Project Data:', Object.fromEntries(fd.entries()));
 
       await createProject(fd, token);
       toast.success('Project created successfully!');
