@@ -80,7 +80,7 @@ const TechCard = ({ tech }: { tech: any }) => {
   const iconRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || window.innerWidth < 768) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -105,7 +105,7 @@ const TechCard = ({ tech }: { tech: any }) => {
   };
 
   const handleMouseLeave = () => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || window.innerWidth < 768) return;
     gsap.to(cardRef.current, {
       rotateX: 0,
       rotateY: 0,
@@ -178,6 +178,8 @@ export const TechStack = () => {
     if (typeof window === 'undefined') return;
 
     let ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
+
       // 1. HEADER REVEAL
       const chars = titleRef.current?.querySelectorAll('.char-reveal');
       if (chars) {
@@ -211,10 +213,10 @@ export const TechStack = () => {
         )
         .fromTo(cards,
           { 
-            scale: 0, 
+            scale: 0.8, 
             opacity: 0, 
-            y: 40,
-            rotate: () => (Math.random() - 0.5) * 30
+            y: 20,
+            rotate: () => (Math.random() - 0.5) * 10
           },
           {
             scale: 1,
@@ -222,8 +224,8 @@ export const TechStack = () => {
             y: 0,
             rotate: 0,
             stagger: 0.05,
-            duration: 1,
-            ease: 'back.out(1.7)'
+            duration: 0.8,
+            ease: 'power3.out'
           },
           "-=0.3"
         );
@@ -239,14 +241,16 @@ export const TechStack = () => {
         ease: 'sine.inOut'
       });
 
-      // 4. Parallax Background Shift
-      gsap.to('.bg-pattern', {
-        yPercent: 30,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          scrub: 1
-        }
+      // 4. Parallax Background Shift (Desktop Only)
+      mm.add("(min-width: 1024px)", () => {
+        gsap.to('.bg-pattern', {
+          yPercent: 30,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            scrub: 1
+          }
+        });
       });
     }, containerRef);
 

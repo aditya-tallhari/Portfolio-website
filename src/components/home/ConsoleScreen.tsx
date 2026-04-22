@@ -115,8 +115,8 @@ const SpeechBubble = ({
 const MainScreen: React.FC<{
   selectedItem: MenuItem;
   onItemSelect: (item: MenuItem) => void;
-  onActionTrigger: () => void;
-}> = ({ selectedItem, onItemSelect, onActionTrigger }) => {
+  onExecute: (item: MenuItem) => void;
+}> = ({ selectedItem, onItemSelect, onExecute }) => {
   const typewriterText = useTypewriter(
     ["a developer", "Aditya Tallhari", "building cool stuff"],
     70,
@@ -174,13 +174,19 @@ const MainScreen: React.FC<{
             {menuItems.map((item) => (
               <span
                 key={item}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   (window as any).__playConsoleClick?.();
                   onItemSelect(item);
-                  setTimeout(() => onActionTrigger(), 10); // Trigger action immediately
+                  onExecute(item);
                 }}
-                onMouseEnter={() => (window as any).__playConsoleClick?.()}
-                className="group inline-flex cursor-pointer items-center gap-0.5 text-[4px] font-black uppercase tracking-[0.1em]"
+                onMouseEnter={() => {
+                  if (selectedItem !== item) {
+                    (window as any).__playConsoleClick?.();
+                    onItemSelect(item);
+                  }
+                }}
+                className="group inline-flex cursor-pointer items-center gap-0.5 text-[4px] font-black uppercase tracking-[0.1em] py-0.5 px-1 hover:bg-black/5 rounded-sm transition-colors"
               >
                 <div className="w-1.5 h-1.5 flex items-center justify-center">
                   <AnimatePresence>
@@ -225,6 +231,21 @@ export const ConsoleScreen = () => {
     setSelectedItem((current) => getNextItem(current, dir));
   }, [activeScreen]);
 
+  const executeItem = useCallback((item: MenuItem) => {
+    if (activeScreen !== "main") return;
+    
+    if (item === "music") {
+      setActiveScreen("music");
+    } else if (item === "terminal") {
+      setActiveScreen("terminal");
+    } else if (item === "portfolio") {
+      (window as any).__laptopSetNavigating?.();
+      router.push("/portfolio");
+    } else if (item === "resume") {
+      window.open("/resume.pdf", "_blank");
+    }
+  }, [activeScreen, router]);
+
   const handleAction = useCallback(
     (action: "select" | "back") => {
       if (action === "back") {
@@ -233,21 +254,10 @@ export const ConsoleScreen = () => {
       }
 
       if (action === "select") {
-        if (activeScreen !== "main") return;
-
-        if (selectedItem === "music") {
-          setActiveScreen("music");
-        } else if (selectedItem === "terminal") {
-          setActiveScreen("terminal");
-        } else if (selectedItem === "portfolio") {
-          (window as any).__laptopSetNavigating?.();
-          router.push("/portfolio");
-        } else if (selectedItem === "resume") {
-          window.open("/resume.pdf", "_blank");
-        }
+        executeItem(selectedItem);
       }
     },
-    [selectedItem, activeScreen, router]
+    [selectedItem, executeItem]
   );
 
   useEffect(() => {
@@ -282,7 +292,7 @@ export const ConsoleScreen = () => {
             key="main"
             selectedItem={selectedItem}
             onItemSelect={setSelectedItem}
-            onActionTrigger={() => handleAction("select")}
+            onExecute={(item) => executeItem(item)}
           />
         ) : activeScreen === "music" ? (
           <MusicScreen key="music" onBack={() => setActiveScreen("main")} />

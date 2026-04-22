@@ -1,4 +1,6 @@
 'use client'
+
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 import { ExternalLink } from 'lucide-react'
@@ -12,10 +14,19 @@ import { FaGithub } from "react-icons/fa";
 interface ProjectCardProps {
   project: ApiProject;
   index: number;
+  onImageLoad?: () => void;
 }
 
-const ProjectCard = ({ project, index }: ProjectCardProps) => {
+const ProjectCard = ({ project, index, onImageLoad }: ProjectCardProps) => {
+  const [hasLoaded, setHasLoaded] = useState(false);
   const techArray = Array.isArray(project.techStack) ? project.techStack : [];
+
+  const handleLoad = () => {
+    if (!hasLoaded) {
+      setHasLoaded(true);
+      onImageLoad?.();
+    }
+  };
 
   return (
     <div className='project-card relative w-[350px] md:w-[480px] shrink-0 rounded-3xl bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-0 shadow-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)] transition-all duration-500 overflow-hidden group'>
@@ -25,7 +36,14 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
           src={project.imageUrl || project.image || 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200'}
           alt={project.title}
           fill
+          sizes="(max-width: 768px) 350px, 480px"
           unoptimized={false}
+          onLoad={handleLoad}
+          ref={(img: any) => {
+            if (img && img.complete) {
+              handleLoad();
+            }
+          }}
           className='object-cover transition-transform duration-700 group-hover:scale-110'
         />
         

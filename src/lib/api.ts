@@ -1,6 +1,4 @@
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (isLocal ? "http://localhost:5000/api/v1" : "https://aditya-tallhari-portfolio-backend.vercel.app/api/v1");
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://aditya-tallhari-portfolio.vercel.app/api/v1";
 
 // ─── Interfaces ──────────────────────────────────────────────────
 
@@ -290,12 +288,12 @@ export const sendAIChat = async (question: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
   });
-  
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "AI response failed");
   }
-  
+
   return response.json();
 };
 

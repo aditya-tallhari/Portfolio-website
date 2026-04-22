@@ -120,15 +120,15 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
           </div>
  
           {/* ── Right Column: Expanded Identity Card ── */}
-          <div ref={phoneRef} className="flex justify-center lg:justify-end">
-            <div className="relative w-[400px] h-[680px] bg-[var(--bg-primary)] rounded-[3.5rem] border border-[var(--border-primary)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-500">
+          <div ref={phoneRef} className="flex justify-center lg:justify-end mt-12 lg:mt-0">
+            <div className="relative w-[300px] h-[510px] sm:w-[400px] sm:h-[680px] bg-[var(--bg-primary)] rounded-[2.5rem] sm:rounded-[3.5rem] border border-[var(--border-primary)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-500 scale-[0.85] sm:scale-100 origin-center lg:origin-right">
               
               {/* Profile Area (Expanded) */}
-              <div className="relative w-full h-[65%] bg-[var(--bg-primary)] brightness-[0.95]">
+              <div className="relative w-full h-[60%] sm:h-[65%] bg-[var(--bg-primary)] brightness-[0.95]">
                 <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay"
                   style={{ backgroundImage: 'radial-gradient(circle, var(--text-primary) 1.2px, transparent 1.2px)', backgroundSize: '10px 10px' }}
                 />
-                <div ref={profileDestRef} className="absolute inset-8 rounded-3xl flex items-center justify-center bg-[var(--text-primary)]/10 overflow-hidden shadow-inner">
+                <div ref={profileDestRef} className="absolute inset-6 sm:inset-8 rounded-2xl sm:rounded-3xl flex items-center justify-center bg-[var(--text-primary)]/10 overflow-hidden shadow-inner">
                    <Image 
                      src="/profile.svg" 
                      alt="Aditya" 
@@ -140,25 +140,24 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
               </div>
  
               {/* Identity Detail (Expanded) */}
-              <div className="absolute bottom-0 inset-x-0 h-[35%] bg-[var(--text-primary)] p-10 flex flex-col justify-between">
+              <div className="absolute bottom-0 inset-x-0 h-[40%] sm:h-[35%] bg-[var(--text-primary)] p-8 sm:p-10 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-4xl font-black tracking-tighter text-[var(--bg-primary)] uppercase">Aditya Tallhari</h3>
-                  {/* <span className="text-xs font-bold text-[var(--bg-primary)] opacity-40 mt-2 block tracking-[0.3em]">PROTOCOL / ENGINEER / CREATIVE</span> */}
+                  <h3 className="text-3xl sm:text-4xl font-black tracking-tighter text-[var(--bg-primary)] uppercase">Aditya Tallhari</h3>
                 </div>
  
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2 sm:gap-3">
                   <div className="flex items-center gap-3 bg-[var(--bg-primary)] px-4 py-2 rounded-full self-start shadow-xl">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-[var(--text-primary)] uppercase tracking-wider">Operational</span>
+                    <span className="text-[9px] sm:text-[10px] font-black text-[var(--text-primary)] uppercase tracking-wider">Operational</span>
                   </div>
                   <div className="bg-[var(--bg-primary)]/10 px-4 py-2 rounded-full border border-[var(--bg-primary)]/10 self-start">
-                    <span className="text-[10px] font-black text-[var(--bg-primary)] opacity-50 uppercase tracking-wider">Full-Stack Architecture</span>
+                    <span className="text-[9px] sm:text-[10px] font-black text-[var(--bg-primary)] opacity-50 uppercase tracking-wider text-nowrap">Full-Stack Architecture</span>
                   </div>
                 </div>
               </div>
  
               {/* Bezel (Scaled) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[var(--bg-primary)] rounded-b-2xl border-x border-b border-[var(--border-primary)] z-20" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 sm:w-32 h-5 sm:h-7 bg-[var(--bg-primary)] rounded-b-xl sm:rounded-b-2xl border-x border-b border-[var(--border-primary)] z-20" />
             </div>
           </div>
  

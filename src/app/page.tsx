@@ -58,14 +58,14 @@ const ParallaxBackgroundText = () => {
     <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden select-none flex flex-col justify-center items-center gap-48 pt-20">
       <div
         ref={text1Ref}
-        className="text-[14rem] font-jetbrains font-black opacity-[0.08] dark:opacity-[0.04] uppercase tracking-tighter mix-blend-multiply dark:mix-blend-overlay whitespace-nowrap leading-none"
+        className="text-[20vw] md:text-[14rem] font-jetbrains font-black opacity-[0.08] dark:opacity-[0.04] uppercase tracking-tighter mix-blend-multiply dark:mix-blend-overlay whitespace-nowrap leading-none"
         style={{ WebkitTextStroke: "1.5px var(--text-primary)" }}
       >
         ADITYA TALLHARI
       </div>
       <div
         ref={text2Ref}
-        className="text-[14rem] font-jetbrains font-black opacity-[0.08] dark:opacity-[0.04] uppercase tracking-tighter mix-blend-multiply dark:mix-blend-overlay whitespace-nowrap leading-none"
+        className="text-[20vw] md:text-[14rem] font-jetbrains font-black opacity-[0.08] dark:opacity-[0.04] uppercase tracking-tighter mix-blend-multiply dark:mix-blend-overlay whitespace-nowrap leading-none"
         style={{ WebkitTextStroke: "1.5px var(--text-primary)" }}
       >
         MERN STACK
@@ -250,17 +250,29 @@ export default function Home() {
       />
       
       {/* ── CINEMATIC HUD LAYERS ── */}
-      <ScanningLine />
+      <div className="hidden sm:block">
+        <ScanningLine />
+      </div>
       <ParallaxBackgroundText />
-      <StatusTerminal />
+      
+      <div className="hidden md:block">
+        <StatusTerminal />
+      </div>
+      
       <ThemeToggle />
-      <QuickMetricsBento />
+      
+      <div className="hidden sm:block">
+        <QuickMetricsBento />
+      </div>
+      
       <PortfolioCTA />
       
-      <SocialSidebar />
+      <div className="hidden lg:block">
+        <SocialSidebar />
+      </div>
 
       <main className="relative z-10 w-full flex items-center justify-center lg:pl-24 overflow-visible">
-        <div className="w-full max-w-4xl px-8">
+        <div className="w-full max-w-4xl px-4 md:px-8">
           <LaptopConsole
             onArrowKeyPress={handleArrowPress}
             onActionExecute={handleAction}

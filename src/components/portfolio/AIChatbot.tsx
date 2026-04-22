@@ -122,6 +122,7 @@ export const AIChatbot = () => {
                          src="/fly.svg" 
                          alt="Aditya AI" 
                          fill 
+                         sizes="28px"
                          className="object-cover scale-110" 
                        />
                     </div>
@@ -264,6 +265,7 @@ export const AIChatbot = () => {
                   src="/fly.svg" 
                   alt="Chat" 
                   fill 
+                  sizes="40px"
                   className="object-cover scale-[1.1] rounded-full drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" 
                 />
                 {/* Notification Ping */}

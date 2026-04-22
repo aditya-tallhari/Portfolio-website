@@ -212,7 +212,7 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                 </span>
               </div>
 
-              <h1 className="text-[7vw] md:text-[5vw] lg:text-[4.8vw] font-playfair font-black tracking-tighter leading-tight mb-6">
+              <h1 className="text-5xl sm:text-7xl md:text-[5vw] lg:text-[4.8vw] font-playfair font-black tracking-tighter leading-tight mb-6">
                 Hey, I'm <span className="">Aditya</span>
                 <motion.span
                   animate={{ opacity: [1, 0] }}

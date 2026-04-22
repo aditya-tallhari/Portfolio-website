@@ -147,6 +147,8 @@ export const Experience = () => {
     if (typeof window === 'undefined' || !containerRef.current || experiencesList.length === 0) return;
 
     const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
+
       /* ─── Phase 2: Header Redesign Entrance ─── */
       const headerTl = gsap.timeline({
         scrollTrigger: {
@@ -187,7 +189,6 @@ export const Experience = () => {
           y: 0, 
           duration: 0.8, 
           onComplete: () => {
-             // Animate counter number
              const target = experiencesList.length;
              gsap.to({ val: 0 }, {
                val: target,
@@ -203,21 +204,23 @@ export const Experience = () => {
       );
 
       /* ─── Phase 3: Timeline Fill ─── */
-      if (timelineFillRef.current) {
-        gsap.fromTo(timelineFillRef.current, 
-          { scaleY: 0 }, 
-          { 
-            scaleY: 1, 
-            ease: 'none',
-            scrollTrigger: {
-              trigger: timelineTrackRef.current,
-              start: 'top 60%',
-              end: 'bottom 80%',
-              scrub: 1,
+      mm.add("(min-width: 768px)", () => {
+        if (timelineFillRef.current) {
+          gsap.fromTo(timelineFillRef.current, 
+            { scaleY: 0 }, 
+            { 
+              scaleY: 1, 
+              ease: 'none',
+              scrollTrigger: {
+                trigger: timelineTrackRef.current,
+                start: 'top 60%',
+                end: 'bottom 80%',
+                scrub: 1,
+              }
             }
-          }
-        );
-      }
+          );
+        }
+      });
 
       /* ─── Phase 4 & 5: Node & Card Staggered Revelations ─── */
       gsap.utils.toArray<HTMLElement>('.exp-row').forEach((row, i) => {
@@ -246,50 +249,58 @@ export const Experience = () => {
           }
         );
 
-        // Card Slide & 3D Rotate
-        gsap.fromTo(card, 
-          { 
-            x: isEven ? -100 : 100, 
-            opacity: 0, 
-            rotateY: isEven ? 15 : -15,
-            transformPerspective: 1200
-          }, 
-          { 
-            x: 0, 
-            opacity: 1, 
-            rotateY: 0, 
-            duration: 1.2, 
-            ease: 'power4.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 72%',
-              toggleActions: "play reverse play reverse"
+        // Card Slide & 3D Rotate (Responsive)
+        mm.add({
+          isDesktop: "(min-width: 768px)",
+          isMobile: "(max-width: 767px)"
+        }, (context) => {
+          const { isDesktop } = context.conditions as any;
+          
+          gsap.fromTo(card, 
+            { 
+              x: isDesktop ? (isEven ? -100 : 100) : 50, 
+              opacity: 0, 
+              rotateY: isDesktop ? (isEven ? 15 : -15) : 0,
+              transformPerspective: 1200
+            }, 
+            { 
+              x: 0, 
+              opacity: 1, 
+              rotateY: 0, 
+              duration: 1.2, 
+              ease: 'power4.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                toggleActions: "play reverse play reverse"
+              }
             }
-          }
-        );
+          );
 
-        // Ghost Number Sync Animation (Side Entry)
-        gsap.fromTo(ghost, 
-          { 
-            x: isEven ? 100 : -100, 
-            opacity: 0,
-            scale: 0.8
-          }, 
-          { 
-            x: 0, 
-            opacity: 1, 
-            scale: 1,
-            duration: 1.2, 
-            ease: 'power4.out',
-            scrollTrigger: { 
-              trigger: card, 
-              start: 'top 72%', // Matches card start exactly
-              toggleActions: "play reverse play reverse"
+          gsap.fromTo(ghost, 
+            { 
+              x: isDesktop ? (isEven ? 100 : -100) : 0, 
+              y: isDesktop ? 0 : 20,
+              opacity: 0,
+              scale: 0.8
+            }, 
+            { 
+              x: 0, 
+              y: 0,
+              opacity: 1, 
+              scale: 1,
+              duration: 1.2, 
+              ease: 'power4.out',
+              scrollTrigger: { 
+                trigger: card, 
+                start: 'top 80%',
+                toggleActions: "play reverse play reverse"
+              }
             }
-          }
-        );
+          );
+        });
 
-        // Content Stagger (Inner)
+        // Content Stagger
         const bullets = card.querySelectorAll('.exp-bullet');
         if (bullets && bullets.length > 0) {
           gsap.fromTo(bullets, 
@@ -302,7 +313,7 @@ export const Experience = () => {
               ease: 'power2.out',
               scrollTrigger: { 
                 trigger: card, 
-                start: 'top 65%',
+                start: 'top 70%',
                 toggleActions: "play reverse play reverse"
               }
             }
@@ -310,21 +321,7 @@ export const Experience = () => {
         }
       });
 
-      /* ─── Background Parallax (Depth) ─── */
-      gsap.to('.exp-bg-text-layer', {
-        y: -100,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
-
-      // Refresh ScrollTrigger after dynamic content is possibly rendered
       ScrollTrigger.refresh();
-
     }, containerRef);
 
     return () => ctx.revert();

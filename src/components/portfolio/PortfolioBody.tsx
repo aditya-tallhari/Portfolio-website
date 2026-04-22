@@ -133,27 +133,48 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
   }, [profileImageRef, profileDestRef]);
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
+    let lenis: Lenis | null = null;
+    let updateLenis: ((time: number) => void) | null = null;
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    const initLenis = () => {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
+        infinite: false,
+      });
 
-    requestAnimationFrame(raf);
+      // Drive Lenis with GSAP's ticker for perfect sync
+      updateLenis = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
 
-    return () => {
-      lenis.destroy();
+      gsap.ticker.add(updateLenis);
+      gsap.ticker.lagSmoothing(0);
+      lenis.on('scroll', ScrollTrigger.update);
+      
+      // Initial refresh to ensure everything is synced
+      ScrollTrigger.refresh();
     };
+
+    // Initialize after DOM is fully ready and a small delay for safety
+    if (document.readyState === 'complete') {
+      const timer = setTimeout(initLenis, 100);
+      return () => clearTimeout(timer);
+    } else {
+      window.addEventListener('load', initLenis);
+      return () => {
+        window.removeEventListener('load', initLenis);
+        if (lenis) {
+          lenis.destroy();
+          if (updateLenis) gsap.ticker.remove(updateLenis);
+        }
+      };
+    }
   }, []);
 
   return (

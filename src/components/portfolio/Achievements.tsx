@@ -8,33 +8,33 @@ const educationData = [
   {
     id: '01',
     degree: 'B.Tech in CSE',
-    institution: "Vignan's Institute of Engineering",
-    location: 'Visakhapatnam, AP',
-    period: '2021 — 2025',
-    grade: 'CGPA: 8.9',
-    desc: 'Specializing in Advanced Machine Learning and Scalable Full Stack Systems. Actively involved in technical research and algorithmic development.',
+    institution: "R. C. Patel Institute of Technology",
+    location: 'Shirpur, Dhule',
+    period: '2024 — 2027',
+    grade: 'CGPA: 8.47',
+    desc: 'Currently pursuing B.Tech in Computer Science and Engineering, with a strong focus on Advanced Machine Learning and Scalable Full Stack Systems. Actively involved in technical research and algorithmic development.',
     tags: ['Machine Learning', 'Data Structures', 'Cloud Systems'],
     verified: true
   },
   {
     id: '02',
     degree: 'Diploma in CS',
-    institution: 'Government Polytechnic',
-    location: 'Srikakulam, AP',
-    period: '2018 — 2021',
-    grade: 'Score: 92%',
-    desc: 'Deep dive into computer science fundamentals, low-level architecture, and operating system principles. Graduated with top honors.',
+    institution: 'Godavari Polytechnic College, Jalgaon',
+    location: 'Jalgaon, Maharashtra',
+    period: '2021 — 2024',
+    grade: 'Score: 87.77%',
+    desc: 'Achieved an overall score of 87.77% in Diploma in Computer Science, specializing in core engineering fundamentals and foundational software development principles.',
     tags: ['C/C++', 'OS Fundamentals', 'Hardware'],
     verified: true
   },
   {
     id: '03',
-    degree: 'SSC (High School)',
-    institution: 'Z.P. High School',
-    location: 'AP, India',
-    period: '2016 — 2018',
-    grade: 'GPA: 10.0',
-    desc: 'Distinguished academic performance with focus on Mathematics, Science and Physics milestones.',
+    degree: 'SSC (Secondary School)',
+    institution: 'A.G.C.S High School,Bhuswal',
+    location: 'Bhusawal, Maharashtra',
+    period: '2019 — 2021',
+    grade: '77.80%',
+    desc: 'Secured 77.80% in SSC, demonstrating a strong foundation in mathematics and sciences, which paved the way for my technical education.',
     tags: ['Mathematics', 'Science'],
     verified: true
   }
@@ -80,7 +80,7 @@ export const Achievements = () => {
           
           <h2 className="text-6xl md:text-9xl font-playfair font-black tracking-tighter uppercase leading-[0.8] mb-10">
             <SplitText text="Academic" className="block text-[var(--text-primary)]" />
-            <SplitText text="Expedition" className="block text-[var(--text-primary)] opacity-10" />
+            <SplitText text="Expedition" className="block text-[var(--text-primary)] opacity-20" />
           </h2>
 
           <motion.div 
@@ -88,7 +88,7 @@ export const Achievements = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center md:justify-start gap-6 opacity-30 font-jetbrains text-[10px] uppercase tracking-widest font-black"
+            className="flex flex-wrap items-center justify-center md:justify-start gap-6 opacity-60 font-jetbrains text-[10px] uppercase tracking-widest font-black text-[var(--text-primary)]"
           >
             <span className="flex items-center gap-2"><Sparkles size={12} /> Excellence Focused</span>
             <span className="flex items-center gap-2"><Binary size={12} /> Computer Science Core</span>
@@ -127,34 +127,34 @@ const EducationRow = ({ edu, index }: { edu: typeof educationData[0], index: num
             {edu.period}
           </div>
           {edu.verified && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 text-[9px] font-black uppercase tracking-widest font-jetbrains">
-              <div className="w-1 h-1 rounded-full bg-emerald-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase tracking-widest font-jetbrains">
+              <div className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400" />
               Institutional Verified
             </div>
           )}
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-4 text-[var(--text-primary)] opacity-40">
+          <div className="flex items-center gap-4 text-[var(--text-primary)] opacity-60">
              <GraduationCap size={20} />
              <h4 className="text-xs font-black uppercase tracking-[0.3em] font-jetbrains">{edu.institution}</h4>
           </div>
           <h3 className="text-4xl md:text-5xl font-playfair font-black text-[var(--text-primary)] leading-tight group-hover:text-[var(--accent-primary)] transition-colors duration-500">
             {edu.degree}
           </h3>
-          <div className="flex items-center gap-2 text-[var(--text-primary)] opacity-30 text-[10px] font-black uppercase tracking-widest font-jetbrains">
+          <div className="flex items-center gap-2 text-[var(--text-primary)] opacity-50 text-[10px] font-black uppercase tracking-widest font-jetbrains">
             <MapPin size={12} /> {edu.location}
           </div>
         </div>
 
-        <p className="max-w-2xl text-sm md:text-base text-[var(--text-primary)] opacity-60 leading-relaxed font-jetbrains italic">
+        <p className="max-w-2xl text-sm md:text-base text-[var(--text-primary)] opacity-70 leading-relaxed font-jetbrains italic">
           "{edu.desc}"
         </p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2">
           {edu.tags.map(tag => (
-            <span key={tag} className="text-[9px] font-black uppercase tracking-widest border border-[var(--border-primary)] px-3 py-1.5 rounded-lg opacity-40 group-hover:opacity-70 transition-opacity font-jetbrains">
+            <span key={tag} className="text-[9px] font-black uppercase tracking-widest border border-[var(--border-primary)] px-3 py-1.5 rounded-lg opacity-60 group-hover:opacity-100 transition-opacity font-jetbrains text-[var(--text-primary)]">
               {tag}
             </span>
           ))}
@@ -164,12 +164,12 @@ const EducationRow = ({ edu, index }: { edu: typeof educationData[0], index: num
       {/* Grade Card */}
       <div className="w-full md:w-64 p-8 rounded-3xl bg-[var(--bg-primary)] border border-[var(--border-primary)] flex flex-col items-center justify-center gap-2 group-hover:border-[var(--accent-primary)]/40 transition-all duration-500 shadow-xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-[2px] bg-[var(--accent-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-20 font-jetbrains">Final Assessment</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-40 font-jetbrains">Final Assessment</span>
         <div className="text-4xl md:text-5xl font-black font-playfair italic text-[var(--accent-primary)]">
           {edu.grade}
         </div>
         <div className="mt-4 w-full h-[1px] bg-[var(--border-primary)]" />
-        <div className="flex items-center gap-2 mt-4 text-[var(--text-primary)] opacity-20 text-[9px] font-black uppercase tracking-widest font-jetbrains">
+        <div className="flex items-center gap-2 mt-4 text-[var(--text-primary)] opacity-40 text-[9px] font-black uppercase tracking-widest font-jetbrains">
           <Award size={12} /> Transcripts Ready
         </div>
       </div>

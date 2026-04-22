@@ -34,18 +34,19 @@ const MoonIcon = ({ size = 18 }: { size?: number }) => (
 export const Navbar = () => {
   const pathname = usePathname();
   const { mode, toggleMode, isLight } = useTheme();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-6 lg:px-12 py-5 flex items-center justify-between w-full text-[var(--text-primary)] backdrop-blur-2xl bg-[var(--bg-primary)]/70 border-b border-[var(--border-primary)] transition-all duration-500">
-      {/* ── Logo Section (Original Stacked Style) ── */}
-      <div className="flex-shrink-0">
-        <Link href="/" className="flex flex-col font-black tracking-tighter text-base leading-[0.85] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all">
+      {/* ── Logo Section ── */}
+      <div className="flex-shrink-0 z-[110]">
+        <Link href="/" className="flex flex-col font-black tracking-tighter text-sm md:text-base leading-[0.85] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all">
           <span>ADITYA</span>
           <span>TALLHARI</span>
         </Link>
       </div>
 
-      {/* ── Center Navigation (Classic Hover) ── */}
+      {/* ── Desktop Navigation ── */}
       <div className="hidden md:flex flex-1 items-center justify-center gap-12 max-w-2xl mx-auto">
         {navLinks.map((link) => {
           const isActive = pathname === link.href;
@@ -65,13 +66,7 @@ export const Navbar = () => {
       </div>
 
       {/* ── Right Control Center ── */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <button className="p-2 text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-all transform hover:scale-110">
-            {/* <VolumeIcon size={20} /> */}
-          </button>
-        </div>
-
+      <div className="flex items-center gap-4 md:gap-6 z-[110]">
         <button
           onClick={toggleMode}
           className={`relative group p-2 rounded-full overflow-hidden hover:bg-[var(--accent-glow)] transition-all active:scale-95 ${
@@ -87,11 +82,67 @@ export const Navbar = () => {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {isLight ? <SunIcon size={22} /> : <MoonIcon size={22} />}
+              {isLight ? <SunIcon size={20} /> : <MoonIcon size={20} />}
             </motion.div>
           </AnimatePresence>
         </button>
+
+        {/* Mobile Menu Toggle */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden p-2 text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all"
+          aria-label="Toggle Menu"
+        >
+          <div className="w-6 h-5 relative flex flex-col justify-between">
+            <span className={`w-full h-0.5 bg-current transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`w-full h-0.5 bg-current transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+            <span className={`w-full h-0.5 bg-current transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          </div>
+        </button>
       </div>
+
+      {/* ── Mobile Menu Overlay ── */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: 'circOut' }}
+            className="fixed inset-0 top-[73px] bg-[var(--bg-primary)] z-[105] flex flex-col p-10 md:hidden overflow-y-auto"
+          >
+            <div className="flex flex-col gap-8 mt-10">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-4xl font-black tracking-tighter uppercase hover:text-[var(--accent-primary)] transition-all flex items-center gap-4 group"
+                  >
+                    <span className="text-xs font-mono text-[var(--accent-primary)] opacity-50 group-hover:opacity-100">0{i + 1}</span>
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-auto pt-10 border-t border-[var(--border-primary)] flex flex-col gap-4">
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--muted-text)] uppercase">Connect Protocol</span>
+              <div className="flex gap-6">
+                {/* Social icons could go here if needed */}
+                <a href="mailto:adityatallhari79@gmail.com" className="text-xs font-medium hover:text-[var(--accent-primary)]">EMAIL</a>
+                <a href="https://github.com/aditya-tallhari" target="_blank" className="text-xs font-medium hover:text-[var(--accent-primary)]">GITHUB</a>
+                <a href="https://linkedin.com/in/aditya-tallhari" target="_blank" className="text-xs font-medium hover:text-[var(--accent-primary)]">LINKEDIN</a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

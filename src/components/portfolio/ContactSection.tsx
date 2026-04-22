@@ -36,28 +36,28 @@ export const ContactSection = () => {
   return (
     <section id="contact" className="py-24 px-6 md:px-12 bg-[var(--bg-primary)]">
       <div className="max-w-6xl mx-auto">
-        <header className="mb-20">
+        <header className="mb-16 md:mb-20">
           <div className="flex items-center gap-3 mb-6 opacity-60">
             <div className="w-12 h-[1px] bg-[var(--accent-primary)]" />
             <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--accent-primary)]">Contact</span>
           </div>
-          <h2 className="text-5xl md:text-8xl font-playfair font-black tracking-tighter uppercase mb-6 leading-none">
+          <h2 className="text-4xl xs:text-5xl md:text-8xl font-playfair font-black tracking-tighter uppercase mb-6 leading-[0.9]">
             Let's <span className="text-[var(--accent-primary)]">Connect</span>
           </h2>
-          <p className="text-[var(--text-primary)] max-w-xl text-sm md:text-base uppercase tracking-widest leading-relaxed opacity-60 transition-opacity duration-500">
+          <p className="text-[var(--text-primary)] max-w-xl text-xs md:text-base uppercase tracking-widest leading-relaxed opacity-60 transition-opacity duration-500">
             Have a project in mind? reach out for collaboration or inquiries.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-start">
           {/* Left: Contact Info */}
-          <div className="lg:col-span-5 space-y-12">
+          <div className="lg:col-span-5 space-y-10 md:space-y-12">
             <div className="space-y-8">
-              <a href="mailto:adityatallhari@gmail.com" className="group block space-y-2">
+              <a href="mailto:adityatallhari@gmail.com" className="group block space-y-2 overflow-hidden">
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 text-[var(--text-primary)]">Email</p>
                 <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                  <span className="text-xl md:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors">adityatallhari@gmail.com</span>
-                  <ArrowRight size={20} className="text-[var(--accent-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                  <span className="text-lg xs:text-xl md:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors truncate">adityatallhari@gmail.com</span>
+                  <ArrowRight size={20} className="hidden xs:block text-[var(--accent-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all shrink-0" />
                 </div>
               </a>
 
