@@ -21,9 +21,11 @@ export default function AddProjectPage() {
 
   const [form, setForm] = useState({
     title: '', description: '', content: '',
-    imageUrl: '', githubUrl: '', liveUrl: '',
+    githubUrl: '', liveUrl: '',
     techStack: [] as string[], isFeatured: false,
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [techInput, setTechInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -52,13 +54,18 @@ export default function AddProjectPage() {
     e.preventDefault();
     if (!validate() || !token) return;
 
+    if (!imageFile) {
+      toast.error('Please upload a project image');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const fd = new FormData();
       fd.append('title', form.title);
       fd.append('description', form.description);
       fd.append('content', form.content);
-      fd.append('imageUrl', form.imageUrl);
+      if (imageFile) fd.append('image', imageFile);
       fd.append('isFeatured', String(form.isFeatured));
       fd.append('links[github]', form.githubUrl);
       fd.append('links[live]', form.liveUrl);
@@ -128,13 +135,45 @@ export default function AddProjectPage() {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <Field label="Image URL">
-                <input type="url" placeholder="https://..." value={form.imageUrl} onChange={e => setForm(p => ({ ...p, imageUrl: e.target.value }))} className={inputClass} />
-                {form.imageUrl && (
-                  <div className="mt-2 h-32 rounded-xl overflow-hidden border border-[var(--border-primary)]">
-                    <img src={form.imageUrl} alt="Preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
-                  </div>
-                )}
+              <Field label="Project Image *" error={errors.image}>
+                <div 
+                  className={`relative group h-48 rounded-2xl border-2 border-dashed transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center gap-3 ${
+                    previewUrl ? 'border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/[0.02]' : 'border-[var(--border-primary)] hover:border-[var(--accent-primary)]/40 bg-[var(--text-primary)]/[0.02] hover:bg-[var(--text-primary)]/[0.04]'
+                  }`}
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                >
+                  {previewUrl ? (
+                    <>
+                      <img src={previewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-[10px] text-white font-bold tracking-widest uppercase font-jetbrains">Change Image</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-full bg-[var(--text-primary)]/[0.04] flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus size={20} className="text-[var(--text-primary)] opacity-40" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-primary)] opacity-60">Upload Project Image</p>
+                        <p className="text-[9px] text-[var(--text-primary)] opacity-20 mt-1 font-jetbrains">PNG, JPG or WebP (max 5MB)</p>
+                      </div>
+                    </>
+                  )}
+                  <input 
+                    id="image-upload"
+                    type="file" 
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
+                        setPreviewUrl(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+                </div>
               </Field>
             </motion.div>
 

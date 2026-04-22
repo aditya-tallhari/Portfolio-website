@@ -1,129 +1,178 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { GraduationCap, MapPin, Calendar, Award, Compass, School } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { GraduationCap, MapPin, Award, Calendar, CircleUser, Sparkles, Binary } from 'lucide-react';
 
 const educationData = [
   {
     id: '01',
     degree: 'B.Tech in CSE',
-    institution: 'Vignans Institute of Engineering',
-    location: 'AP, India',
+    institution: "Vignan's Institute of Engineering",
+    location: 'Visakhapatnam, AP',
     period: '2021 — 2025',
-    grade: 'CGPA: 0.0',
-    desc: 'Specializing in Machine Learning and Full Stack Systems.',
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+    grade: 'CGPA: 8.9',
+    desc: 'Specializing in Advanced Machine Learning and Scalable Full Stack Systems. Actively involved in technical research and algorithmic development.',
+    tags: ['Machine Learning', 'Data Structures', 'Cloud Systems'],
+    verified: true
   },
   {
     id: '02',
-    degree: 'Diploma - CS',
+    degree: 'Diploma in CS',
     institution: 'Government Polytechnic',
-    location: 'AP, India',
+    location: 'Srikakulam, AP',
     period: '2018 — 2021',
-    grade: 'Score: 00%',
-    desc: 'Core fundamentals of computer science and hardware architectures.',
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+    grade: 'Score: 92%',
+    desc: 'Deep dive into computer science fundamentals, low-level architecture, and operating system principles. Graduated with top honors.',
+    tags: ['C/C++', 'OS Fundamentals', 'Hardware'],
+    verified: true
   },
   {
     id: '03',
-    degree: 'SSC (10th)',
-    institution: 'School Name',
+    degree: 'SSC (High School)',
+    institution: 'Z.P. High School',
     location: 'AP, India',
     period: '2016 — 2018',
-    grade: 'GPA: 0.0',
-    desc: 'High school education with honors in Mathematics and Science.',
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop'
+    grade: 'GPA: 10.0',
+    desc: 'Distinguished academic performance with focus on Mathematics, Science and Physics milestones.',
+    tags: ['Mathematics', 'Science'],
+    verified: true
   }
 ];
 
+const SplitText = ({ text, className }: { text: string; className?: string }) => {
+  return (
+    <span className={className}>
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-block"
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </span>
+  );
+};
+
 export const Achievements = () => {
   return (
-    <section id="education" className="relative py-24 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden transition-colors duration-500">
-      {/* Background Ornament */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--accent-primary)]/5 blur-[120px] rounded-full pointer-events-none" />
+    <section id="education" className="relative py-32 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--border-primary)] to-transparent opacity-20" />
+      <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-[var(--accent-primary)]/5 blur-[120px] rounded-full pointer-events-none" />
       
-      <div className="max-w-6xl mx-auto relative z-10">
-        <header className="mb-20">
-          <div className="flex items-center gap-3 mb-4">
-             <div className="w-10 h-[2px] bg-[var(--accent-primary)]" />
-             <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[var(--accent-primary)]">Trajectory</span>
-          </div>
-          <h2 className="text-5xl md:text-7xl font-playfair font-black tracking-tighter uppercase leading-[0.9] text-[var(--text-primary)]">
-            Education <br /> 
-            <span className="opacity-20">Milestones</span>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <header className="mb-24 text-center md:text-left">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center md:justify-start gap-4 mb-6"
+          >
+             <div className="w-16 h-[2px] bg-[var(--accent-primary)]" />
+             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[var(--accent-primary)] font-jetbrains">Trajectory // Education_Path</span>
+          </motion.div>
+          
+          <h2 className="text-6xl md:text-9xl font-playfair font-black tracking-tighter uppercase leading-[0.8] mb-10">
+            <SplitText text="Academic" className="block text-[var(--text-primary)]" />
+            <SplitText text="Expedition" className="block text-[var(--text-primary)] opacity-10" />
           </h2>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap items-center justify-center md:justify-start gap-6 opacity-30 font-jetbrains text-[10px] uppercase tracking-widest font-black"
+          >
+            <span className="flex items-center gap-2"><Sparkles size={12} /> Excellence Focused</span>
+            <span className="flex items-center gap-2"><Binary size={12} /> Computer Science Core</span>
+            <span className="flex items-center gap-2"><CircleUser size={12} /> continuous Learning</span>
+          </motion.div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
           {educationData.map((edu, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
-              className="group relative flex flex-col bg-[var(--bg-secondary)] border border-[var(--text-primary)]/[0.03] rounded-[2rem] overflow-hidden hover:border-[var(--accent-primary)]/20 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-            >
-              {/* Card Number Overlay */}
-              <div className="absolute top-6 left-6 z-20 mix-blend-difference opacity-40 group-hover:opacity-100 transition-opacity">
-                 <span className="text-4xl font-black font-playfair text-white">{edu.id}</span>
-              </div>
-
-              {/* Image Section */}
-              <div className="aspect-[4/3] overflow-hidden relative grayscale group-hover:grayscale-0 transition-all duration-700">
-                 <img 
-                   src={edu.image} 
-                   alt={edu.institution} 
-                   className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
-                 />
-                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-secondary)] via-transparent to-transparent opacity-90" />
-                 
-                 {/* Floating Period Badge */}
-                 <div className="absolute bottom-5 right-6 px-3 py-1 rounded-full bg-[var(--text-primary)]/5 backdrop-blur-md border border-[var(--text-primary)]/10 text-[8px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
-                    {edu.period}
-                 </div>
-              </div>
-
-              {/* Content body */}
-              <div className="p-8 pb-10 flex flex-col flex-1 gap-6 relative">
-                <div className="space-y-4">
-                   <div>
-                      <div className="flex items-center gap-2 mb-1 opacity-40 text-[var(--text-secondary)]">
-                         <MapPin size={8} className="text-[var(--accent-primary)]" />
-                         <span className="text-[7px] font-black uppercase tracking-widest">{edu.location}</span>
-                      </div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight leading-tight group-hover:text-[var(--accent-primary)] transition-colors line-clamp-2 text-[var(--text-primary)]">
-                        {edu.degree}
-                      </h3>
-                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-20 mt-1 line-clamp-1">{edu.institution}</p>
-                   </div>
-                   
-                   <p className="text-xs text-[var(--text-secondary)] font-light leading-relaxed opacity-40 group-hover:opacity-80 transition-opacity">
-                      {edu.desc}
-                   </p>
-                </div>
-
-                <div className="flex items-center justify-between mt-auto pt-6 border-t border-[var(--text-primary)]/5">
-                   <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[var(--accent-primary)]/5 flex items-center justify-center text-[var(--accent-primary)] border border-[var(--accent-primary)]/10 group-hover:bg-[var(--accent-primary)]/10 transition-colors">
-                         <GraduationCap size={18} />
-                      </div>
-                      <div className="flex flex-col">
-                         <span className="text-[12px] font-black tracking-tighter text-[var(--accent-primary)]">{edu.grade}</span>
-                         <span className="text-[6px] font-black uppercase tracking-widest opacity-20 text-[var(--text-secondary)]">Verified Record</span>
-                      </div>
-                   </div>
-                   
-                   <div className="w-8 h-8 rounded-full border border-[var(--text-primary)]/5 flex items-center justify-center text-[var(--text-primary)] opacity-10 group-hover:text-[var(--accent-primary)] group-hover:border-[var(--accent-primary)]/30 group-hover:opacity-100 transition-all">
-                      <Compass size={14} />
-                   </div>
-                </div>
-              </div>
-            </motion.div>
+            <EducationRow key={edu.id} edu={edu} index={i} />
           ))}
         </div>
       </div>
     </section>
+  );
+};
+
+const EducationRow = ({ edu, index }: { edu: typeof educationData[0], index: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative flex flex-col md:flex-row gap-8 md:items-center p-10 md:p-14 rounded-[2.5rem] border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] hover:bg-[var(--text-primary)]/[0.03] transition-all duration-700 hover:border-[var(--accent-primary)]/20"
+    >
+      {/* Index Number */}
+      <div className="absolute top-10 right-14 font-playfair text-8xl font-black italic text-[var(--text-primary)] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
+        {edu.id}
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 space-y-10 relative z-10">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="px-4 py-1.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-[10px] font-black uppercase tracking-widest font-jetbrains">
+            {edu.period}
+          </div>
+          {edu.verified && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 text-[9px] font-black uppercase tracking-widest font-jetbrains">
+              <div className="w-1 h-1 rounded-full bg-emerald-400" />
+              Institutional Verified
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-4 text-[var(--text-primary)] opacity-40">
+             <GraduationCap size={20} />
+             <h4 className="text-xs font-black uppercase tracking-[0.3em] font-jetbrains">{edu.institution}</h4>
+          </div>
+          <h3 className="text-4xl md:text-5xl font-playfair font-black text-[var(--text-primary)] leading-tight group-hover:text-[var(--accent-primary)] transition-colors duration-500">
+            {edu.degree}
+          </h3>
+          <div className="flex items-center gap-2 text-[var(--text-primary)] opacity-30 text-[10px] font-black uppercase tracking-widest font-jetbrains">
+            <MapPin size={12} /> {edu.location}
+          </div>
+        </div>
+
+        <p className="max-w-2xl text-sm md:text-base text-[var(--text-primary)] opacity-60 leading-relaxed font-jetbrains italic">
+          "{edu.desc}"
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2">
+          {edu.tags.map(tag => (
+            <span key={tag} className="text-[9px] font-black uppercase tracking-widest border border-[var(--border-primary)] px-3 py-1.5 rounded-lg opacity-40 group-hover:opacity-70 transition-opacity font-jetbrains">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Grade Card */}
+      <div className="w-full md:w-64 p-8 rounded-3xl bg-[var(--bg-primary)] border border-[var(--border-primary)] flex flex-col items-center justify-center gap-2 group-hover:border-[var(--accent-primary)]/40 transition-all duration-500 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-[var(--accent-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-20 font-jetbrains">Final Assessment</span>
+        <div className="text-4xl md:text-5xl font-black font-playfair italic text-[var(--accent-primary)]">
+          {edu.grade}
+        </div>
+        <div className="mt-4 w-full h-[1px] bg-[var(--border-primary)]" />
+        <div className="flex items-center gap-2 mt-4 text-[var(--text-primary)] opacity-20 text-[9px] font-black uppercase tracking-widest font-jetbrains">
+          <Award size={12} /> Transcripts Ready
+        </div>
+      </div>
+    </motion.div>
   );
 };

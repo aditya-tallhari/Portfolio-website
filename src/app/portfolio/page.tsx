@@ -9,6 +9,12 @@ import { Footer } from '@/components/layout/Footer';
 import { PageLoader } from '@/components/layout/PageLoader';
 import { PortfolioBody } from '@/components/portfolio/PortfolioBody';
 import { PortfolioHero } from '@/components/portfolio/PortfolioHero';
+import dynamic from 'next/dynamic';
+
+// Lazy load the chat component to avoid initial bundle size impact
+const AIChatbot = dynamic(() => import('@/components/portfolio/AIChatbot').then(m => m.AIChatbot), { 
+  ssr: false 
+});
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -69,6 +75,7 @@ export default function PortfolioPage() {
         <Footer />
       </div>
 
+      <AIChatbot />
     </div>
   );
 }

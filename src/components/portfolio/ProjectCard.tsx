@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image';
 
 import { ExternalLink } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -17,13 +18,15 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
   const techArray = Array.isArray(project.techStack) ? project.techStack : [];
 
   return (
-    <div className='project-card relative w-[380px] md:w-[450px] shrink-0 rounded-2xl bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-0 shadow-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)] transition-all duration-500 overflow-hidden group'>
+    <div className='project-card relative w-[350px] md:w-[480px] shrink-0 rounded-3xl bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-0 shadow-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)] transition-all duration-500 overflow-hidden group'>
       {/* Image Section - Edge to Edge */}
-      <div className='card-image-wrap flex h-64 items-center justify-center bg-[#1a1a2e] relative overflow-hidden'>
-        <img
+      <div className='card-image-wrap flex h-60 md:h-[280px] items-center justify-center bg-[#1a1a2e] relative overflow-hidden'>
+        <Image
           src={project.imageUrl || project.image || 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200'}
           alt={project.title}
-          className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+          fill
+          unoptimized={false}
+          className='object-cover transition-transform duration-700 group-hover:scale-110'
         />
         
         {/* Large Background Number (Moved above image for visibility) */}
@@ -33,13 +36,13 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
       </div>
 
       <Card className='border-none bg-transparent shadow-none'>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
              <span className="text-sm font-jetbrains font-black text-[var(--accent-primary)] opacity-40">
                {String(index + 1).padStart(2, '0')} /
              </span>
-             <CardTitle className="text-2xl font-playfair font-black text-[var(--text-primary)]">
-               {project.title}
+             <CardTitle className="text-2xl md:text-3xl font-playfair font-black text-[var(--text-primary)]">
+                {project.title}
              </CardTitle>
           </div>
           <div className='text-sm text-muted-foreground flex flex-wrap items-center gap-1.5 pt-2'>

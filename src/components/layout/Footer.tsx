@@ -5,134 +5,197 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Mail, ArrowUpRight } from 'lucide-react';
-import { FaGithub, FaLinkedinIn, FaTwitter, FaWhatsapp } from 'react-icons/fa';
+import { ArrowUpRight, Globe, Mail } from 'lucide-react';
+import { 
+  FaGithub, 
+  FaLinkedinIn, 
+  FaTwitter, 
+  FaWhatsapp, 
+  FaInstagram,
+  FaDiscord
+} from 'react-icons/fa';
+import { SiLeetcode, SiCodeforces } from 'react-icons/si';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const Footer = () => {
-  const containerRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useGSAP(() => {
+    if (!footerRef.current) return;
+
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top 85%',
-        toggleActions: 'play none none reverse',
+        trigger: footerRef.current,
+        start: 'top bottom',
+        end: 'bottom bottom',
+        scrub: 1.5,
       }
     });
 
-    tl.from('.footer-item', {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: 'power2.out'
+    tl.fromTo('.footer-reveal-item', 
+      { y: 80, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: 'power3.out' }
+    );
+
+    gsap.to('.footer-bg-text', {
+      scrollTrigger: {
+        trigger: footerRef.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 2,
+      },
+      x: -150,
+      opacity: 0.1,
     });
-  }, { scope: containerRef });
+
+  }, { scope: footerRef });
 
   return (
     <footer 
-      ref={containerRef}
-      className="relative w-full border-t border-[var(--border-primary)] bg-[var(--bg-primary)] pt-24 pb-12 overflow-hidden transition-colors duration-700"
+      ref={footerRef}
+      className="relative w-full min-h-screen bg-[var(--bg-primary)] flex flex-col justify-between overflow-hidden border-t border-[var(--border-primary)]"
     >
-      <div className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24">
-        <div className="flex flex-col lg:flex-row justify-between gap-16 mb-20">
-          
-          {/* Left Side: CTA */}
-          <div className="footer-item flex-1 max-w-xl">
-            <h2 className="text-5xl md:text-6xl font-playfair font-black tracking-tighter leading-tight mb-8">
-              Have an idea? <br />
-              <span className="text-[var(--accent-primary)]">Let's Connect.</span>
-            </h2>
+      {/* ── BACKGROUND LAYER ── */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        <div className="footer-bg-text absolute top-1/2 left-1/2 -translate-y-1/2 text-[30vw] font-jetbrains font-black opacity-[0.02] dark:opacity-[0.015] whitespace-nowrap leading-none tracking-tighter">
+          ADITYA TALLHARI
+        </div>
+        
+        <div className="absolute inset-0 opacity-[0.05]">
+          <svg width="100%" height="100%">
+            <pattern id="footer-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="currentColor" strokeWidth="1" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#footer-grid)" />
+          </svg>
+        </div>
+      </div>
+
+      {/* ── TOP SECTION: BIG CTA ── */}
+      <div className="relative z-10 w-full pt-48 px-8 md:px-16 lg:px-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="footer-reveal-item mb-20">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-[1px] bg-[var(--accent-primary)]" />
+              <span className="text-[11px] font-black uppercase tracking-[0.6em] text-[var(--accent-primary)] font-jetbrains">Project Initialization</span>
+            </div>
             
-            <a 
-              href="mailto:contact@aditya.dev" 
-              className="group inline-flex items-center gap-4 text-xl font-jetbrains font-bold hover:text-[var(--accent-primary)] transition-all"
-            >
-              contact@aditya.dev
-              <div className="w-12 h-12 rounded-full border border-[var(--text-primary)]/20 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all">
-                <ArrowUpRight size={20} />
-              </div>
-            </a>
+            <h2 className="text-6xl md:text-[8rem] font-playfair font-black tracking-tighter leading-[0.85] uppercase mb-8">
+              Ready to <br />
+              <span className="text-[var(--accent-primary)] italic">Scale?</span>
+            </h2>
+
+            <div className="flex flex-wrap items-center gap-8 md:gap-16">
+              <a 
+                href="mailto:contact@aditya.dev" 
+                className="group flex flex-col gap-2"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 font-jetbrains">Drop an transmission</span>
+                <div className="flex items-center gap-6">
+                  <span className="text-2xl md:text-4xl font-jetbrains font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                    contact@aditya.dev
+                  </span>
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all transform group-hover:rotate-45">
+                    <ArrowUpRight size={24} />
+                  </div>
+                </div>
+              </a>
+              
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MIDDLE SECTION: NAVIGATION ── */}
+      <div className="relative z-10 w-full py-10 px-8 md:px-16 lg:px-24 pb-0 pt-1">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-24">
+          <div className="footer-reveal-item space-y-8">
+             <div className="text-2xl font-playfair font-black tracking-widest border-b-2 border-[var(--accent-primary)] w-fit pb-1">AT.</div>
+             <p className="text-sm text-[var(--text-primary)] opacity-40 leading-relaxed font-jetbrains max-w-[280px]">
+                Engineering high-performance digital experiences through sophisticated design and optimized codebases.
+             </p>
           </div>
 
-          {/* Right Side: Links */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-20">
-            {/* Index */}
-            <div className="footer-item flex flex-col gap-6">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Index</span>
-              <ul className="flex flex-col gap-4 text-sm font-bold uppercase tracking-widest">
-                {['About', 'Projects', 'Experience', 'Contact'].map((item) => (
-                  <li key={item}>
-                    <Link href={`#${item.toLowerCase()}`} className="hover:text-[var(--accent-primary)] transition-colors">
+          <div className="footer-reveal-item space-y-8">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-20 font-jetbrains">Navigation</span>
+            <ul className="grid grid-cols-1 gap-4">
+               {['About', 'Projects', 'Experience', 'CP', 'Contact'].map(item => (
+                 <li key={item}>
+                   <Link href={`#${item.toLowerCase()}`} className="text-sm font-bold uppercase tracking-[0.2em] hover:text-[var(--accent-primary)] transition-all flex items-center gap-2 group/nav">
+                      <span className="w-0 group-hover/nav:w-4 h-[1px] bg-[var(--accent-primary)] transition-all" />
                       {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                   </Link>
+                 </li>
+               ))}
+            </ul>
+          </div>
 
-            {/* Socials */}
-            <div className="footer-item flex flex-col gap-6">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Socials</span>
-              <ul className="flex flex-col gap-4 text-sm font-bold uppercase tracking-widest">
-                {[
-                  { name: 'Github', icon: FaGithub, href: '#' },
-                  { name: 'LinkedIn', icon: FaLinkedinIn, href: '#' },
-                  { name: 'Twitter', icon: FaTwitter, href: '#' },
-                  { name: 'Whatsapp', icon: FaWhatsapp, href: '#' }
-                ].map((social) => (
-                  <li key={social.name}>
-                    <a href={social.href} className="flex items-center gap-2 hover:text-[var(--accent-primary)] transition-colors group">
-                      <social.icon size={16} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+          <div className="footer-reveal-item space-y-8">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-20 font-jetbrains">Connected</span>
+            <ul className="grid grid-cols-1 gap-5">
+               {[
+                 { name: 'Github', icon: FaGithub, href: 'https://github.com/adityatallhari' },
+                 { name: 'LinkedIn', icon: FaLinkedinIn, href: '#' },
+                 { name: 'Twitter', icon: FaTwitter, href: '#' },
+                 { name: 'Whatsapp', icon: FaWhatsapp, href: '#' }
+               ].map(social => (
+                 <li key={social.name}>
+                   <a href={social.href} className="text-sm font-bold uppercase tracking-[0.2em] hover:text-[var(--accent-primary)] transition-all flex items-center gap-4 group/soc">
+                      <social.icon size={18} className="opacity-20 group-hover/soc:opacity-100 transition-opacity" />
                       {social.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                   </a>
+                 </li>
+               ))}
+            </ul>
+          </div>
 
-            {/* Status */}
-            <div className="footer-item flex flex-col gap-6 col-span-2 md:col-span-1">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-black opacity-30 font-jetbrains">Presence</span>
-              <p className="text-sm font-bold uppercase tracking-widest leading-relaxed opacity-60">
-                Remote / <br />
-                Global Execution
+          <div className="footer-reveal-item space-y-8">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-20 font-jetbrains">Presence</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Globe size={16} className="text-[var(--accent-primary)]" />
+                <span className="text-sm font-bold tracking-widest text-[var(--text-primary)] uppercase">Remote / Global</span>
+              </div>
+              <p className="text-[10px] font-jetbrains font-bold uppercase leading-relaxed tracking-widest opacity-30 max-w-[200px]">
+                Available for worldwide synchronization and deployment.
               </p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom bar */}
-        <div className="footer-item flex flex-col md:flex-row justify-between items-center pt-10 border-t border-[var(--text-primary)]/10 gap-8">
-          <div className="flex items-center gap-6">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains">
-              © 2026 Aditya Tallhari
-            </span>
-            <div className="hidden md:block w-1 h-1 rounded-full bg-[var(--accent-primary)] opacity-30" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains">
-              Built with precision.
-            </span>
+      {/* ── BOTTOM SECTION: UTILS ── */}
+      <div className="relative z-10 w-full py-10 px-8 md:px-16 lg:px-24 border-t border-[var(--text-primary)]/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 font-jetbrains">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-black opacity-20 uppercase tracking-[0.2em]">Crafted By</span>
+              <span className="text-[11px] font-bold tracking-widest uppercase">Aditya Tallhari © 2026</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-black opacity-20 uppercase tracking-[0.2em]">Build Protocol</span>
+              <span className="text-[11px] font-bold tracking-widest uppercase text-[var(--accent-primary)]">Next.js // GSAP</span>
+            </div>
           </div>
 
           <button 
             onClick={scrollToTop}
-            className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] hover:text-[var(--accent-primary)] transition-all"
+            className="group flex flex-col items-center gap-3"
           >
-            Back to Top
-            <div className="w-8 h-8 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all">
-              <ArrowUpRight size={14} className="-rotate-45" />
+            <div className="w-12 h-12 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all transform group-hover:-translate-y-2">
+              <ArrowUpRight size={18} className="-rotate-45" />
             </div>
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-30 group-hover:opacity-100 group-hover:text-[var(--accent-primary)] transition-all">Back to apex</span>
           </button>
         </div>
       </div>
     </footer>
   );
 };
-
-

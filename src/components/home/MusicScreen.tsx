@@ -82,7 +82,16 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
           }
         }
       } catch (err) {
-        console.error("Music initialization error:", err);
+        console.warn("Music initialization error. Using offline fallback.", err instanceof Error ? err.message : "");
+        const fallbackSong = {
+          id: 1,
+          title: "Offline System Track",
+          url: "",
+          cover: "",
+          channel: "Local Cache"
+        };
+        setPlaylist([fallbackSong]);
+        setCurrentSong(fallbackSong);
       } finally {
         setLoading(false);
       }
@@ -178,8 +187,8 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
             {loading
               ? "Initializing..."
               : isPlaying
-              ? "Synchronizing // Stream Active"
-              : "System Idle // Waiting"}
+              ? " Stream Active"
+              : "Waiting"}
           </p>
         </div>
 
@@ -246,7 +255,7 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
 
         <div className="mt-2 flex items-center gap-1.5 opacity-60">
           <span className="text-[2.5px] font-mono text-[#FFFCF0] font-black tracking-tighter">
-            SRC: DEEZER_API // INDEX: {currentIndex}
+            {/* SRC: DEEZER_API // INDEX: {currentIndex} */}
           </span>
         </div>
       </div>

@@ -63,18 +63,19 @@ export const GithubStats = () => {
           fetchGithubActivity()
         ]);
         
-        const rawStats = statsData.data.stats;
+        const rawStats = statsData?.data?.stats;
+        if (!rawStats) throw new Error("No stats payload found in response");
+
         setStats({
           ...rawStats,
           // Use real distribution from backend
-          breakdown: rawStats.distribution || { original: 90, forked: 10 },
-          // Avatars for followers representation
-          avatars: Array(4).fill(rawStats.avatarUrl || "https://github.com/identicons/default.png")
+          breakdown: rawStats.distribution || { original: 90, forked: 10 }
         });
         
-        setActivity(activityData.data.events || []);
+        const events = activityData?.data?.events || [];
+        setActivity(events);
       } catch (error) {
-        console.error("GitHub integration error:", error);
+        console.warn("GitHub integration error. Using offline fallback.", error instanceof Error ? error.message : "");
         // Robust fallback if API fails
         setStats({
           totalRepos: 0,
@@ -87,8 +88,12 @@ export const GithubStats = () => {
           languages: [
             { name: "TypeScript", percent: 0 }
           ],
-          avatars: Array(4).fill("https://github.com/identicons/jason.png")
+          contributionHistory: []
         });
+        setActivity([
+          { type: "PushEvent", repo: "aditya/portfolio", summary: "Offline fallback data" },
+          { type: "CreateEvent", repo: "aditya/backend", summary: "Backend unreachable" }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -107,7 +112,7 @@ export const GithubStats = () => {
   if (loading) return null;
 
   return (
-    <section id="stats" className="relative w-full py-24 px-6 md:px-12 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-500">
+    <section id="stats" className="relative z-50 w-full py-24 px-6 md:px-12 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-500">
       <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: `radial-gradient(var(--accent-primary) 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
       
       <div className="max-w-6xl mx-auto relative z-10">
@@ -151,18 +156,15 @@ export const GithubStats = () => {
                          <span className="text-xs font-bold uppercase tracking-widest opacity-30">Followers</span>
                        </div>
                       <div className="text-4xl font-black italic font-playfair leading-none"><CounterValue targetValue={stats?.followers || 0} /></div>
-                      <div className="flex -space-x-2 mt-4">
-                        {stats?.avatars?.map((a: string, i: number) => <div key={i} className="w-10 h-10 rounded-full border-2 border-[var(--bg-primary)] overflow-hidden bg-[var(--text-primary)]/[0.05]" />)}
-                      </div>
                    </div>
                 </div>
                 <div className="lg:col-span-6"><div className="relative h-full border border-[var(--border-primary)] rounded-[2.5rem] overflow-hidden bg-[var(--text-primary)]/[0.01] p-0 shadow-2xl dark:shadow-none"><RogueMascot className="w-full h-full" /></div></div>
                 <div className="lg:col-span-3 space-y-6">
-                   <MiniStatCard icon={<GitFork size={18} />} label="Commits" value={stats?.contributions || 0} />
+                   <MiniStatCard icon={<GitBranch size={18} />} label="Commits" value={stats?.contributions || 0} />
                    <MiniStatCard icon={<GitPullRequest size={18} />} label="PRs" value={stats?.pullRequests || 0} />
                    <div className="p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] h-44 flex flex-col">
                       <h4 className="text-xs font-bold uppercase tracking-widest mb-6 opacity-30">Breakdown</h4>
-                      <div className="space-y-4">{stats?.languages?.slice(0, 3).map((l: any, i: number) => <div key={i} className="space-y-1.5"><div className="flex justify-between text-xs font-bold uppercase"><span>{l.name}</span><span className="text-[var(--accent-primary)] opacity-60">{l.percent}%</span></div><div className="h-[2px] bg-[var(--text-primary)]/5 rounded-full overflow-hidden"><motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} className="h-full origin-left bg-[var(--accent-primary)]" style={{ width: `${l.percent}%` }} /></div></div>)}</div>
+                      <div className="space-y-4">{stats?.languages?.slice(0, 3).map((l: any, i: number) => <div key={i} className="space-y-1.5"><div className="flex justify-between text-xs font-bold uppercase"><span>{l.name}</span><span className="text-[var(--accent-primary)] opacity-60">{l.percent}%</span></div><div className="h-[2px] bg-[var(--text-primary)]/5 rounded-full overflow-hidden"><motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} className="h-full origin-left bg-[var(--accent-primary)]" style={{ width: `${parseFloat(l.percent) || 0}%` }} /></div></div>)}</div>
                    </div>
                 </div>
               </motion.div>
@@ -185,30 +187,116 @@ export const GithubStats = () => {
                    </div>
                 </div>
 
-                <div className="border border-[var(--border-primary)] rounded-2xl p-10 bg-[var(--text-primary)]/[0.01] h-64 flex flex-col">
+                <div className="border border-[var(--border-primary)] rounded-2xl p-10 bg-[var(--text-primary)]/[0.01] flex-1 flex flex-col min-h-[300px]">
                    <div className="flex items-center justify-between mb-10">
-                      <h4 className="text-xs font-bold uppercase tracking-widest opacity-30">Trends // Payload</h4>
-                      <div className="px-4 py-1 rounded-full border border-[var(--accent-primary)]/20 text-xs font-bold uppercase tracking-widest text-[var(--accent-primary)] flex items-center gap-2"><Zap size={10} /> Connected</div>
+                      <h4 className="text-xs font-bold uppercase tracking-widest opacity-30">Activity // Pulse</h4>
+                      <div className="px-4 py-1 rounded-full border border-[var(--accent-primary)]/20 text-xs font-bold uppercase tracking-widest text-[var(--accent-primary)] flex items-center gap-2">
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }} 
+                          transition={{ repeat: Infinity, duration: 2 }}
+                          className="w-2 h-2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_8px_var(--accent-primary)]" 
+                        />
+                        Real-time Data
+                      </div>
                    </div>
-                   <div className="flex-1 relative">
-                      <svg width="100%" height="100%" viewBox="0 0 1000 100" preserveAspectRatio="none" className="overflow-visible">
-                        <motion.path
-                          initial={{ pathLength: 0, opacity: 0 }}
-                          animate={{ pathLength: 1, opacity: 1 }}
-                          transition={{ duration: 1.5 }}
-                          d="M0,80 L300,80 C400,80 500,20 600,20 C700,20 800,80 1000,80"
-                          fill="none"
-                          stroke="var(--accent-primary)"
-                          strokeWidth="2"
-                        />
-                        <motion.path
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.05 }}
-                          d="M0,80 L300,80 C400,80 500,20 600,20 C700,20 800,80 1000,80 V100 H0 Z"
-                          fill="var(--accent-primary)"
-                        />
-                        <circle cx="600" cy="20" r="4" fill="var(--accent-primary)" />
-                      </svg>
+                   <div className="flex-1 overflow-hidden">
+                      {stats?.contributionHistory && stats.contributionHistory.length > 0 ? (
+                         <div className="w-full py-6 overflow-hidden">
+                            {/* Month Labels */}
+                            <div className="relative h-5 mb-4 ml-[42px] w-full">
+                               {(() => {
+                                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                 const history = stats.contributionHistory || [];
+                                 const weekMarkers: { month: string; weekIndex: number }[] = [];
+                                 
+                                 for (let i = 0; i < history.length; i += 7) {
+                                   if (!history[i]) continue;
+                                   const date = new Date(history[i].date);
+                                   const monthLabel = months[date.getMonth()];
+                                   
+                                   if (weekMarkers.length === 0 || weekMarkers[weekMarkers.length - 1].month !== monthLabel) {
+                                     weekMarkers.push({ month: monthLabel, weekIndex: i / 7 });
+                                   }
+                                 }
+                                 
+                                 return weekMarkers.map((m, idx) => (
+                                   <div 
+                                     key={idx} 
+                                     className="absolute text-[11px] font-medium text-[#8b949e] whitespace-nowrap"
+                                     style={{ left: `calc(${m.weekIndex} * (100% / 52.5))` }}
+                                   >
+                                     {m.month}
+                                   </div>
+                                 ));
+                               })()}
+                            </div>
+
+                            <div className="flex gap-4">
+                               {/* Day Labels */}
+                               <div className="flex flex-col justify-between py-1 text-[11px] text-[#8b949e] w-[30px] shrink-0 text-right pr-3">
+                                  <span className="h-[18px]"></span>
+                                  <span className="h-[18px]">Mon</span>
+                                  <span className="h-[18px]"></span>
+                                  <span className="h-[18px]">Wed</span>
+                                  <span className="h-[18px]"></span>
+                                  <span className="h-[18px]">Fri</span>
+                                  <span className="h-[18px]"></span>
+                               </div>
+
+                               <div className="flex flex-1 justify-between gap-[4px]">
+                                 {(() => {
+                                   const history = stats.contributionHistory;
+                                   const weeks = [];
+                                   for (let i = 0; i < history.length; i += 7) {
+                                     weeks.push(history.slice(i, i + 7));
+                                   }
+                                   
+                                   const displayWeeks = weeks.slice(-52);
+                                   
+                                   return displayWeeks.map((week, wIdx) => (
+                                     <div key={wIdx} className="flex flex-col gap-[4px] flex-1">
+                                       {week.map((day: any, dIdx: number) => {
+                                         let bg = "#161b22";
+                                         if (day.count > 0) bg = "#0e4429";
+                                         if (day.count > 3) bg = "#006d32";
+                                         if (day.count > 6) bg = "#26a641";
+                                         if (day.count > 10) bg = "#39d353";
+                                         
+                                         return (
+                                           <div
+                                             key={dIdx}
+                                             className="aspect-square w-full min-h-[14px] rounded-[3px] cursor-pointer group relative"
+                                             style={{ backgroundColor: bg }}
+                                           >
+                                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-[#24292f] text-white text-[12px] font-medium rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-[#30363d] transition-all">
+                                               {day.count} contributions on {new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                               <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-[#24292f]" />
+                                             </div>
+                                           </div>
+                                         );
+                                       })}
+                                     </div>
+                                   ));
+                                 })()}
+                               </div>
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="flex items-center justify-end gap-3 mt-8 mr-4">
+                               <span className="text-[11px] text-[#8b949e]">Less</span>
+                               <div className="flex gap-[5px]">
+                                  {[ "#161b22", "#0e4429", "#006d32", "#26a641", "#39d353" ].map(bg => (
+                                     <div key={bg} className="w-[14px] h-[14px] rounded-[3px]" style={{ backgroundColor: bg }} />
+                                  ))}
+                               </div>
+                               <span className="text-[11px] text-[#8b949e]">More</span>
+                            </div>
+                         </div>
+                      ) : (
+                        <div className="w-full h-64 flex items-center justify-center border border-[#30363d] rounded-2xl bg-[#0d1117]/50">
+                           <span className="text-sm font-medium text-[#8b949e] animate-pulse">Syncing contribution history...</span>
+                        </div>
+                      )}
                    </div>
                 </div>
 

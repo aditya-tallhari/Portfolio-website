@@ -57,7 +57,20 @@ export const Experience = () => {
         }));
         setExperiencesList(mappedData);
       } catch (error) {
-        console.error("Error fetching experience:", error);
+        console.warn("Error fetching experience. Using offline fallback.", error instanceof Error ? error.message : "");
+        setExperiencesList([
+          {
+            id: "01",
+            type: "work",
+            period: "Present",
+            year: "2024",
+            role: "Developer",
+            company: "Offline Mode",
+            location: "Localhost",
+            points: ["The backend is currently unreachable.", "Viewing localized cached timeline."],
+            accent: "#FF4500"
+          }
+        ]);
       } finally {
         setIsLoading(false);
       }
@@ -255,17 +268,22 @@ export const Experience = () => {
           }
         );
 
-        // ghost number slide
+        // Ghost Number Sync Animation (Side Entry)
         gsap.fromTo(ghost, 
-          { y: 30, opacity: 0 }, 
           { 
-            y: 0, 
-            opacity: 0.03, 
-            duration: 1.5, 
-            ease: 'power3.out',
+            x: isEven ? 100 : -100, 
+            opacity: 0,
+            scale: 0.8
+          }, 
+          { 
+            x: 0, 
+            opacity: 1, 
+            scale: 1,
+            duration: 1.2, 
+            ease: 'power4.out',
             scrollTrigger: { 
               trigger: card, 
-              start: 'top 70%',
+              start: 'top 72%', // Matches card start exactly
               toggleActions: "play reverse play reverse"
             }
           }
@@ -316,7 +334,7 @@ export const Experience = () => {
     <section 
       ref={containerRef} 
       id="experience" 
-      className="relative py-40 md:py-48 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden"
+      className="relative pt-40 pb-16 md:pt-48 md:pb-20 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden"
     >
       {/* ── Background Patterns & Depth Layer ── */}
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
@@ -329,13 +347,13 @@ export const Experience = () => {
       </div>
 
       {/* Floating Parallax Background Text */}
-      <div className="exp-bg-text-layer absolute top-0 left-0 right-0 h-full pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around">
+      {/* <div className="exp-bg-text-layer absolute top-0 left-0 right-0 h-full pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around">
         {['HISTORY', 'PROGRESS', 'MILESTONES'].map((text, i) => (
           <div key={i} className="text-[25vw] font-black tracking-tighter text-[var(--text-primary)] opacity-[0.02] leading-none text-center transition-opacity duration-500">
             {text}
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Architectural Side Accents */}
       <div className="absolute top-0 left-8 md:left-16 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-[var(--border-primary)] to-transparent hidden xl:block opacity-40" />
@@ -439,7 +457,7 @@ export const Experience = () => {
                     </div>
 
                     {/* Entry Layout Structure */}
-                    <div className={`flex flex-col md:flex-row items-start ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                    <div className={`flex flex-col md:flex-row items-center gap-12 md:gap-0 ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                       
                       {/* Magnetic Card Container */}
                       <div 
@@ -512,14 +530,15 @@ export const Experience = () => {
                       {/* Central Spacer */}
                       <div className="hidden md:block md:w-[8%]" />
 
-                      {/* Phase 5: Parallax Ghost Typography */}
-                      <div className={`exp-ghost-num hidden md:flex md:w-[46%] items-center ${isEven ? 'justify-start pl-12' : 'justify-end pr-12'}`}>
-                         <span className="text-[12vw] font-playfair font-black text-[var(--text-primary)] select-none pointer-events-none tracking-tighter leading-none opacity-[0.05] transition-opacity duration-500">
+                      {/* Phase 5: Parallax Ghost Typography (Side Number) */}
+                      <div className={`exp-ghost-num flex md:w-[46%] items-center ${isEven ? 'justify-start md:pl-12 pl-14' : 'justify-end md:pr-12 pr-14'}`}>
+                         <span className="text-[18vw] md:text-[12vw] font-playfair font-black text-[var(--text-primary)] select-none pointer-events-none tracking-tighter leading-none opacity-[0.08] transition-opacity duration-500">
                            {exp.id}
                          </span>
                       </div>
 
                     </div>
+
                   </div>
                 );
               })

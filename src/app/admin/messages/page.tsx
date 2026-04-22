@@ -6,9 +6,7 @@ import { Mail, MailOpen, Trash2, Search, Clock, User, AtSign } from 'lucide-reac
 
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast, ToastContainer, createToastHelpers } from '../components/Toast';
-
-// Messages are fetched from the admin endpoint with auth token
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aditya-tallhari-portfolio.vercel.app/api/v1';
+import { fetchAdminMessages, markMessageRead, deleteMessage } from '@/lib/api';
 
 interface Message {
   _id: string;
@@ -34,11 +32,8 @@ export default function MessagesPage() {
   const loadMessages = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/messages/admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
+      if (!token) throw new Error('No token');
+      const data = await fetchAdminMessages(token);
       setMessages(data.data || data.messages || []);
     } catch {
       toast.error('Failed to load messages. Ensure you are logged in.');
@@ -51,11 +46,8 @@ export default function MessagesPage() {
 
   const markRead = async (id: string) => {
     try {
-      await fetch(`${API_BASE_URL}/messages/admin/${id}`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'read' }),
-      });
+      if (!token) return;
+      await markMessageRead(id, token);
       setMessages(prev => prev.map(m => m._id === id ? { ...m, status: 'read' } : m));
     } catch {
       toast.error('Failed to update message status');
@@ -63,13 +55,10 @@ export default function MessagesPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget || !token) return;
     setIsDeleting(true);
     try {
-      await fetch(`${API_BASE_URL}/messages/admin/${deleteTarget}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await deleteMessage(deleteTarget, token);
       setMessages(prev => prev.filter(m => m._id !== deleteTarget));
       if (selected?._id === deleteTarget) setSelected(null);
       toast.success('Message deleted');

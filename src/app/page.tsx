@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import { LaptopConsole, ArrowKey } from "@/components/home/LaptopConsole";
 import { ConsoleScreen } from "@/components/home/ConsoleScreen";
 import { SocialSidebar } from "@/components/layout/SocialSidebar";
@@ -10,7 +11,7 @@ import { PageLoader } from "@/components/layout/PageLoader";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { recordVisitor } from "@/lib/api";
+import { recordVisitor, fetchPublicStats, PublicStats } from "@/lib/api";
 
 // ─── COMPONENTS FOR HUD ──────────────────────────────────────────
 
@@ -116,9 +117,9 @@ const ThemeToggle = () => {
   const { mode, toggleMode, isDark } = useTheme();
   
   return (
-    <div 
+    <button 
       onClick={toggleMode}
-      className="fixed top-10 right-10 z-50 flex items-center gap-3 px-4 py-2 cursor-pointer transition-all group"
+      className="fixed top-10 right-10 z-50 flex items-center gap-3 px-4 py-2 transition-all group bg-transparent border-none outline-none"
     >
       <div className="relative w-3 h-3">
          <motion.div
@@ -130,17 +131,37 @@ const ThemeToggle = () => {
           className={`w-full h-full rounded-full ${isDark ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.6)]' : 'bg-orange-600 shadow-[0_0_15px_rgba(234,88,12,0.4)]'}`}
         />
       </div>
-      <span className="font-jetbrains text-[9px] font-bold tracking-[0.2em] text-[var(--text-primary)] uppercase group-hover:text-[var(--accent-primary)] transition-colors">
+      <span className="font-jetbrains text-[13px] font-bold tracking-[0.2em] text-[var(--text-primary)] uppercase group-hover:text-[var(--accent-primary)] transition-colors">
         {isDark ? "Dark Protocol" : "Light System"}
       </span>
-    </div>
+    </button>
+
   );
 };
 
 const QuickMetricsBento = () => {
+  const [stats, setStats] = useState<PublicStats>({
+    projects: 12,
+    experience: 2,
+    views: 0,
+    clients: 8
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await fetchPublicStats();
+        if (data) setStats(data);
+      } catch (err) {
+        console.warn("Using fallback metrics (Backend unreachable)");
+      }
+    };
+    loadStats();
+  }, []);
+
   const metrics = [
-    { label: "EXPERIENCE", val: "2+ YRS" },
-    { label: "PROJECTS", val: "10+ OPS" },
+    { label: "EXPERIENCE", val: `${stats.experience}+ YRS` },
+    { label: "PROJECTS", val: `${stats.projects}+ OPS` },
     { label: "AVAILABILITY", val: "100%" },
   ];
   return (
@@ -164,6 +185,31 @@ const QuickMetricsBento = () => {
   );
 };
 
+
+const PortfolioCTA = () => {
+  return (
+    <Link 
+      href="/portfolio"
+      className="fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-2.5 border border-[var(--text-primary)]/10 hover:border-[var(--accent-primary)] bg-[var(--bg-primary)]/50 backdrop-blur-sm transition-all duration-300 group rounded-sm"
+    >
+      <span className="text-[10px] font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] uppercase tracking-[0.2em] transition-colors">
+        Go to Portfolio
+      </span>
+      <svg 
+        width="12" 
+        height="12" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        className="text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] group-hover:translate-x-0.5 transition-all duration-300"
+      >
+        <path d="M5 12H19M19 12L13 6M19 12L13 18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </Link>
+  );
+};
+
+
 // ─── MAIN HOME PAGE ───────────────────────────────────────────────
 
 export default function Home() {
@@ -184,7 +230,7 @@ export default function Home() {
           sessionStorage.setItem('v', '1');
         }
       } catch (err) {
-        console.error("Failed to record visitor:", err);
+        console.warn("Failed to record visitor stats (Offline mode).", err instanceof Error ? err.message : "");
       }
     };
     record();
@@ -209,6 +255,7 @@ export default function Home() {
       <StatusTerminal />
       <ThemeToggle />
       <QuickMetricsBento />
+      <PortfolioCTA />
       
       <SocialSidebar />
 

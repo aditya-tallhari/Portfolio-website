@@ -47,10 +47,15 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
   const [vfs, setVfs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<TerminalLineData[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
   const [input, setInput] = useState("");
   const [currentPath, setCurrentPath] = useState("/");
   const [uptime, setUptime] = useState("0s");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
+
 
   const getTimestamp = () => {
     const now = new Date();
@@ -62,8 +67,19 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
       content,
       type,
       path,
-      timestamp: getTimestamp()
-    }]);
+      timestamp: "" // Will be set on the client
+    }].map(h => h.timestamp ? h : { ...h, timestamp: getTimestamp() }));
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Restore focus if clicked anywhere inside the terminal
+      if (viewportRef.current?.contains(e.target as Node)) {
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("click", handleGlobalClick);
+    return () => window.removeEventListener("click", handleGlobalClick);
   }, []);
 
   useEffect(() => {
@@ -101,6 +117,9 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
   const handleCommand = (cmd: string) => {
     const fullCmd = cmd.trim();
     if (!fullCmd) return;
+
+    setCommandHistory(prev => [fullCmd, ...prev].slice(0, 50));
+    setHistoryIndex(-1);
 
     const args = fullCmd.split(" ");
     const trimmedCmd = args[0].toLowerCase();
@@ -154,9 +173,9 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
         addLine(`usage: ${trimmedCmd} [executable]`, "warning");
       } else {
         const contents = vfs ? vfs[currentPath] : null;
-        const isExecutable = Array.isArray(contents) && contents.includes(fileName);
+        const isExecutable = typeof contents === 'object' && Array.isArray(vfs['/bin']) && vfs['/bin'].includes(fileName);
         
-        if (isExecutable) {
+        if (isExecutable || (Array.isArray(contents) && contents.includes(fileName))) {
            addLine(`EXECUTING ${fileName}...`, "success");
            addLine("Redirecting to PORTFOLIO_VIRTUAL_DISPLAY...", "info");
            setTimeout(() => {
@@ -206,7 +225,8 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 bg-black text-[#00FF41] font-mono overflow-hidden flex flex-col p-2"
+      ref={viewportRef}
+      className="absolute inset-0 bg-black text-[#00FF41] font-mono overflow-hidden flex flex-col p-2 select-none"
     >
       {/* Minimal Header */}
       <div className="flex items-center justify-between border-b border-white/10 pb-1 mb-2">
@@ -221,14 +241,14 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
 
       {/* Terminal Viewport */}
       <div 
-        className="flex-1 overflow-y-auto space-y-0.5"
+        className="flex-1 overflow-y-auto space-y-0.5 custom-scrollbar"
         style={{ 
           msOverflowStyle: 'none', 
           scrollbarWidth: 'none',
         }}
       >
         <style dangerouslySetInnerHTML={{ __html: `
-          .flex-1::-webkit-scrollbar { display: none; }
+          .custom-scrollbar::-webkit-scrollbar { display: none; }
         `}} />
         {history.map((line, i) => (
           <TerminalLine key={i} line={line} />
@@ -244,6 +264,7 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
         <div className="flex items-center gap-1">
           <span className="text-[#00D9FF] font-black text-[4px]">guest:{currentPath}$</span>
           <input
+            ref={inputRef}
             autoFocus
             className="bg-transparent border-none outline-none flex-1 text-[#00FF41] text-[4px] font-mono"
             spellCheck="false"
@@ -251,10 +272,31 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
+              // Ensure we don't trigger parent laptop handlers
               e.stopPropagation();
+              
               if (e.key === "Enter") {
                 (window as any).__playConsoleClick?.();
                 handleCommand(input);
+              }
+              if (e.key === "ArrowUp") {
+                e.preventDefault();
+                const nextIndex = historyIndex + 1;
+                if (nextIndex < commandHistory.length) {
+                  setHistoryIndex(nextIndex);
+                  setInput(commandHistory[nextIndex]);
+                }
+              }
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                const nextIndex = historyIndex - 1;
+                if (nextIndex >= 0) {
+                  setHistoryIndex(nextIndex);
+                  setInput(commandHistory[nextIndex]);
+                } else {
+                  setHistoryIndex(-1);
+                  setInput("");
+                }
               }
               if (e.key === "Escape") {
                 (window as any).__playConsoleClick?.();
@@ -267,3 +309,4 @@ export const TerminalScreen: React.FC<TerminalScreenProps> = ({ onBack }) => {
     </motion.div>
   );
 };
+

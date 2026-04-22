@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://aditya-tallhari-portfolio.vercel.app/api/v1";
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (isLocal ? "http://localhost:5000/api/v1" : "https://aditya-tallhari-portfolio-backend.vercel.app/api/v1");
 
 
 // ─── Interfaces ──────────────────────────────────────────────────
@@ -281,4 +282,49 @@ export const fetchPublicStats = async (): Promise<PublicStats> => {
   if (!response.ok) throw new Error("Failed to fetch public stats");
   const data = await response.json();
   return data.data;
+};
+
+export const sendAIChat = async (question: string) => {
+  const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question }),
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "AI response failed");
+  }
+  
+  return response.json();
+};
+
+export const fetchAdminMessages = async (token: string) => {
+  const response = await fetch(`${API_BASE_URL}/messages/admin`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) throw new Error("Failed to fetch messages");
+  return response.json();
+};
+
+export const markMessageRead = async (id: string, token: string) => {
+  const response = await fetch(`${API_BASE_URL}/messages/admin/${id}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status: "read" }),
+  });
+  if (!response.ok) throw new Error("Failed to mark message as read");
+  return response.json();
+};
+
+export const deleteMessage = async (id: string, token: string) => {
+  const response = await fetch(`${API_BASE_URL}/messages/admin/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) throw new Error("Failed to delete message");
+  return response.json();
 };

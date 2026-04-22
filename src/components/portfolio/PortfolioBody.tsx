@@ -9,6 +9,7 @@ import { Experience } from './Experience';
 import { Projects } from './Projects';
 import { Achievements } from './Achievements';
 import {GithubStats} from './GithubStats';
+import { CompetitiveProgramming } from './CompetitiveProgramming';
 import { ContactSection } from './ContactSection';
 import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger);
@@ -163,6 +164,7 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
       <Projects />
       <GithubStats />
       <Achievements />
+      <CompetitiveProgramming />
       <ContactSection />
     </>
   );

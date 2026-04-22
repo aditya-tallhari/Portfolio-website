@@ -103,9 +103,9 @@ export default function ProjectsPage() {
                   className="group p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/30 transition-all duration-300 flex flex-col gap-4"
                 >
                   {/* Project image */}
-                  {project.imageUrl && (
+                  {(project.imageUrl || (project as any).image) && (
                     <div className="h-32 rounded-xl overflow-hidden bg-[var(--text-primary)]/[0.04]">
-                      <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+                      <img src={project.imageUrl || (project as any).image} alt={project.title} className="w-full h-full object-cover" />
                     </div>
                   )}
 

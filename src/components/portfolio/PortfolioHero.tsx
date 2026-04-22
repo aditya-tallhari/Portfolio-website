@@ -6,9 +6,10 @@ import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageCircle, ArrowDownRight } from 'lucide-react';
+import { ArrowDownRight } from 'lucide-react';
 import { FaGithub } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
+import { FaInstagram } from "react-icons/fa6";
 import { motion, useMotionValue as motionValue, useSpring, useTransform } from "framer-motion";
 import { recordVisitor, fetchPublicStats, PublicStats } from '@/lib/api';
 
@@ -145,9 +146,9 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
             </motion.div>
           </div>
           <div className="flex flex-col gap-8">
-            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
-            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><MessageCircle size={24} /></a>
-            <a href="#" className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaGithub size={24} /></a>
+            <a href="https://www.linkedin.com/in/aditya-tallhari" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
+            <a href="https://www.instagram.com/aditya_tallare_" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaInstagram size={24} /></a>
+            <a href="https://github.com/aditya-tallhari" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaGithub size={24} /></a>
           </div>
         </div>
 
