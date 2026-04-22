@@ -107,7 +107,10 @@ export const createProject = async (projectData: FormData, token: string) => {
     headers: { Authorization: `Bearer ${token}` },
     body: projectData,
   });
-  if (!response.ok) throw new Error("Failed to create project");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to create project");
+  }
   return response.json();
 };
 
@@ -117,7 +120,10 @@ export const updateProject = async (id: string, projectData: FormData, token: st
     headers: { Authorization: `Bearer ${token}` },
     body: projectData,
   });
-  if (!response.ok) throw new Error("Failed to update project");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to update project");
+  }
   return response.json();
 };
 
