@@ -1,23 +1,34 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
 
 export const CustomCursor = () => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const followerRef = useRef<HTMLDivElement>(null);
+  const container = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useGSAP(() => {
+    if (!mounted || !container.current) return;
+
     const moveCursor = (e: MouseEvent) => {
-      gsap.to(cursorRef.current, {
+      // Use quickSetter for performance in mousemove
+      gsap.to(".cursor-dot", {
         x: e.clientX,
         y: e.clientY,
         duration: 0.1,
+        overwrite: 'auto'
       });
-      gsap.to(followerRef.current, {
+      gsap.to(".cursor-follower", {
         x: e.clientX,
         y: e.clientY,
         duration: 0.3,
+        overwrite: 'auto'
       });
     };
 
@@ -25,10 +36,18 @@ export const CustomCursor = () => {
 
     // Hover effects
     const onMouseEnter = () => {
-      gsap.to(followerRef.current, { scale: 3, backgroundColor: 'rgba(255,255,255,0.1)' });
+      gsap.to(".cursor-follower", { 
+        scale: 3, 
+        backgroundColor: 'rgba(255,255,255,0.1)', 
+        duration: 0.3 
+      });
     };
     const onMouseLeave = () => {
-      gsap.to(followerRef.current, { scale: 1, backgroundColor: 'transparent' });
+      gsap.to(".cursor-follower", { 
+        scale: 1, 
+        backgroundColor: 'transparent', 
+        duration: 0.3 
+      });
     };
 
     const interactables = document.querySelectorAll('button, a, .magnetic');
@@ -44,18 +63,20 @@ export const CustomCursor = () => {
         el.removeEventListener('mouseleave', onMouseLeave);
       });
     };
-  }, []);
+  }, { scope: container, dependencies: [mounted] });
+
+  if (!mounted) return null;
+
 
   return (
-    <>
+    <div ref={container}>
       <div
-        ref={cursorRef}
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full z-[9999] pointer-events-none mix-blend-difference -translate-x-1/2 -translate-y-1/2"
+        className="cursor-dot fixed top-0 left-0 w-2 h-2 bg-white rounded-full z-[9999] pointer-events-none mix-blend-difference -translate-x-1/2 -translate-y-1/2"
       />
       <div
-        ref={followerRef}
-        className="fixed top-0 left-0 w-8 h-8 border border-white/30 rounded-full z-[9998] pointer-events-none -translate-x-1/2 -translate-y-1/2 transition-transform duration-100 ease-out"
+        className="cursor-follower fixed top-0 left-0 w-8 h-8 border border-white/30 rounded-full z-[9998] pointer-events-none -translate-x-1/2 -translate-y-1/2"
       />
-    </>
+    </div>
   );
 };
+

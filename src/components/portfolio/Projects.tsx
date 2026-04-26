@@ -103,96 +103,94 @@ export const Projects = () => {
   useGSAP(() => {
     if (isLoading) return;
 
-    const ctx = gsap.context(() => {
+    // ── Header Animation ──
+    const headerTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: headerRef.current,
+        start: 'top 85%',
+        toggleActions: "play none none none",
+      }
+    });
 
-      // ── Header Animation ──
-      const headerTl = gsap.timeline({
+    headerTl.to('.title-word-left', {
+      x: 0,
+      opacity: 1,
+      duration: 1.2,
+      ease: 'expo.out'
+    });
+
+    headerTl.to('.title-word-right', {
+      x: 0,
+      opacity: 1,
+      duration: 1.2,
+      ease: 'expo.out'
+    }, '<0.2');
+
+    // ── Horizontal Pinning Logic (Desktop Only) ──
+    const mm = gsap.matchMedia();
+    
+    mm.add("(min-width: 768px)", () => {
+      if (!gridRef.current || !containerRef.current) return;
+
+      const getScrollAmount = () => {
+        if (!gridRef.current) return 0;
+        // Calculate exact amount to show the last card fully
+        return gridRef.current.scrollWidth - window.innerWidth + (window.innerWidth * 0.1); 
+      };
+
+      gsap.to(gridRef.current, {
+        x: () => -getScrollAmount(),
+        ease: "none",
         scrollTrigger: {
-          trigger: headerRef.current,
-          start: 'top 85%',
-          toggleActions: "play none none none",
+          trigger: containerRef.current,
+          pin: true,
+          scrub: 1,
+          start: "top top",
+          end: () => `+=${getScrollAmount()}`,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
         }
       });
+    });
 
-      headerTl.to('.title-word-left', {
-        x: 0,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'expo.out'
+    // ── Mobile Animation (Vertical Stack) ──
+    mm.add("(max-width: 767px)", () => {
+      gsap.from(".project-card", {
+        y: 60,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 80%",
+        }
       });
+    });
 
-      headerTl.to('.title-word-right', {
-        x: 0,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'expo.out'
-      }, '<0.2');
+    // ── Project Interactions ──
+    const sections = gsap.utils.toArray('.project-card');
+    sections.forEach((card: any) => {
+      card.addEventListener('mousemove', (e: any) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
 
-      // ── Horizontal Pinning Logic (Desktop Only) ──
-      const mm = gsap.matchMedia();
-      
-      mm.add("(min-width: 768px)", () => {
-        const getScrollAmount = () => {
-          if (!gridRef.current) return 0;
-          // Calculate exact amount to show the last card fully
-          return gridRef.current.scrollWidth - window.innerWidth + (window.innerWidth * 0.1); 
-        };
-
-        gsap.to(gridRef.current, {
-          x: () => -getScrollAmount(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            pin: true,
-            scrub: 1,
-            start: "top top",
-            end: () => `+=${getScrollAmount()}`,
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-          }
+        gsap.to(card.querySelector('.card-image-wrap'), {
+          x: (x - centerX) * 0.02,
+          y: (y - centerY) * 0.02,
+          duration: 0.5
         });
       });
 
-      // ── Mobile Animation (Vertical Stack) ──
-      mm.add("(max-width: 767px)", () => {
-        gsap.from(".project-card", {
-          y: 60,
-          opacity: 0,
-          stagger: 0.2,
-          duration: 0.8,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 80%",
-          }
-        });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card.querySelector('.card-image-wrap'), { x: 0, y: 0, duration: 0.8 });
       });
+    });
 
-      // ── Project Interactions ──
-      const sections = gsap.utils.toArray('.project-card');
-      sections.forEach((card: any) => {
-        card.addEventListener('mousemove', (e: any) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-
-          gsap.to(card.querySelector('.card-image-wrap'), {
-            x: (x - centerX) * 0.02,
-            y: (y - centerY) * 0.02,
-            duration: 0.5
-          });
-        });
-
-        card.addEventListener('mouseleave', () => {
-          gsap.to(card.querySelector('.card-image-wrap'), { x: 0, y: 0, duration: 0.8 });
-        });
-      });
-
-    }, containerRef);
-    return () => ctx.revert();
-  }, [isLoading, projectsList]);
+  }, { scope: containerRef, dependencies: [isLoading, projectsList] });
 
   return (
     <section

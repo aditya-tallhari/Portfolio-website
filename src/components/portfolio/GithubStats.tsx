@@ -155,7 +155,7 @@ export const GithubStats = () => {
                          <Users size={18} className="text-[var(--accent-primary)] opacity-40" />
                          <span className="text-xs font-bold uppercase tracking-widest opacity-30">Followers</span>
                        </div>
-                      <div className="text-4xl font-black italic font-playfair leading-none"><CounterValue targetValue={stats?.followers || 0} /></div>
+                      <div className="text-4xl font-black font-playfair leading-none"><CounterValue targetValue={stats?.followers || 0} /></div>
                    </div>
                 </div>
                 <div className="lg:col-span-6"><div className="relative h-full border border-[var(--border-primary)] rounded-[2.5rem] overflow-hidden bg-[var(--text-primary)]/[0.01] p-0 shadow-2xl dark:shadow-none"><RogueMascot className="w-full h-full" /></div></div>

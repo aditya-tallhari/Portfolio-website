@@ -2,7 +2,9 @@
 
 import React, { useEffect } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 import { AboutSection } from './AboutSection';
 import { TechStack } from './TechStack';
 import { Experience } from './Experience';
@@ -20,7 +22,7 @@ interface PortfolioBodyProps {
 }
 
 export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBodyProps) => {
-  useEffect(() => {
+  useGSAP(() => {
     if (!profileImageRef.current || !profileDestRef.current) return;
 
     // 1. Create a clone of the hero profile image div
@@ -131,6 +133,7 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
       st.kill();
     };
   }, [profileImageRef, profileDestRef]);
+
 
   useEffect(() => {
     let lenis: Lenis | null = null;

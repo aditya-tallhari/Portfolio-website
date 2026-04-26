@@ -91,15 +91,17 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
       );
 
       // Scroll parallax
-      gsap.to('.hero-profile-container', {
-        y: -40,
-        scrollTrigger: {
-          trigger: ref.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1.5,
-        },
-      });
+      if (ref && typeof ref !== 'function' && ref.current) {
+        gsap.to('.hero-profile-container', {
+          y: -40,
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
+        });
+      }
 
     }, { scope: ref as React.RefObject<HTMLDivElement> });
 

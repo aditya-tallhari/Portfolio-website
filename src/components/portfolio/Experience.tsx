@@ -146,10 +146,10 @@ export const Experience = () => {
   useGSAP(() => {
     if (typeof window === 'undefined' || !containerRef.current || experiencesList.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+    const mm = gsap.matchMedia();
 
-      /* ─── Phase 2: Header Redesign Entrance ─── */
+    /* ─── Phase 2: Header Redesign Entrance ─── */
+    if (headerRef.current) {
       const headerTl = gsap.timeline({
         scrollTrigger: {
           trigger: headerRef.current,
@@ -157,7 +157,7 @@ export const Experience = () => {
           toggleActions: "play reverse play reverse"
         }
       });
-
+      
       headerTl.fromTo('.exp-accent-line', 
         { scaleX: 0 }, 
         { scaleX: 1, duration: 1, ease: 'power4.inOut', transformOrigin: 'left' }
@@ -189,143 +189,142 @@ export const Experience = () => {
           y: 0, 
           duration: 0.8, 
           onComplete: () => {
-             const target = experiencesList.length;
-             gsap.to({ val: 0 }, {
-               val: target,
-               duration: 2,
-               ease: 'power2.out',
-               onUpdate: function() {
-                 setCount(Math.ceil(this.targets()[0].val));
-               }
-             });
+              const target = experiencesList.length;
+              gsap.to({ val: 0 }, {
+                val: target,
+                duration: 2,
+                ease: 'power2.out',
+                onUpdate: function() {
+                  setCount(Math.ceil(this.targets()[0].val));
+                }
+              });
           }
         },
         '-=0.4'
       );
+    }
 
-      /* ─── Phase 3: Timeline Fill ─── */
-      mm.add("(min-width: 768px)", () => {
-        if (timelineFillRef.current) {
-          gsap.fromTo(timelineFillRef.current, 
-            { scaleY: 0 }, 
-            { 
-              scaleY: 1, 
-              ease: 'none',
-              scrollTrigger: {
-                trigger: timelineTrackRef.current,
-                start: 'top 60%',
-                end: 'bottom 80%',
-                scrub: 1,
-              }
-            }
-          );
-        }
-      });
-
-      /* ─── Phase 4 & 5: Node & Card Staggered Revelations ─── */
-      gsap.utils.toArray<HTMLElement>('.exp-row').forEach((row, i) => {
-        const card = row.querySelector('.exp-card');
-        const node = row.querySelector('.exp-node');
-        const ghost = row.querySelector('.exp-ghost-num');
-
-        if (!card || !node || !ghost) return;
-
-        const isEven = i % 2 === 0;
-
-        // Node Pop
-        gsap.fromTo(node, 
-          { scale: 0, opacity: 0, xPercent: -50 }, 
+    /* ─── Phase 3: Timeline Fill ─── */
+    mm.add("(min-width: 768px)", () => {
+      if (timelineFillRef.current && timelineTrackRef.current) {
+        gsap.fromTo(timelineFillRef.current, 
+          { scaleY: 0 }, 
           { 
-            scale: 1, 
-            opacity: 1, 
-            xPercent: -50,
-            duration: 0.8, 
-            ease: 'back.out(2)',
+            scaleY: 1, 
+            ease: 'none',
             scrollTrigger: {
-              trigger: node,
-              start: 'top 75%',
+              trigger: timelineTrackRef.current,
+              start: 'top 60%',
+              end: 'bottom 80%',
+              scrub: 1,
+            }
+          }
+        );
+      }
+    });
+
+    /* ─── Phase 4 & 5: Node & Card Staggered Revelations ─── */
+    gsap.utils.toArray<HTMLElement>('.exp-row').forEach((row, i) => {
+      const card = row.querySelector('.exp-card');
+      const node = row.querySelector('.exp-node');
+      const ghost = row.querySelector('.exp-ghost-num');
+
+      if (!card || !node || !ghost) return;
+
+      const isEven = i % 2 === 0;
+
+      // Node Pop
+      gsap.fromTo(node, 
+        { scale: 0, opacity: 0, xPercent: -50 }, 
+        { 
+          scale: 1, 
+          opacity: 1, 
+          xPercent: -50,
+          duration: 0.8, 
+          ease: 'back.out(2)',
+          scrollTrigger: {
+            trigger: node,
+            start: 'top 75%',
+            toggleActions: "play reverse play reverse"
+          }
+        }
+      );
+
+      // Card Slide & 3D Rotate (Responsive)
+      mm.add({
+        isDesktop: "(min-width: 768px)",
+        isMobile: "(max-width: 767px)"
+      }, (context) => {
+        const { isDesktop } = context.conditions as any;
+        
+        gsap.fromTo(card, 
+          { 
+            x: isDesktop ? (isEven ? -100 : 100) : 50, 
+            opacity: 0, 
+            rotateY: isDesktop ? (isEven ? 15 : -15) : 0,
+            transformPerspective: 1200
+          }, 
+          { 
+            x: 0, 
+            opacity: 1, 
+            rotateY: 0, 
+            duration: 1.2, 
+            ease: 'power4.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 80%',
               toggleActions: "play reverse play reverse"
             }
           }
         );
 
-        // Card Slide & 3D Rotate (Responsive)
-        mm.add({
-          isDesktop: "(min-width: 768px)",
-          isMobile: "(max-width: 767px)"
-        }, (context) => {
-          const { isDesktop } = context.conditions as any;
-          
-          gsap.fromTo(card, 
-            { 
-              x: isDesktop ? (isEven ? -100 : 100) : 50, 
-              opacity: 0, 
-              rotateY: isDesktop ? (isEven ? 15 : -15) : 0,
-              transformPerspective: 1200
-            }, 
-            { 
-              x: 0, 
-              opacity: 1, 
-              rotateY: 0, 
-              duration: 1.2, 
-              ease: 'power4.out',
-              scrollTrigger: {
-                trigger: card,
-                start: 'top 80%',
-                toggleActions: "play reverse play reverse"
-              }
+        gsap.fromTo(ghost, 
+          { 
+            x: isDesktop ? (isEven ? 100 : -100) : 0, 
+            y: isDesktop ? 0 : 20,
+            opacity: 0,
+            scale: 0.8
+          }, 
+          { 
+            x: 0, 
+            y: 0,
+            opacity: 1, 
+            scale: 1,
+            duration: 1.2, 
+            ease: 'power4.out',
+            scrollTrigger: { 
+              trigger: card, 
+              start: 'top 80%',
+              toggleActions: "play reverse play reverse"
             }
-          );
-
-          gsap.fromTo(ghost, 
-            { 
-              x: isDesktop ? (isEven ? 100 : -100) : 0, 
-              y: isDesktop ? 0 : 20,
-              opacity: 0,
-              scale: 0.8
-            }, 
-            { 
-              x: 0, 
-              y: 0,
-              opacity: 1, 
-              scale: 1,
-              duration: 1.2, 
-              ease: 'power4.out',
-              scrollTrigger: { 
-                trigger: card, 
-                start: 'top 80%',
-                toggleActions: "play reverse play reverse"
-              }
-            }
-          );
-        });
-
-        // Content Stagger
-        const bullets = card.querySelectorAll('.exp-bullet');
-        if (bullets && bullets.length > 0) {
-          gsap.fromTo(bullets, 
-            { x: -10, opacity: 0 }, 
-            { 
-              x: 0, 
-              opacity: 1, 
-              stagger: 0.1, 
-              duration: 0.6, 
-              ease: 'power2.out',
-              scrollTrigger: { 
-                trigger: card, 
-                start: 'top 70%',
-                toggleActions: "play reverse play reverse"
-              }
-            }
-          );
-        }
+          }
+        );
       });
 
-      ScrollTrigger.refresh();
-    }, containerRef);
+      // Content Stagger
+      const bullets = card.querySelectorAll('.exp-bullet');
+      if (bullets && bullets.length > 0) {
+        gsap.fromTo(bullets, 
+          { x: -10, opacity: 0 }, 
+          { 
+            x: 0, 
+            opacity: 1, 
+            stagger: 0.1, 
+            duration: 0.6, 
+            ease: 'power2.out',
+            scrollTrigger: { 
+              trigger: card, 
+              start: 'top 70%',
+              toggleActions: "play reverse play reverse"
+            }
+          }
+        );
+      }
+    });
 
-    return () => ctx.revert();
-  }, [experiencesList]);
+    ScrollTrigger.refresh();
+  }, { scope: containerRef, dependencies: [experiencesList] });
+
 
   return (
     <section 

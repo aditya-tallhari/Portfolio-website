@@ -58,6 +58,21 @@ export interface Skill {
   proficiency: number;
 }
 
+export interface Education {
+  _id?: string;
+  label: string;
+  degree: string;
+  specialization: string;
+  institution: string;
+  location: string;
+  period: string;
+  grade: string;
+  desc: string;
+  tags: string[];
+  accent?: string;
+  order?: number;
+}
+
 export interface TechStack {
   _id?: string;
   category: string;
@@ -177,6 +192,50 @@ export const deleteExperience = async (id: string, token: string) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok) throw new Error("Failed to delete experience");
+  return response.json();
+};
+
+// ─── Education APIs ──────────────────────────────────────────────
+
+export const fetchEducation = async (): Promise<Education[]> => {
+  const response = await fetch(`${API_BASE_URL}/education`);
+  if (!response.ok) throw new Error("Failed to fetch education records");
+  const data = await response.json();
+  return data.data;
+};
+
+export const addEducation = async (educationData: Partial<Education>, token: string) => {
+  const response = await fetch(`${API_BASE_URL}/education`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(educationData),
+  });
+  if (!response.ok) throw new Error("Failed to add education record");
+  return response.json();
+};
+
+export const updateEducation = async (id: string, educationData: Partial<Education>, token: string) => {
+  const response = await fetch(`${API_BASE_URL}/education/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(educationData),
+  });
+  if (!response.ok) throw new Error("Failed to update education record");
+  return response.json();
+};
+
+export const deleteEducation = async (id: string, token: string) => {
+  const response = await fetch(`${API_BASE_URL}/education/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) throw new Error("Failed to delete education record");
   return response.json();
 };
 
@@ -330,5 +389,50 @@ export const deleteMessage = async (id: string, token: string) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok) throw new Error("Failed to delete message");
+  return response.json();
+};
+
+// ─── Coding Profile APIs ─────────────────────────────────────────
+
+export interface CodingProfileResponse {
+  status: string;
+  data: {
+    leetcode?: {
+      solved: {
+        easy: number;
+        medium: number;
+        hard: number;
+        total: number;
+      };
+      rating: number;
+      rank: number;
+      calendar?: Record<string, number>;
+      streak?: number;
+    };
+    codechef?: {
+      rating: number;
+      stars: string;
+      globalRank: number;
+      countryRank: number;
+      maxRank?: number;
+      solved: number;
+      streak: number;
+    };
+  };
+}
+
+export const fetchLeetCodeProfile = async (username: string): Promise<CodingProfileResponse> => {
+  const response = await fetch(`${API_BASE_URL}/coding-profile/leetcode/${username}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch LeetCode profile for ${username}`);
+  }
+  return response.json();
+};
+
+export const fetchCodeChefProfile = async (username: string): Promise<CodingProfileResponse> => {
+  const response = await fetch(`${API_BASE_URL}/coding-profile/codechef/${username}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch CodeChef profile for ${username}`);
+  }
   return response.json();
 };

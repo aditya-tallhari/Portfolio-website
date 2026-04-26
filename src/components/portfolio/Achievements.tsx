@@ -1,178 +1,227 @@
 'use client';
 
-import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { GraduationCap, MapPin, Award, Calendar, CircleUser, Sparkles, Binary } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { GraduationCap, MapPin, Calendar, BookOpen, Binary, Cpu } from 'lucide-react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const educationData = [
-  {
-    id: '01',
-    degree: 'B.Tech in CSE',
-    institution: "R. C. Patel Institute of Technology",
-    location: 'Shirpur, Dhule',
-    period: '2024 — 2027',
-    grade: 'CGPA: 8.47',
-    desc: 'Currently pursuing B.Tech in Computer Science and Engineering, with a strong focus on Advanced Machine Learning and Scalable Full Stack Systems. Actively involved in technical research and algorithmic development.',
-    tags: ['Machine Learning', 'Data Structures', 'Cloud Systems'],
-    verified: true
-  },
-  {
-    id: '02',
-    degree: 'Diploma in CS',
-    institution: 'Godavari Polytechnic College, Jalgaon',
-    location: 'Jalgaon, Maharashtra',
-    period: '2021 — 2024',
-    grade: 'Score: 87.77%',
-    desc: 'Achieved an overall score of 87.77% in Diploma in Computer Science, specializing in core engineering fundamentals and foundational software development principles.',
-    tags: ['C/C++', 'OS Fundamentals', 'Hardware'],
-    verified: true
-  },
-  {
-    id: '03',
-    degree: 'SSC (Secondary School)',
-    institution: 'A.G.C.S High School,Bhuswal',
-    location: 'Bhusawal, Maharashtra',
-    period: '2019 — 2021',
-    grade: '77.80%',
-    desc: 'Secured 77.80% in SSC, demonstrating a strong foundation in mathematics and sciences, which paved the way for my technical education.',
-    tags: ['Mathematics', 'Science'],
-    verified: true
-  }
-];
+import { fetchEducation, Education } from '@/lib/api';
 
-const SplitText = ({ text, className }: { text: string; className?: string }) => {
-  return (
-    <span className={className}>
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-block"
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </span>
-  );
-};
+gsap.registerPlugin(ScrollTrigger);
 
 export const Achievements = () => {
-  return (
-    <section id="education" className="relative py-32 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--border-primary)] to-transparent opacity-20" />
-      <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-[var(--accent-primary)]/5 blur-[120px] rounded-full pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        <header className="mb-24 text-center md:text-left">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-center md:justify-start gap-4 mb-6"
-          >
-             <div className="w-16 h-[2px] bg-[var(--accent-primary)]" />
-             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[var(--accent-primary)] font-jetbrains">Trajectory // Education_Path</span>
-          </motion.div>
-          
-          <h2 className="text-6xl md:text-9xl font-playfair font-black tracking-tighter uppercase leading-[0.8] mb-10">
-            <SplitText text="Academic" className="block text-[var(--text-primary)]" />
-            <SplitText text="Expedition" className="block text-[var(--text-primary)] opacity-20" />
-          </h2>
+  const [educationData, setEducationData] = useState<Education[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const labelRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center md:justify-start gap-6 opacity-60 font-jetbrains text-[10px] uppercase tracking-widest font-black text-[var(--text-primary)]"
-          >
-            <span className="flex items-center gap-2"><Sparkles size={12} /> Excellence Focused</span>
-            <span className="flex items-center gap-2"><Binary size={12} /> Computer Science Core</span>
-            <span className="flex items-center gap-2"><CircleUser size={12} /> continuous Learning</span>
-          </motion.div>
+  useEffect(() => {
+    const loadEducation = async () => {
+      try {
+        const data = await fetchEducation();
+        setEducationData(data);
+      } catch (error) {
+        console.error("Error fetching education:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadEducation();
+  }, []);
+
+  // Simple Entrance
+  useGSAP(() => {
+    if (!containerRef.current) return;
+    gsap.from(".edu-container", {
+      opacity: 0,
+      duration: 0.5,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 90%",
+      }
+    });
+  }, { scope: containerRef });
+
+  // Simple Indicator Slide
+  useGSAP(() => {
+    if (!containerRef.current || !indicatorRef.current) return;
+    const activeLabel = labelRefs.current[activeIndex];
+    if (activeLabel) {
+      gsap.to(indicatorRef.current, {
+        y: activeLabel.offsetTop,
+        height: activeLabel.offsetHeight,
+        duration: 0.25,
+        ease: "sine.out"
+      });
+    }
+  }, { scope: containerRef, dependencies: [activeIndex] });
+
+  // Premium Staggered Content Transition
+  useGSAP(() => {
+    if (!containerRef.current || !detailRef.current) return;
+
+    const tl = gsap.timeline();
+
+    // 1. Reset state (invisible and slightly shifted)
+    tl.set([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags"], { 
+      opacity: 0, 
+      y: 10 
+    });
+
+    // 2. Coordinated entrance
+    tl.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags"], {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      stagger: 0.08,
+      ease: "power2.out",
+    });
+  }, { scope: containerRef, dependencies: [activeIndex] });
+
+
+  const activeData = educationData[activeIndex] || educationData[0];
+
+  if (isLoading) {
+    return (
+      <section className="relative w-full py-20 bg-[var(--bg-primary)] overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <div className="w-48 h-4 bg-[var(--text-primary)]/[0.04] rounded animate-pulse mb-4" />
+          <div className="w-96 h-12 bg-[var(--text-primary)]/[0.04] rounded animate-pulse mb-12" />
+          <div className="h-96 rounded-2xl bg-[var(--text-primary)]/[0.02] border border-[var(--border-primary)] animate-pulse" />
+        </div>
+      </section>
+    );
+  }
+
+  if (educationData.length === 0) return null;
+
+  const handleHover = (index: number) => {
+    if (index === activeIndex) return;
+
+    // 1. Animate current content OUT first
+    gsap.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags"], {
+      opacity: 0,
+      y: -10,
+      duration: 0.15,
+      ease: "power2.in",
+      onComplete: () => {
+        // 2. Change state ONLY after animation is done
+        setActiveIndex(index);
+      }
+    });
+  };
+
+  return (
+    <section 
+      ref={containerRef} 
+      id="education" 
+      className="relative w-full py-20 bg-[var(--bg-primary)] overflow-hidden"
+    >
+      <div className="edu-container max-w-6xl mx-auto px-6 md:px-12 relative z-10">
+        <header className="mb-10">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-6 h-[1px] bg-[var(--accent-primary)]" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent-primary)] font-jetbrains">Education</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-playfair font-black uppercase text-[var(--text-primary)]">
+            Academic <span className="text-[var(--accent-primary)]">Milestones</span>
+          </h2>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
-          {educationData.map((edu, i) => (
-            <EducationRow key={edu.id} edu={edu} index={i} />
-          ))}
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Simple Sidebar */}
+          <div className="w-full lg:w-[200px] relative">
+            <div 
+              ref={indicatorRef}
+              className="absolute left-0 w-[2px] bg-[var(--accent-primary)] hidden lg:block z-20"
+            />
+            <div className="flex flex-row lg:flex-col border-l border-[var(--border-primary)]/30">
+              {educationData.map((edu, index) => (
+                <button
+                  key={edu._id}
+                  ref={el => { labelRefs.current[index] = el }}
+                  onMouseEnter={() => handleHover(index)}
+                  className={`relative px-6 py-4 text-left transition-all duration-200 group ${
+                    activeIndex === index ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]/30 hover:text-[var(--text-primary)]/60'
+                  }`}
+                >
+                  <span className="text-[13px] font-jetbrains font-medium block tracking-tight">
+                    {edu.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+
+          {/* Simple Detail Section */}
+          <div 
+            ref={detailRef}
+            className="flex-1 w-full relative"
+          >
+            <div className="p-8 md:p-10 rounded-[1rem] bg-[var(--text-primary)]/[0.02] border border-[var(--border-primary)] relative min-h-[400px] flex flex-col justify-center">
+              <div className="detail-content-inner space-y-8">
+                <div className="detail-header flex flex-col md:flex-row justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold text-[var(--accent-primary)] uppercase tracking-widest">
+                      {activeData.degree}
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-playfair font-black text-[var(--text-primary)]">
+                      {activeData.specialization}
+                    </h3>
+                  </div>
+
+
+                  <div className="detail-stats flex flex-col items-end">
+                    <div className="text-3xl md:text-4xl font-playfair font-black text-[var(--accent-primary)]">
+                      {activeData.grade.split(': ')[1] || activeData.grade}
+                    </div>
+                    <span className="text-[10px] font-bold opacity-40 uppercase">
+                      {activeData.grade.includes(':') ? activeData.grade.split(': ')[0] : 'Result'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-[var(--border-primary)]/10">
+                  <div className="detail-focus space-y-4">
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold uppercase text-[var(--accent-primary)]">Institution</span>
+                      <div className="text-sm font-bold text-[var(--text-primary)]">
+                        {activeData.institution}
+                        <span className="block opacity-40 text-[10px]">{activeData.location}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold uppercase text-[var(--accent-primary)]">Timeline</span>
+                      <p className="text-sm font-bold text-[var(--text-primary)]">{activeData.period}</p>
+                    </div>
+                  </div>
+                  <div className="detail-focus space-y-1">
+                    <span className="text-[9px] font-bold uppercase text-[var(--accent-primary)]">Description</span>
+                    <p className="text-xs text-[var(--text-secondary)] opacity-70 leading-relaxed font-jetbrains">
+                      {activeData.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="detail-tags flex flex-wrap gap-2 pt-4">
+                  {activeData.tags.map((tag) => (
+                    <span key={tag} className="px-2 py-1 rounded bg-[var(--text-primary)]/[0.04] border border-[var(--border-primary)] text-[9px] font-bold uppercase opacity-60">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  );
-};
-
-const EducationRow = ({ edu, index }: { edu: typeof educationData[0], index: number }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative flex flex-col md:flex-row gap-8 md:items-center p-10 md:p-14 rounded-[2.5rem] border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] hover:bg-[var(--text-primary)]/[0.03] transition-all duration-700 hover:border-[var(--accent-primary)]/20"
-    >
-      {/* Index Number */}
-      <div className="absolute top-10 right-14 font-playfair text-8xl font-black italic text-[var(--text-primary)] opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
-        {edu.id}
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 space-y-10 relative z-10">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="px-4 py-1.5 rounded-full bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 text-[var(--accent-primary)] text-[10px] font-black uppercase tracking-widest font-jetbrains">
-            {edu.period}
-          </div>
-          {edu.verified && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase tracking-widest font-jetbrains">
-              <div className="w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-              Institutional Verified
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-4 text-[var(--text-primary)] opacity-60">
-             <GraduationCap size={20} />
-             <h4 className="text-xs font-black uppercase tracking-[0.3em] font-jetbrains">{edu.institution}</h4>
-          </div>
-          <h3 className="text-4xl md:text-5xl font-playfair font-black text-[var(--text-primary)] leading-tight group-hover:text-[var(--accent-primary)] transition-colors duration-500">
-            {edu.degree}
-          </h3>
-          <div className="flex items-center gap-2 text-[var(--text-primary)] opacity-50 text-[10px] font-black uppercase tracking-widest font-jetbrains">
-            <MapPin size={12} /> {edu.location}
-          </div>
-        </div>
-
-        <p className="max-w-2xl text-sm md:text-base text-[var(--text-primary)] opacity-70 leading-relaxed font-jetbrains italic">
-          "{edu.desc}"
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2">
-          {edu.tags.map(tag => (
-            <span key={tag} className="text-[9px] font-black uppercase tracking-widest border border-[var(--border-primary)] px-3 py-1.5 rounded-lg opacity-60 group-hover:opacity-100 transition-opacity font-jetbrains text-[var(--text-primary)]">
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Grade Card */}
-      <div className="w-full md:w-64 p-8 rounded-3xl bg-[var(--bg-primary)] border border-[var(--border-primary)] flex flex-col items-center justify-center gap-2 group-hover:border-[var(--accent-primary)]/40 transition-all duration-500 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-[var(--accent-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] opacity-40 font-jetbrains">Final Assessment</span>
-        <div className="text-4xl md:text-5xl font-black font-playfair italic text-[var(--accent-primary)]">
-          {edu.grade}
-        </div>
-        <div className="mt-4 w-full h-[1px] bg-[var(--border-primary)]" />
-        <div className="flex items-center gap-2 mt-4 text-[var(--text-primary)] opacity-40 text-[9px] font-black uppercase tracking-widest font-jetbrains">
-          <Award size={12} /> Transcripts Ready
-        </div>
-      </div>
-    </motion.div>
   );
 };

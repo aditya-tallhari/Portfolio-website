@@ -149,7 +149,7 @@ export const AIChatbot = () => {
               {/* Chat Area */}
               <div 
                 data-lenis-prevent={true}
-                className="flex-1 overflow-y-auto overscroll-contain p-3 p-y-2 flex flex-col gap-3 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[var(--text-primary)]/10 [&::-webkit-scrollbar-thumb]:rounded-full"
+                className="flex-1 overflow-y-auto overscroll-contain p-3 py-2 flex flex-col gap-3 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[var(--text-primary)]/10 [&::-webkit-scrollbar-thumb]:rounded-full"
               >
                 {messages.map((msg) => (
                   <motion.div

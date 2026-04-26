@@ -106,9 +106,10 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
               className="bg-[var(--text-primary)]/[0.04] backdrop-blur-3xl border border-[var(--border-primary)] rounded-3xl p-10 md:p-14 w-full lg:max-w-2xl shadow-xl relative z-10 font-jetbrains transition-all duration-500"
             >
               <div className="space-y-8">
-                <p className="text-xl md:text-2xl text-[var(--text-primary)] opacity-90 leading-relaxed italic">
-                  I thrive on the intersection of <span className="text-[var(--accent-primary)] font-bold italic">Design</span> & 
-                  <span className="text-[var(--accent-primary)] font-bold italic"> Engineering</span>. 
+                <p className="text-xl md:text-2xl text-[var(--text-primary)] opacity-90 leading-relaxed">
+                  I thrive on the intersection of <span className="text-[var(--accent-primary)] font-bold">Design</span> & 
+                  <span className="text-[var(--accent-primary)] font-bold"> Engineering</span>. 
+                  My goal is to create products that are as functional as they are beautiful.
                 </p>
                 <p className="text-base md:text-lg text-[var(--text-primary)] opacity-60 leading-relaxed">
                   With expertise in Next.js and high-end motion design, I transform complex technical 

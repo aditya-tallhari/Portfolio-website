@@ -88,26 +88,24 @@ export const Footer = () => {
             
             <h2 className="text-6xl md:text-[8rem] font-playfair font-black tracking-tighter leading-[0.85] uppercase mb-8">
               Ready to <br />
-              <span className="text-[var(--accent-primary)] italic">Scale?</span>
+              <span className="text-[var(--accent-primary)]">Scale?</span>
             </h2>
 
             <div className="flex flex-wrap items-center gap-8 md:gap-16">
               <a 
                 href="mailto:contact@aditya.dev" 
-                className="group flex flex-col gap-2"
+                className="group flex flex-col gap-2 relative transition-all duration-300"
               >
-                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 font-jetbrains">Drop an transmission</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 font-jetbrains group-hover:text-[var(--accent-primary)] group-hover:opacity-100 transition-all">Drop an transmission</span>
                 <div className="flex items-center gap-6">
-                  <span className="text-2xl md:text-4xl font-jetbrains font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                  <span className="text-2xl md:text-4xl font-jetbrains font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors duration-300">
                     contact@aditya.dev
                   </span>
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all transform group-hover:rotate-45">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[var(--text-primary)]/10 flex items-center justify-center group-hover:bg-[var(--accent-primary)] group-hover:border-[var(--accent-primary)] group-hover:text-white transition-all duration-300 transform group-hover:rotate-45">
                     <ArrowUpRight size={24} />
                   </div>
                 </div>
               </a>
-              
-              
             </div>
           </div>
         </div>
@@ -128,8 +126,8 @@ export const Footer = () => {
             <ul className="grid grid-cols-1 gap-4">
                {['About', 'Projects', 'Experience', 'CP', 'Contact'].map(item => (
                  <li key={item}>
-                   <Link href={`#${item.toLowerCase()}`} className="text-sm font-bold uppercase tracking-[0.2em] hover:text-[var(--accent-primary)] transition-all flex items-center gap-2 group/nav">
-                      <span className="w-0 group-hover/nav:w-4 h-[1px] bg-[var(--accent-primary)] transition-all" />
+                   <Link href={`#${item.toLowerCase()}`} className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all duration-300 flex items-center gap-2 group/nav">
+                      <span className="w-0 group-hover/nav:w-4 h-[1px] bg-[var(--accent-primary)] transition-all duration-300" />
                       {item}
                    </Link>
                  </li>
@@ -147,8 +145,8 @@ export const Footer = () => {
                  { name: 'Whatsapp', icon: FaWhatsapp, href: '#' }
                ].map(social => (
                  <li key={social.name}>
-                   <a href={social.href} className="text-sm font-bold uppercase tracking-[0.2em] hover:text-[var(--accent-primary)] transition-all flex items-center gap-4 group/soc">
-                      <social.icon size={18} className="opacity-20 group-hover/soc:opacity-100 transition-opacity" />
+                   <a href={social.href} className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all duration-300 flex items-center gap-4 group/soc">
+                      <social.icon size={18} className="opacity-20 group-hover/soc:opacity-100 group-hover/soc:text-[var(--accent-primary)] transition-all duration-300" />
                       {social.name}
                    </a>
                  </li>
@@ -163,6 +161,7 @@ export const Footer = () => {
                 <Globe size={16} className="text-[var(--accent-primary)]" />
                 <span className="text-sm font-bold tracking-widest text-[var(--text-primary)] uppercase">Remote / Global</span>
               </div>
+
               <p className="text-[10px] font-jetbrains font-bold uppercase leading-relaxed tracking-widest opacity-30 max-w-[200px]">
                 Available for worldwide synchronization and deployment.
               </p>
