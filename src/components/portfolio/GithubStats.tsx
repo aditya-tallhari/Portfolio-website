@@ -112,7 +112,7 @@ export const GithubStats = () => {
   if (loading) return null;
 
   return (
-    <section id="stats" className="relative z-50 w-full py-24 px-6 md:px-12 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-500">
+    <section id="stats" className="relative z-50 w-full py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-500">
       <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: `radial-gradient(var(--accent-primary) 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
       
       <div className="max-w-6xl mx-auto relative z-10">
@@ -121,20 +121,20 @@ export const GithubStats = () => {
               <div className="w-12 h-[1px] bg-[var(--accent-primary)]" />
               <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent-primary)]">GitHub // System</span>
            </div>
-           <h2 className="text-4xl md:text-6xl font-playfair font-black tracking-tighter uppercase mb-2">
-             <SplitText text="GitHub" className="mr-4" />
-             <SplitText text="Statistics" className="text-[var(--accent-primary)]" />
+           <h2 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black tracking-tighter uppercase mb-2">
+              <SplitText text="GitHub" className="mr-2 md:mr-4" />
+              <SplitText text="Statistics" className="text-[var(--accent-primary)]" />
            </h2>
         </div>
 
-        <div ref={tabRef} className="relative flex mb-12 p-1.5 bg-[var(--text-primary)]/[0.03] border border-[var(--border-primary)] rounded-lg w-fit">
+        <div ref={tabRef} className="relative flex mb-8 md:mb-12 p-1.5 bg-[var(--text-primary)]/[0.03] border border-[var(--border-primary)] rounded-lg w-full sm:w-fit overflow-x-auto scrollbar-hide">
           <div ref={indicatorRef} className="absolute bottom-0 h-0.5 bg-[var(--accent-primary)] z-0" style={{ width: 0 }} />
           {(["Overview", "Activity", "Insights"] as Tab[]).map((tab) => (
             <button
               key={tab}
               data-tab={tab}
               onClick={() => setActiveTab(tab)}
-              className={`relative z-10 px-8 py-3 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${
+              className={`relative z-10 px-5 sm:px-8 py-3 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
                 activeTab === tab ? "text-[var(--accent-primary)]" : "text-[var(--text-secondary)] opacity-40 hover:opacity-100"
               }`}
             >
@@ -146,25 +146,28 @@ export const GithubStats = () => {
         <div className="grid grid-cols-1 gap-6">
           <AnimatePresence mode="wait">
             {activeTab === "Overview" && (
-              <motion.div key="ov" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                <div className="lg:col-span-3 space-y-6">
+              <motion.div key="ov" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
+                {/* Mobile: 2-col stat grid, Desktop: left sidebar */}
+                <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">
                    <MiniStatCard icon={<Code size={18} />} label="Repos" value={stats?.totalRepos || 0} />
                    <MiniStatCard icon={<Star size={18} />} label="Stars" value={stats?.totalStars || 0} />
-                   <div className="p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] flex flex-col justify-between h-44">
+                   <div className="col-span-2 lg:col-span-1 p-5 sm:p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] flex flex-col justify-between h-32 sm:h-44">
                       <div className="flex items-center justify-between">
                          <Users size={18} className="text-[var(--accent-primary)] opacity-40" />
-                         <span className="text-xs font-bold uppercase tracking-widest opacity-30">Followers</span>
+                         <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-30">Followers</span>
                        </div>
-                      <div className="text-4xl font-black font-playfair leading-none"><CounterValue targetValue={stats?.followers || 0} /></div>
+                      <div className="text-3xl sm:text-4xl font-black font-playfair leading-none"><CounterValue targetValue={stats?.followers || 0} /></div>
                    </div>
                 </div>
-                <div className="lg:col-span-6"><div className="relative h-full border border-[var(--border-primary)] rounded-[2.5rem] overflow-hidden bg-[var(--text-primary)]/[0.01] p-0 shadow-2xl dark:shadow-none"><RogueMascot className="w-full h-full" /></div></div>
-                <div className="lg:col-span-3 space-y-6">
+                {/* Mascot - shorter on mobile */}
+                <div className="lg:col-span-6"><div className="relative h-64 sm:h-80 lg:h-full border border-[var(--border-primary)] rounded-[2.5rem] overflow-hidden bg-[var(--text-primary)]/[0.01] p-0 shadow-2xl dark:shadow-none"><RogueMascot className="w-full h-full" /></div></div>
+                {/* Mobile: 2-col stat grid, Desktop: right sidebar */}
+                <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">
                    <MiniStatCard icon={<GitBranch size={18} />} label="Commits" value={stats?.contributions || 0} />
                    <MiniStatCard icon={<GitPullRequest size={18} />} label="PRs" value={stats?.pullRequests || 0} />
-                   <div className="p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] h-44 flex flex-col">
-                      <h4 className="text-xs font-bold uppercase tracking-widest mb-6 opacity-30">Breakdown</h4>
-                      <div className="space-y-4">{stats?.languages?.slice(0, 3).map((l: any, i: number) => <div key={i} className="space-y-1.5"><div className="flex justify-between text-xs font-bold uppercase"><span>{l.name}</span><span className="text-[var(--accent-primary)] opacity-60">{l.percent}%</span></div><div className="h-[2px] bg-[var(--text-primary)]/5 rounded-full overflow-hidden"><motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} className="h-full origin-left bg-[var(--accent-primary)]" style={{ width: `${parseFloat(l.percent) || 0}%` }} /></div></div>)}</div>
+                   <div className="col-span-2 lg:col-span-1 p-5 sm:p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] h-auto sm:h-44 flex flex-col">
+                      <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6 opacity-30">Breakdown</h4>
+                      <div className="space-y-3 sm:space-y-4">{stats?.languages?.slice(0, 3).map((l: any, i: number) => <div key={i} className="space-y-1.5"><div className="flex justify-between text-[10px] sm:text-xs font-bold uppercase"><span>{l.name}</span><span className="text-[var(--accent-primary)] opacity-60">{l.percent}%</span></div><div className="h-[2px] bg-[var(--text-primary)]/5 rounded-full overflow-hidden"><motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} className="h-full origin-left bg-[var(--accent-primary)]" style={{ width: `${parseFloat(l.percent) || 0}%` }} /></div></div>)}</div>
                    </div>
                 </div>
               </motion.div>
@@ -172,22 +175,22 @@ export const GithubStats = () => {
 
             {activeTab === "Activity" && (
               <motion.div key="ac" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-                <div className="border border-[var(--border-primary)] rounded-2xl p-6 bg-[var(--text-primary)]/[0.02] flex items-center justify-between">
-                   <div className="flex items-center gap-4">
-                      <Calendar size={20} className="text-[var(--accent-primary)] opacity-60" />
+                <div className="border border-[var(--border-primary)] rounded-2xl p-4 sm:p-6 bg-[var(--text-primary)]/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                   <div className="flex items-center gap-3 sm:gap-4">
+                      <Calendar size={20} className="text-[var(--accent-primary)] opacity-60 shrink-0" />
                       <div>
-                         <h3 className="text-sm font-bold uppercase tracking-tight">Activity Status</h3>
-                         <p className="text-xs opacity-60 uppercase tracking-widest">{stats?.contributions || 167} total commits</p>
+                         <h3 className="text-xs sm:text-sm font-bold uppercase tracking-tight">Activity Status</h3>
+                         <p className="text-[10px] sm:text-xs opacity-60 uppercase tracking-widest">{stats?.contributions || 167} total commits</p>
                       </div>
                    </div>
-                   <div className="flex gap-2">
+                   <div className="flex gap-2 flex-wrap">
                       {["2026", "2025", "2024"].map(y => (
-                        <span key={y} className="px-3 py-1 rounded border border-[var(--border-primary)] text-xs font-bold opacity-40">{y}</span>
+                        <span key={y} className="px-2 sm:px-3 py-1 rounded border border-[var(--border-primary)] text-[10px] sm:text-xs font-bold opacity-40">{y}</span>
                       ))}
                    </div>
                 </div>
 
-                <div className="border border-[var(--border-primary)] rounded-2xl p-10 bg-[var(--text-primary)]/[0.01] flex-1 flex flex-col min-h-[300px]">
+                <div className="border border-[var(--border-primary)] rounded-2xl p-4 sm:p-6 md:p-10 bg-[var(--text-primary)]/[0.01] flex-1 flex flex-col min-h-[250px] sm:min-h-[300px]">
                    <div className="flex items-center justify-between mb-10">
                       <h4 className="text-xs font-bold uppercase tracking-widest opacity-30">Activity // Pulse</h4>
                       <div className="px-4 py-1 rounded-full border border-[var(--accent-primary)]/20 text-xs font-bold uppercase tracking-widest text-[var(--accent-primary)] flex items-center gap-2">
@@ -199,7 +202,7 @@ export const GithubStats = () => {
                         Real-time Data
                       </div>
                    </div>
-                   <div className="flex-1 overflow-hidden">
+                   <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide">
                       {stats?.contributionHistory && stats.contributionHistory.length > 0 ? (
                          <div className="w-full py-6 overflow-hidden">
                             {/* Month Labels */}
@@ -308,7 +311,7 @@ export const GithubStats = () => {
 
             {activeTab === "Insights" && (
               <motion.div key="in" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-3 sm:gap-6">
                    <MicroCard label="Streak" value={`${stats?.streaks?.current || 0}d`} />
                    <MicroCard label="Max" value={`${stats?.streaks?.longest || 0}d`} />
                    <MicroCard label="Peak" value={`${stats?.streaks?.bestDay || 0}c`} />
@@ -336,7 +339,7 @@ export const GithubStats = () => {
                       </div>
                    </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                    <div className="border border-[var(--border-primary)] rounded-2xl p-6 bg-[var(--text-primary)]/[0.01]">
                       <p className="text-xs font-bold uppercase opacity-30 mb-4">PR_INDEX</p>
                       <div className="h-[2px] w-full bg-[var(--text-primary)]/5" />
@@ -356,19 +359,19 @@ export const GithubStats = () => {
 };
 
 const MiniStatCard = ({ icon, label, value }: any) => (
-  <div className="p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] flex flex-col justify-between h-44">
+  <div className="p-4 sm:p-6 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] flex flex-col justify-between h-32 sm:h-44">
     <div className="flex items-center justify-between">
       <div className="text-[var(--accent-primary)] opacity-60">{icon}</div>
-      <span className="text-xs font-bold uppercase opacity-30 tracking-widest leading-none">{label}</span>
+      <span className="text-[10px] sm:text-xs font-bold uppercase opacity-30 tracking-widest leading-none">{label}</span>
     </div>
-    <div className="text-4xl font-black font-playfair leading-none text-[var(--text-primary)]"><CounterValue targetValue={value} /></div>
+    <div className="text-2xl sm:text-4xl font-black font-playfair leading-none text-[var(--text-primary)]"><CounterValue targetValue={value} /></div>
   </div>
 );
 
 const MicroCard = ({ label, value }: any) => (
-  <div className="p-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] text-center">
-    <p className="text-xs font-bold uppercase opacity-30 tracking-widest mb-4 leading-none">{label}</p>
-    <p className="text-2xl font-black font-playfair text-[var(--text-primary)]">{value}</p>
+  <div className="p-5 sm:p-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] text-center">
+    <p className="text-[10px] sm:text-xs font-bold uppercase opacity-30 tracking-widest mb-3 sm:mb-4 leading-none">{label}</p>
+    <p className="text-xl sm:text-2xl font-black font-playfair text-[var(--text-primary)]">{value}</p>
   </div>
 );
 

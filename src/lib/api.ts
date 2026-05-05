@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://aditya-tallhari-portfolio.vercel.app/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? "http://localhost:5000/api/v1" : "https://aditya-tallhari-portfolio.vercel.app/api/v1");
 
 // ─── Interfaces ──────────────────────────────────────────────────
 
@@ -69,6 +69,7 @@ export interface Education {
   grade: string;
   desc: string;
   tags: string[];
+  imageUrl?: string;
   accent?: string;
   order?: number;
 }
@@ -204,27 +205,29 @@ export const fetchEducation = async (): Promise<Education[]> => {
   return data.data;
 };
 
-export const addEducation = async (educationData: Partial<Education>, token: string) => {
+export const addEducation = async (educationData: Partial<Education> | FormData, token: string) => {
+  const isFormData = educationData instanceof FormData;
   const response = await fetch(`${API_BASE_URL}/education`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(educationData),
+    body: isFormData ? educationData : JSON.stringify(educationData),
   });
   if (!response.ok) throw new Error("Failed to add education record");
   return response.json();
 };
 
-export const updateEducation = async (id: string, educationData: Partial<Education>, token: string) => {
+export const updateEducation = async (id: string, educationData: Partial<Education> | FormData, token: string) => {
+  const isFormData = educationData instanceof FormData;
   const response = await fetch(`${API_BASE_URL}/education/${id}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(educationData),
+    body: isFormData ? educationData : JSON.stringify(educationData),
   });
   if (!response.ok) throw new Error("Failed to update education record");
   return response.json();
@@ -408,6 +411,8 @@ export interface CodingProfileResponse {
       rank: number;
       calendar?: Record<string, number>;
       streak?: number;
+      topPercentage?: number;
+      efficiency?: number;
     };
     codechef?: {
       rating: number;
@@ -417,6 +422,8 @@ export interface CodingProfileResponse {
       maxRank?: number;
       solved: number;
       streak: number;
+      efficiency?: number;
+      activityHistory?: Array<{ value: number; active: boolean }>;
     };
   };
 }

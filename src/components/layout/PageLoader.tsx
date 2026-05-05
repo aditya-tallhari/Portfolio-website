@@ -9,7 +9,7 @@ interface PageLoaderProps {
 }
 
 const words = [
-  "Hello", "Namaste"
+  "Hello", "Namaste","Bonjour"
 ];
 
 export const PageLoader = ({ onComplete }: PageLoaderProps) => {

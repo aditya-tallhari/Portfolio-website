@@ -34,7 +34,7 @@ const ProjectCard = ({ project, index, onImageLoad }: ProjectCardProps) => {
   };
 
   return (
-    <div className='project-card relative w-[350px] md:w-[480px] shrink-0 rounded-3xl bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-0 shadow-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)] transition-all duration-500 overflow-hidden group'>
+    <div className='project-card relative w-[calc(100vw-3rem)] sm:w-[350px] md:w-[480px] shrink-0 rounded-3xl bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-0 shadow-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)] transition-all duration-500 overflow-hidden group'>
       {/* Image Section - Edge to Edge */}
       <div className='card-image-wrap flex h-60 md:h-[280px] items-center justify-center bg-[#1a1a2e] relative overflow-hidden'>
         <Image

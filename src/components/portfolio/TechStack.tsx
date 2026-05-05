@@ -11,7 +11,6 @@ import {
   Database,
   Globe,
   Terminal,
-  Cpu,
   Layers,
   ShieldCheck,
   Boxes,
@@ -19,28 +18,23 @@ import {
   Server,
   Smartphone,
   Layout,
-  Settings,
   Flame,
   Zap,
   Coffee,
   GitBranch,
-  Cloud,
-  Brain,
-  Microscope,
-  Box
 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const frontend = [
-  { name: 'Next.js', icon: '/tech/next.svg', iconComp: Globe, color: '#000000', proficiency: 95, level: 'Advanced', desc: 'Server-side rendering & Static Generation' },
   { name: 'React.js', icon: '/tech/react.svg', iconComp: Layout, color: '#61DAFB', proficiency: 98, level: 'Expert', desc: 'Component-driven UI development' },
+  { name: 'Next.js', icon: '/tech/next.svg', iconComp: Globe, color: '#000000', proficiency: 95, level: 'Advanced', desc: 'Server-side rendering & Static Generation' },
   { name: 'TypeScript', icon: '/tech/typescript.svg', iconComp: Code2, color: '#3178C6', proficiency: 90, level: 'Advanced', desc: 'Typed JavaScript for scale' },
   { name: 'Tailwind CSS', icon: '/tech/tailwind.svg', iconComp: Palette, color: '#06B6D4', proficiency: 95, level: 'Expert', desc: 'Utility-first CSS styling' },
   { name: 'Redux', icon: '/tech/redux.svg', iconComp: Layers, color: '#764ABC', proficiency: 85, level: 'Advanced', desc: 'Predictable state management' },
   { name: 'HTML5', icon: '/tech/html5.svg', iconComp: Code2, color: '#E34F26', proficiency: 100, level: 'Expert', desc: 'Semantic web architecture' },
   { name: 'CSS3', icon: '/tech/css3.svg', iconComp: Palette, color: '#1572B6', proficiency: 95, level: 'Expert', desc: 'Advanced layouts & animations' },
-  { name: 'Firebase', icon: null, iconComp: Flame, color: '#FFCA28', proficiency: 80, level: 'Intermediate', desc: 'Real-time database & Auth' },
+  { name: 'Firebase', icon: '/tech/Firebase.svg', iconComp: Flame, color: '#FFCA28', proficiency: 80, level: 'Intermediate', desc: 'Real-time database & Auth' },
 ];
 
 const backend = [
@@ -60,29 +54,29 @@ const core = [
   { name: 'JavaScript', icon: '/tech/JavaScript.svg', iconComp: Coffee, color: '#007396', proficiency: 78, level: 'Intermediate', desc: 'Enterprise software development' },
   { name: 'Git', icon: '/tech/git.svg', iconComp: GitBranch, color: '#F05032', proficiency: 95, level: 'Expert', desc: 'Distributed version control' },
   { name: 'VS Code', icon: '/tech/vscode.svg', iconComp: Terminal, color: '#007ACC', proficiency: 100, level: 'Expert', desc: 'Primary IDE & customization' },
-  { name: 'C Language', icon: '/tech/C.svg', iconComp: Terminal, color: '#A8B9CC', proficiency: 80, level: 'Intermediate', desc: 'Low-level systems programming' },
   { name: 'DSA', icon: null, iconComp: Boxes, color: '#D4AF37', proficiency: 85, level: 'Advanced', desc: 'Optimizing through algorithms' },
+  { name: 'C Language', icon: '/tech/C.svg', iconComp: Terminal, color: '#A8B9CC', proficiency: 80, level: 'Intermediate', desc: 'Low-level systems programming' },
+  { name: 'Github', icon: '/tech/github.svg', iconComp: GitBranch, color: '#181717', proficiency: 95, level: 'Expert', desc: 'Version control & collaboration' },
 ];
 
-const devops = [
-  // { name: 'AWS', icon: '/tech/aws.svg', iconComp: Cloud, color: '#FF9900', proficiency: 75, level: 'Intermediate', desc: 'Cloud infrastructure' },
-  { name: 'Vercel', icon: '/tech/vercel.svg', iconComp: Globe, color: '#000000', proficiency: 95, level: 'Expert', desc: 'Deployment & Hosting' },
-  { name: 'Docker', icon: '/tech/docker.svg', iconComp: Box, color: '#2496ED', proficiency: 70, level: 'Intermediate', desc: 'Containerization' },
-  { name: 'GitHub Actions', icon: "/tech/GitHubActions.svg", iconComp: Workflow, color: '#2088FF', proficiency: 85, level: 'Advanced', desc: 'CI/CD Automation' },
+const mobile = [
+  { name: 'React Native', icon:'/tech/react.svg', iconComp: Smartphone, color: '#61DAFB', proficiency: 85, level: 'Advanced', desc: 'Cross-platform app development' },
+  { name: 'Expo', icon: '', iconComp: Zap, color: '#000000', proficiency: 92, level: 'Expert', desc: 'Universal React applications' },
+  { name: 'Android Studio', icon: '/tech/Android.svg', iconComp: Layers, color: '#02569B', proficiency: 75, level: 'Intermediate', desc: 'Multi-platform UI toolkit' },
 ];
 
-const ai = [
-  { name: 'Ollama', icon: null, iconComp: Cpu, color: '#000000', proficiency: 85, level: 'Advanced', desc: 'Local LLM orchestration' },
-  { name: 'LangChain', icon: null, iconComp: Workflow, color: '#1389FD', proficiency: 82, level: 'Advanced', desc: 'AI Agents & RAG' },
-  { name: 'Vector DBs', icon: null, iconComp: Database, color: '#272727', proficiency: 78, level: 'Intermediate', desc: 'Pinecone & Milvus' },
-  { name: 'Prompt Eng.', icon: null, iconComp: Microscope, color: '#FF5733', proficiency: 95, level: 'Expert', desc: 'Advanced LLM steering' },
+const cloud = [
+  // { name: 'AWS', icon: null, iconComp: Cloud, color: '#FF9900', proficiency: 78, level: 'Intermediate', desc: 'Scalable cloud solutions' },
+  // { name: 'Google Cloud', icon: null, iconComp: Globe, color: '#4285F4', proficiency: 70, level: 'Intermediate', desc: 'Managed infrastructure' },
+  { name: 'Vercel', icon: '/tech/vercel.svg', iconComp: Globe, color: '#000000', proficiency: 95, level: 'Expert', desc: 'Deployment & Edge Hosting' },
+  { name: 'GitHub Actions', icon: "/tech/GitHubActions.svg", iconComp: Workflow, color: '#2088FF', proficiency: 85, level: 'Advanced', desc: 'CI/CD Pipeline Automation' },
 ];
 
 const design = [
-  // { name: 'Figma', icon: '/tech/figma.svg', iconComp: Layout, color: '#F24E1E', proficiency: 85, level: 'Advanced', desc: 'UI/UX Design' },
-  { name: 'Postman', icon: '/tech/Postman.svg', iconComp: Terminal, color: '#FF6C37', proficiency: 90, level: 'Advanced', desc: 'API Testing' },
-  { name: 'Linear', icon: null, iconComp: Layers, color: '#5E6AD2', proficiency: 95, level: 'Expert', desc: 'Project management' },
-  { name: 'Spline', icon: null, iconComp: Box, color: '#FF3366', proficiency: 75, level: 'Intermediate', desc: '3D Web Design' },
+  { name: 'Figma', icon: '/tech/figma.svg', iconComp: Layout, color: '#F24E1E', proficiency: 85, level: 'Advanced', desc: 'UI/UX Design' },
+  // { name: 'Postman', icon: '/tech/Postman.svg', iconComp: Terminal, color: '#FF6C37', proficiency: 90, level: 'Advanced', desc: 'API Testing' },
+  { name: 'Stitch', icon: null, iconComp: Layers, color: '#5E6AD2', proficiency: 95, level: 'Expert', desc: 'Project management' },
+  // { name: 'Spline', icon: null, iconComp: Box, color: '#FF3366', proficiency: 75, level: 'Intermediate', desc: '3D Web Design' },
 ];
 
 
@@ -204,8 +198,8 @@ export const TechStack = () => {
     { id: '01', title: 'Frontend Architecture', data: frontend },
     { id: '02', title: 'Backend & Systems', data: backend },
     { id: '03', title: 'Core Foundations', data: core },
-    { id: '04', title: 'DevOps & Cloud', data: devops },
-    { id: '05', title: 'Autonomous AI', data: ai },
+    { id: '04', title: 'Mobile Development', data: mobile },
+    { id: '05', title: 'Cloud & Infrastructure', data: cloud },
     { id: '06', title: 'Design & Workflow', data: design },
   ];
 

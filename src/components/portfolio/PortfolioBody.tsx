@@ -12,6 +12,7 @@ import { Projects } from './Projects';
 import { Achievements } from './Achievements';
 import {GithubStats} from './GithubStats';
 import { CompetitiveProgramming } from './CompetitiveProgramming';
+import Hackathons  from './Hackathons';
 import { ContactSection } from './ContactSection';
 import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger);
@@ -66,8 +67,9 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
 
     const st = ScrollTrigger.create({
       trigger: '#about',
-      start: 'top 98%',
-      end: 'top 5%',
+      start: 'top 80%', // Triggers as the user scrolls into the About section
+      endTrigger: profileDestRef.current || undefined,
+      end: 'center 60%',
       scrub: 0.1, // Near-instant sync to prevent lag-based blinking
       onUpdate: (self) => {
         const progress = self.progress;
@@ -189,6 +191,7 @@ export const PortfolioBody = ({ profileImageRef, profileDestRef }: PortfolioBody
       <GithubStats />
       <Achievements />
       <CompetitiveProgramming />
+      <Hackathons />
       <ContactSection />
     </>
   );

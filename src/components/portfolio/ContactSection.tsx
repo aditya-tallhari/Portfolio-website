@@ -34,40 +34,40 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-24 px-6 md:px-12 bg-[var(--bg-primary)]">
+    <section id="contact" className="py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-[var(--bg-primary)]">
       <div className="max-w-6xl mx-auto">
-        <header className="mb-16 md:mb-20">
-          <div className="flex items-center gap-3 mb-6 opacity-60">
-            <div className="w-12 h-[1px] bg-[var(--accent-primary)]" />
+        <header className="mb-12 md:mb-16 lg:mb-20">
+          <div className="flex items-center gap-3 mb-4 sm:mb-6 opacity-60">
+            <div className="w-8 sm:w-12 h-[1px] bg-[var(--accent-primary)]" />
             <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--accent-primary)]">Contact</span>
           </div>
-          <h2 className="text-4xl xs:text-5xl md:text-8xl font-playfair font-black tracking-tighter uppercase mb-6 leading-[0.9]">
+          <h2 className="text-3xl xs:text-4xl sm:text-5xl md:text-8xl font-playfair font-black tracking-tighter uppercase mb-4 sm:mb-6 leading-[0.9]">
             Let's <span className="text-[var(--accent-primary)]">Connect</span>
           </h2>
-          <p className="text-[var(--text-primary)] max-w-xl text-xs md:text-base uppercase tracking-widest leading-relaxed opacity-60 transition-opacity duration-500">
+          <p className="text-[var(--text-primary)] max-w-xl text-[10px] sm:text-xs md:text-base uppercase tracking-widest leading-relaxed opacity-60 transition-opacity duration-500">
             Have a project in mind? reach out for collaboration or inquiries.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-16 items-start">
           {/* Left: Contact Info */}
-          <div className="lg:col-span-5 space-y-10 md:space-y-12">
+          <div className="lg:col-span-5 space-y-8 md:space-y-10 lg:space-y-12">
             <div className="space-y-8">
               <a href="mailto:adityatallhari@gmail.com" className="group block space-y-2 overflow-hidden">
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 text-[var(--text-primary)]">Email</p>
                 <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                  <span className="text-lg xs:text-xl md:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors truncate">adityatallhari@gmail.com</span>
+                  <span className="text-base sm:text-lg md:text-xl lg:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors break-all sm:break-normal">adityatallhari@gmail.com</span>
                   <ArrowRight size={20} className="hidden xs:block text-[var(--accent-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all shrink-0" />
                 </div>
               </a>
 
               <div className="space-y-2 text-[var(--text-primary)]">
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">Location</p>
-                <p className="text-xl md:text-3xl font-black font-playfair">Shirpur, Maharashtra, India</p>
+                <p className="text-lg sm:text-xl md:text-3xl font-black font-playfair">Shirpur, Maharashtra, India</p>
               </div>
             </div>
 
-            <div className="pt-8 border-t border-[var(--border-primary)] flex gap-8">
+            <div className="pt-6 sm:pt-8 border-t border-[var(--border-primary)] flex gap-6 sm:gap-8">
               {[
                 { icon: FaGithub, href: 'https://github.com/adityatallhari', label: 'GitHub' },
                 { icon: FaLinkedin, href: 'https://linkedin.com/in/adityatallhari', label: 'LinkedIn' }
@@ -105,7 +105,7 @@ export const ContactSection = () => {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="group bg-[var(--accent-primary)] text-[var(--bg-primary)] px-10 py-5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                    className="group w-full sm:w-auto bg-[var(--accent-primary)] text-[var(--bg-primary)] px-8 sm:px-10 py-4 sm:py-5 rounded-full text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
                   >
                     {isLoading ? 'Sending...' : 'Send Message'}
                     <Send size={16} />

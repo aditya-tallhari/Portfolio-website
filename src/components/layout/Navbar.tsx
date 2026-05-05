@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/providers/ColorModeProvider';
@@ -9,9 +10,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '#about' },
+  { name: 'Exp', href: '#experience' },
   { name: 'Projects', href: '#projects' },
-  { name: 'Stats', href: '#stats' },
-  { name: 'Profile', href: '#profile' },
+  { name: 'Winnings', href: '#hackathons' },
+  { name: 'Coding', href: '#competitive' },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -37,7 +39,8 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] px-6 lg:px-12 py-5 flex items-center justify-between w-full text-[var(--text-primary)] backdrop-blur-2xl bg-[var(--bg-primary)]/70 border-b border-[var(--border-primary)] transition-all duration-500">
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-[100] px-6 lg:px-12 py-5 flex items-center justify-between w-full text-[var(--text-primary)] backdrop-blur-2xl bg-[var(--bg-primary)]/70 border-b border-[var(--border-primary)] transition-all duration-500">
       {/* ── Logo Section ── */}
       <div className="flex-shrink-0 z-[110]">
         <Link href="/" className="flex flex-col font-black tracking-tighter text-sm md:text-base leading-[0.85] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all">
@@ -101,48 +104,56 @@ export const Navbar = () => {
         </button>
       </div>
 
+    </nav>
+
       {/* ── Mobile Menu Overlay ── */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: 'circOut' }}
-            className="fixed inset-0 top-[73px] bg-[var(--bg-primary)] z-[105] flex flex-col p-10 md:hidden overflow-y-auto"
-          >
-            <div className="flex flex-col gap-8 mt-10">
-              {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.05 }}
-                >
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 pt-24 pb-10 px-8 bg-[var(--bg-primary)] z-[9999] flex flex-col md:hidden overflow-y-auto"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-6 right-6 p-2 text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors"
+                aria-label="Close Menu"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="flex flex-col gap-6 mt-4">
+                {navLinks.map((link) => (
                   <Link
+                    key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-4xl font-black tracking-tighter uppercase hover:text-[var(--accent-primary)] transition-all flex items-center gap-4 group"
+                    className="text-3xl font-semibold tracking-wide text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors border-b border-[var(--border-primary)]/20 pb-4"
                   >
-                    <span className="text-xs font-mono text-[var(--accent-primary)] opacity-50 group-hover:opacity-100">0{i + 1}</span>
                     {link.name}
                   </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="mt-auto pt-10 border-t border-[var(--border-primary)] flex flex-col gap-4">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--muted-text)] uppercase">Connect Protocol</span>
-              <div className="flex gap-6">
-                {/* Social icons could go here if needed */}
-                <a href="mailto:adityatallhari79@gmail.com" className="text-xs font-medium hover:text-[var(--accent-primary)]">EMAIL</a>
-                <a href="https://github.com/aditya-tallhari" target="_blank" className="text-xs font-medium hover:text-[var(--accent-primary)]">GITHUB</a>
-                <a href="https://linkedin.com/in/aditya-tallhari" target="_blank" className="text-xs font-medium hover:text-[var(--accent-primary)]">LINKEDIN</a>
+                ))}
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+
+              <div className="mt-auto pt-12 flex flex-col gap-4">
+                <span className="text-sm font-bold text-[var(--muted-text)] uppercase tracking-wider">Connect</span>
+                <div className="flex flex-wrap gap-6">
+                  <a href="mailto:adityatallhari79@gmail.com" className="text-lg font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors">Email</a>
+                  <a href="https://github.com/aditya-tallhari" target="_blank" rel="noreferrer" className="text-lg font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors">GitHub</a>
+                  <a href="https://linkedin.com/in/aditya-tallhari" target="_blank" rel="noreferrer" className="text-lg font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors">LinkedIn</a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 };

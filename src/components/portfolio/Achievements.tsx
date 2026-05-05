@@ -27,6 +27,7 @@ export const Achievements = () => {
         setEducationData(data);
       } catch (error) {
         console.error("Error fetching education:", error);
+        setEducationData([]);
       } finally {
         setIsLoading(false);
       }
@@ -74,7 +75,7 @@ export const Achievements = () => {
     });
 
     // 2. Coordinated entrance
-    tl.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags"], {
+    tl.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags", ".detail-image"], {
       opacity: 1,
       y: 0,
       duration: 0.5,
@@ -104,7 +105,7 @@ export const Achievements = () => {
     if (index === activeIndex) return;
 
     // 1. Animate current content OUT first
-    gsap.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags"], {
+    gsap.to([".detail-header", ".detail-stats", ".detail-focus", ".detail-tags", ".detail-image"], {
       opacity: 0,
       y: -10,
       duration: 0.15,
@@ -120,37 +121,40 @@ export const Achievements = () => {
     <section 
       ref={containerRef} 
       id="education" 
-      className="relative w-full py-20 bg-[var(--bg-primary)] overflow-hidden"
+      className="relative w-full py-16 md:py-20 bg-[var(--bg-primary)] overflow-hidden"
     >
-      <div className="edu-container max-w-6xl mx-auto px-6 md:px-12 relative z-10">
-        <header className="mb-10">
+      <div className="edu-container max-w-6xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
+        <header className="mb-8 md:mb-10">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-6 h-[1px] bg-[var(--accent-primary)]" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent-primary)] font-jetbrains">Education</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-playfair font-black uppercase text-[var(--text-primary)]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-black uppercase text-[var(--text-primary)]">
             Academic <span className="text-[var(--accent-primary)]">Milestones</span>
           </h2>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-12 items-start">
-          {/* Simple Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          {/* Simple Sidebar - horizontal scroll on mobile */}
           <div className="w-full lg:w-[200px] relative">
             <div 
               ref={indicatorRef}
               className="absolute left-0 w-[2px] bg-[var(--accent-primary)] hidden lg:block z-20"
             />
-            <div className="flex flex-row lg:flex-col border-l border-[var(--border-primary)]/30">
+            <div className="flex flex-row lg:flex-col gap-1 overflow-x-auto scrollbar-hide border-l-0 lg:border-l border-b lg:border-b-0 border-[var(--border-primary)]/30 pb-2 lg:pb-0">
               {educationData.map((edu, index) => (
                 <button
                   key={edu._id}
                   ref={el => { labelRefs.current[index] = el }}
                   onMouseEnter={() => handleHover(index)}
-                  className={`relative px-6 py-4 text-left transition-all duration-200 group ${
-                    activeIndex === index ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]/30 hover:text-[var(--text-primary)]/60'
+                  onClick={() => handleHover(index)}
+                  className={`relative px-4 sm:px-6 py-3 sm:py-4 text-left transition-all duration-200 group whitespace-nowrap lg:whitespace-normal shrink-0 ${
+                    activeIndex === index 
+                      ? 'text-[var(--text-primary)] border-b-2 lg:border-b-0 border-[var(--accent-primary)]' 
+                      : 'text-[var(--text-primary)]/30 hover:text-[var(--text-primary)]/60'
                   }`}
                 >
-                  <span className="text-[13px] font-jetbrains font-medium block tracking-tight">
+                  <span className="text-[12px] sm:text-[13px] font-jetbrains font-medium block tracking-tight">
                     {edu.label}
                   </span>
                 </button>
@@ -162,23 +166,36 @@ export const Achievements = () => {
           {/* Simple Detail Section */}
           <div 
             ref={detailRef}
-            className="flex-1 w-full relative"
+            className="flex-[2] max-w-[700px] w-full relative"
           >
-            <div className="p-8 md:p-10 rounded-[1rem] bg-[var(--text-primary)]/[0.02] border border-[var(--border-primary)] relative min-h-[400px] flex flex-col justify-center">
-              <div className="detail-content-inner space-y-8">
-                <div className="detail-header flex flex-col md:flex-row justify-between gap-6">
-                  <div className="space-y-2">
+            <div className="rounded-[1.5rem] bg-[var(--text-primary)]/[0.02] border border-[var(--border-primary)] relative min-h-[350px] sm:min-h-[400px] flex flex-col overflow-hidden shadow-2xl shadow-black/20">
+              {activeData.imageUrl && (
+                <div className="detail-image relative w-full h-56 md:h-72 overflow-hidden border-b border-[var(--border-primary)] group/img">
+                  <img 
+                    src={activeData.imageUrl} 
+                    alt={activeData.institution}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/40 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-primary)]">View Institution Details</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="detail-content-inner p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 flex-1 flex flex-col justify-center">
+                <div className="detail-header flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <div className="text-[10px] font-bold text-[var(--accent-primary)] uppercase tracking-widest">
                       {activeData.degree}
                     </div>
-                    <h3 className="text-3xl md:text-4xl font-playfair font-black text-[var(--text-primary)]">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-playfair font-black text-[var(--text-primary)]">
                       {activeData.specialization}
                     </h3>
                   </div>
 
 
-                  <div className="detail-stats flex flex-col items-end">
-                    <div className="text-3xl md:text-4xl font-playfair font-black text-[var(--accent-primary)]">
+                  <div className="detail-stats flex flex-col items-start sm:items-end">
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-playfair font-black text-[var(--accent-primary)]">
                       {activeData.grade.split(': ')[1] || activeData.grade}
                     </div>
                     <span className="text-[10px] font-bold opacity-40 uppercase">
@@ -217,7 +234,6 @@ export const Achievements = () => {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
         </div>

@@ -126,46 +126,27 @@ export const Projects = () => {
       ease: 'expo.out'
     }, '<0.2');
 
-    // ── Horizontal Pinning Logic (Desktop Only) ──
-    const mm = gsap.matchMedia();
-    
-    mm.add("(min-width: 768px)", () => {
-      if (!gridRef.current || !containerRef.current) return;
+    // ── Horizontal Pinning Logic (Global) ──
+    if (!gridRef.current || !containerRef.current) return;
 
-      const getScrollAmount = () => {
-        if (!gridRef.current) return 0;
-        // Calculate exact amount to show the last card fully
-        return gridRef.current.scrollWidth - window.innerWidth + (window.innerWidth * 0.1); 
-      };
+    const getScrollAmount = () => {
+      if (!gridRef.current) return 0;
+      // Calculate exact amount to show the last card fully
+      return gridRef.current.scrollWidth - window.innerWidth + (window.innerWidth * 0.1); 
+    };
 
-      gsap.to(gridRef.current, {
-        x: () => -getScrollAmount(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          pin: true,
-          scrub: 1,
-          start: "top top",
-          end: () => `+=${getScrollAmount()}`,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-        }
-      });
-    });
-
-    // ── Mobile Animation (Vertical Stack) ──
-    mm.add("(max-width: 767px)", () => {
-      gsap.from(".project-card", {
-        y: 60,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 0.8,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: "top 80%",
-        }
-      });
+    gsap.to(gridRef.current, {
+      x: () => -getScrollAmount(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        pin: true,
+        scrub: 1,
+        start: "top top",
+        end: () => `+=${getScrollAmount()}`,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+      }
     });
 
     // ── Project Interactions ──
@@ -204,23 +185,23 @@ export const Projects = () => {
       <div className="w-full px-8 md:px-16 lg:px-24 relative z-10 mb-8">
         {/* Header Section */}
         <header ref={headerRef}>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] font-playfair pt-15">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] font-playfair pt-15">
             <span className="title-word-left block opacity-0 -translate-x-10">Selected /</span>
-            <span className="title-word-right block text-6xl md:text-8xl pt-1 text-[var(--accent-primary)] opacity-0 translate-x-10">Projects</span>
+            <span className="title-word-right block text-5xl md:text-8xl pt-1 md:pt-2 text-[var(--accent-primary)] opacity-0 translate-x-10">Projects</span>
           </h2>
         </header>
       </div>
 
-      {/* Horizontal Scroll Wrapper on Desktop / Vertical Stack on Mobile */}
-      <div className="relative flex-1 flex items-center md:items-end pb-2 overflow-x-hidden md:overflow-hidden">
+      {/* Horizontal Scroll Wrapper */}
+      <div className="relative flex-1 flex items-center md:items-end pb-2 overflow-hidden">
         <div 
           ref={gridRef} 
-          className="flex flex-col md:flex-row items-center md:items-start px-6 md:px-16 lg:px-24 w-full md:w-fit h-fit gap-8 md:gap-10"
+          className="flex flex-row items-center md:items-start px-6 md:px-16 lg:px-24 w-fit h-fit gap-6 sm:gap-8 md:gap-10"
         >
           {isLoading ? (
             // Skeleton Loader
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="relative h-[550px] md:h-[620px] w-full max-w-[400px] md:w-[480px] flex flex-col p-8 md:p-12 border border-[var(--border-primary)] mr-0 shrink-0 rounded-3xl">
+              <div key={i} className="relative h-[550px] md:h-[620px] w-[calc(100vw-3rem)] sm:w-[350px] md:w-[480px] flex flex-col p-8 md:p-12 border border-[var(--border-primary)] mr-0 shrink-0 rounded-3xl overflow-hidden">
                 <div className="flex justify-between items-start mb-8">
                   <Skeleton className="w-16 h-16 rounded-full bg-[var(--text-primary)] opacity-10" />
                   <Skeleton className="w-12 h-8 bg-[var(--text-primary)] opacity-10" />

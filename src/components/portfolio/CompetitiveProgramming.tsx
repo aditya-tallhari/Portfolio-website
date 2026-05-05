@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCounterAnimation } from '@/hooks/useCounterAnimation';
-import { 
-  ArrowUpRight, Trophy, Code2, Zap, Target, 
+import { cn } from '@/lib/utils';
+import {
+  ArrowUpRight, Trophy, Code2, Zap, Target,
   ExternalLink, Cpu, Users, Terminal, Activity,
   Layout, Binary, Globe, Award
 } from 'lucide-react';
@@ -35,6 +36,9 @@ interface PlatformData {
     medium: number;
     hard: number;
   };
+  topPercentage?: number;
+  efficiency?: number;
+  activityHistory?: any[]; // Or define the exact type if you have it
 }
 
 const DEFAULT_PLATFORMS: PlatformData[] = [
@@ -109,7 +113,9 @@ export const CompetitiveProgramming = () => {
                 hard: data.solved.hard
               },
               calendar: data.calendar,
-              streak: data.streak?.toString() || '0'
+              streak: data.streak?.toString() || '0',
+              topPercentage: data.topPercentage,
+              efficiency: data.efficiency
             };
           }
           if (p.name === 'CodeChef' && codechefData?.codechef) {
@@ -124,7 +130,9 @@ export const CompetitiveProgramming = () => {
               globalRank: data.globalRank,
               countryRank: data.countryRank,
               maxRank: data.maxRank,
-              calendar: {}
+              calendar: {},
+              efficiency: data.efficiency,
+              activityHistory: data.activityHistory
             };
           }
           return p;
@@ -142,13 +150,13 @@ export const CompetitiveProgramming = () => {
   const currentPlatform = platforms[activePlatform];
 
   return (
-    <section id="competitive" ref={containerRef} className="relative z-10 w-full py-24 px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden">
+    <section id="competitive" ref={containerRef} className="relative z-10 w-full py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-[var(--bg-primary)] overflow-hidden">
       {/* Abstract Background Design */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[var(--accent-primary)]/[0.03] blur-[150px] rounded-full translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[var(--accent-primary)]/[0.02] blur-[120px] rounded-full -translate-x-1/2 translate-y-1/2" />
-        <div className="absolute inset-0 opacity-[0.02]" 
-          style={{ backgroundImage: 'radial-gradient(var(--text-primary) 1px, transparent 1px)', backgroundSize: '40px 40px' }} 
+        <div className="absolute inset-0 opacity-[0.02]"
+          style={{ backgroundImage: 'radial-gradient(var(--text-primary) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
         />
       </div>
 
@@ -169,7 +177,7 @@ export const CompetitiveProgramming = () => {
                 Runtime_Identity // Profiles_02
               </span>
             </motion.div>
-            <h2 className="text-5xl md:text-7xl font-playfair font-black tracking-tighter uppercase leading-[0.85]">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-playfair font-black tracking-tighter uppercase leading-[0.85]">
               Coding <br />
               <span className="text-[var(--accent-primary)]">Persona</span>
             </h2>
@@ -177,10 +185,10 @@ export const CompetitiveProgramming = () => {
 
           <div className="flex flex-col items-start md:items-end">
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl md:text-6xl font-playfair font-black text-[var(--text-primary)]">
+              <span className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black text-[var(--text-primary)]">
                 <CounterValue targetValue={totalSolved} />+
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 font-jetbrains">Total Problems</span>
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest opacity-40 font-jetbrains">Total Problems</span>
             </div>
             <div className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains mt-2">
               Aggregated across all platforms
@@ -189,29 +197,26 @@ export const CompetitiveProgramming = () => {
         </div>
 
         {/* Dashboard Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
           {/* Left Sidebar: Platform Selector */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 flex flex-row lg:flex-col gap-3 sm:gap-4 overflow-x-auto scrollbar-hide lg:overflow-visible">
             {platforms.map((p, idx) => (
               <button
                 key={p.name}
                 onClick={() => setActivePlatform(idx)}
-                className={`w-full group relative p-6 rounded-2xl border transition-all duration-500 flex items-center justify-between overflow-hidden ${
-                  activePlatform === idx 
-                    ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.03]' 
+                className={`w-full min-w-[200px] sm:min-w-[220px] lg:min-w-0 group relative p-4 sm:p-6 rounded-2xl border transition-all duration-500 flex items-center justify-between overflow-hidden shrink-0 ${activePlatform === idx
+                    ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/[0.03]'
                     : 'border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] hover:border-[var(--text-primary)]/20'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-4 relative z-10">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${
-                    activePlatform === idx ? 'border-[var(--accent-primary)]/40 bg-[var(--bg-primary)]' : 'border-[var(--border-primary)]'
-                  }`} style={{ color: p.color }}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${activePlatform === idx ? 'border-[var(--accent-primary)]/40 bg-[var(--bg-primary)]' : 'border-[var(--border-primary)]'
+                    }`} style={{ color: p.color }}>
                     {p.icon}
                   </div>
                   <div className="text-left">
-                    <span className={`block text-xs font-black uppercase tracking-widest font-jetbrains ${
-                      activePlatform === idx ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]/40 group-hover:text-[var(--text-primary)]/60'
-                    }`}>
+                    <span className={`block text-xs font-black uppercase tracking-widest font-jetbrains ${activePlatform === idx ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]/40 group-hover:text-[var(--text-primary)]/60'
+                      }`}>
                       {p.name}
                     </span>
                     <span className="text-[9px] font-bold opacity-30 font-jetbrains uppercase">{p.id}</span>
@@ -224,7 +229,7 @@ export const CompetitiveProgramming = () => {
             ))}
 
             {/* Global Quick Stats */}
-            <div className="p-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] mt-8">
+            <div className="hidden lg:block p-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] mt-8">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 font-jetbrains block mb-6">Global_Metrics</span>
               <div className="space-y-6">
                 {/* <div className="flex justify-between items-center">
@@ -255,21 +260,21 @@ export const CompetitiveProgramming = () => {
                 className="grid grid-cols-1 md:grid-cols-2 gap-8"
               >
                 {/* Platform Hero Card */}
-                <div className="md:col-span-2 p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] backdrop-blur-sm relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-12 group">
+                <div className="md:col-span-2 p-6 sm:p-8 md:p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.02] backdrop-blur-sm relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-12 group">
                   <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: currentPlatform.color }} />
                       <span className="text-[10px] font-black uppercase tracking-widest font-jetbrains opacity-40">System Status: Active</span>
                     </div>
-                    <h3 className="text-4xl md:text-6xl font-playfair font-black text-[var(--text-primary)] mb-2">
+                    <h3 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-black text-[var(--text-primary)] mb-2">
                       {currentPlatform.name}
                     </h3>
                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] font-jetbrains text-[var(--accent-primary)] mb-8">
                       Authorized Access: {currentPlatform.id}
                     </p>
-                    <a 
-                      href={currentPlatform.link} 
-                      target="_blank" 
+                    <a
+                      href={currentPlatform.link}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/[0.05] transition-all duration-300 group/link"
                     >
@@ -277,7 +282,7 @@ export const CompetitiveProgramming = () => {
                       <ArrowUpRight size={14} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                     </a>
                   </div>
-
+                  {/* 
                   <div className="relative z-10 flex flex-col items-start md:items-end">
                     <div className="text-right">
                       <span className="block text-[10px] font-black uppercase tracking-widest opacity-30 font-jetbrains mb-1">Global Rating</span>
@@ -288,7 +293,7 @@ export const CompetitiveProgramming = () => {
                     <div className="mt-4 px-4 py-1.5 rounded-full border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[9px] font-black uppercase tracking-widest font-jetbrains opacity-60">
                       {currentPlatform.rating}
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Large background icon */}
                   <div className="absolute -right-8 -bottom-8 opacity-[0.03] scale-[4] rotate-12 pointer-events-none">
@@ -297,12 +302,12 @@ export const CompetitiveProgramming = () => {
                 </div>
 
                 {/* Global Standing Card */}
-                <div className="p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] relative overflow-hidden group">
+                <div className="p-6 sm:p-8 md:p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] relative overflow-hidden group">
                   <div className="flex items-center justify-between mb-12">
                     <span className="text-[12px] font-black uppercase tracking-widest opacity-40 font-jetbrains">Global Standing</span>
                     <Globe size={20} className="opacity-40 group-hover:rotate-12 transition-transform duration-500" />
                   </div>
-                  
+
                   <div className="space-y-8 relative z-10">
                     {currentPlatform.name === 'LeetCode' ? (
                       /* LeetCode: Problem Mastery View */
@@ -330,7 +335,7 @@ export const CompetitiveProgramming = () => {
                                   <span className="text-[10px] font-black font-jetbrains text-[var(--text-primary)]">{item.val}</span>
                                 </div>
                                 <div className="h-[2px] w-full bg-[var(--text-primary)]/[0.05] rounded-full overflow-hidden">
-                                  <motion.div 
+                                  <motion.div
                                     initial={{ width: 0 }}
                                     whileInView={{ width: `${(item.val / currentPlatform.solved) * 100}%` }}
                                     className={`h-full ${item.bg}`}
@@ -405,7 +410,7 @@ export const CompetitiveProgramming = () => {
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[var(--text-primary)]/[0.01] blur-3xl rounded-full pointer-events-none" />
                 </div>
 
-                <div className="p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] flex flex-col justify-between">
+                <div className="p-6 sm:p-8 md:p-10 rounded-3xl border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.01] flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-8">
                       <span className="text-[12px] font-black uppercase tracking-widest opacity-40 font-jetbrains">
@@ -413,7 +418,7 @@ export const CompetitiveProgramming = () => {
                       </span>
                       {currentPlatform.name === 'LeetCode' ? <Globe size={20} className="opacity-40" /> : <Activity size={20} className="opacity-40" />}
                     </div>
-                    
+
                     {currentPlatform.name === 'LeetCode' ? (
                       <div className="space-y-8">
                         <div className="relative">
@@ -426,10 +431,10 @@ export const CompetitiveProgramming = () => {
                                   const date = new Date();
                                   date.setHours(0, 0, 0, 0);
                                   date.setDate(date.getDate() - (195 - totalDays));
-                                  
+
                                   const dayStart = Math.floor(date.getTime() / 1000);
                                   const dayEnd = dayStart + 86400;
-                                  
+
                                   let intensity = 0;
                                   if (currentPlatform.calendar) {
                                     const match = Object.keys(currentPlatform.calendar).find(k => {
@@ -439,21 +444,35 @@ export const CompetitiveProgramming = () => {
                                     if (match) intensity = currentPlatform.calendar[match];
                                   }
 
-                                  // Improved Visibility Logic
                                   const isActive = intensity > 0;
-                                  const bgColor = isActive ? '#22c55e' : 'rgba(255,255,255,0.1)';
-                                  const opacity = isActive ? 0.3 + (Math.min(intensity, 8) * 0.1) : 0.4;
+                                  
+                                  // Streak highlighting logic: 
+                                  // If the day is active and within the recent 'streak' window
+                                  const streakCount = parseInt(currentPlatform.streak) || 0;
+                                  const daysAgo = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+                                  const isPartOfStreak = isActive && daysAgo < streakCount;
+
+                                  const bgColor = isPartOfStreak 
+                                    ? 'var(--accent-primary)' 
+                                    : isActive ? '#22c55e' : 'rgba(255,255,255,0.1)';
+                                  
+                                  const opacity = isPartOfStreak
+                                    ? 0.9
+                                    : isActive ? 0.3 + (Math.min(intensity, 8) * 0.1) : 0.4;
 
                                   return (
                                     <div 
                                       key={dayIndex}
-                                      className="aspect-square w-full rounded-[1px] md:rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-10 cursor-help"
+                                      className={cn(
+                                        "aspect-square w-full rounded-[1px] md:rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-10 cursor-help",
+                                        isPartOfStreak && "shadow-[0_0_10px_var(--accent-primary)] z-10"
+                                      )}
                                       style={{ 
                                         backgroundColor: bgColor, 
                                         opacity: opacity,
-                                        border: isActive ? 'none' : '1px solid rgba(255,255,255,0.05)'
+                                        border: (isActive || isPartOfStreak) ? 'none' : '1px solid rgba(255,255,255,0.05)'
                                       }}
-                                      title={`${date.toLocaleDateString('en-US')}: ${intensity} submissions`}
+                                      title={`${date.toLocaleDateString('en-US')}: ${intensity} submissions ${isPartOfStreak ? '(Streak Day)' : ''}`}
                                     />
                                   );
                                 })}
@@ -469,15 +488,17 @@ export const CompetitiveProgramming = () => {
 
                         <div className="flex justify-between items-end border-t border-[var(--border-primary)]/20 pt-6">
                           <div>
-                            <span className="block text-[8px] font-bold uppercase tracking-widest opacity-30 font-jetbrains mb-1">Max Streak</span>
+                            <span className="block text-[8px] font-bold uppercase tracking-widest opacity-30 font-jetbrains mb-1">Current Streak</span>
                             <span className="text-3xl font-playfair font-black text-[var(--text-primary)]">
-                              {currentPlatform.streak} Days
+                              <span className="text-[var(--accent-primary)]">{currentPlatform.streak || 0}</span> Days
                             </span>
                           </div>
                           <div className="text-right">
                             <span className="block text-[8px] font-bold uppercase tracking-widest opacity-30 font-jetbrains mb-1">Performance Index</span>
                             <div className="flex items-baseline gap-1">
-                              <span className="text-xl font-jetbrains font-black text-[var(--accent-primary)]">TOP 4.2%</span>
+                              <span className="text-xl font-jetbrains font-black text-[var(--accent-primary)]">
+                                {currentPlatform.topPercentage ? `TOP ${currentPlatform.topPercentage}%` : 'PRO'}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -498,10 +519,10 @@ export const CompetitiveProgramming = () => {
                           </div>
                           <div className="flex gap-1">
                             {Array.from({ length: 24 }).map((_, i) => (
-                              <div 
-                                key={i} 
-                                className="flex-1 h-8 rounded-sm bg-[var(--accent-primary)]" 
-                                style={{ opacity: 0.1 + (Math.random() * 0.4) }} 
+                              <div
+                                key={i}
+                                className="flex-1 h-8 rounded-sm bg-[var(--accent-primary)]"
+                                style={{ opacity: 0.1 + (Math.random() * 0.4) }}
                               />
                             ))}
                           </div>
@@ -521,7 +542,7 @@ export const CompetitiveProgramming = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.8 }}
-          className="mt-24 pt-8 border-t border-[var(--border-primary)] opacity-40 flex flex-wrap items-center justify-center gap-12 md:gap-24"
+          className="mt-16 md:mt-24 pt-8 border-t border-[var(--border-primary)] opacity-40 flex flex-wrap items-center justify-center gap-6 sm:gap-12 md:gap-24"
         >
           <Metric label="Algorithms" value="640+" />
           <Metric label="Top Rank" value="Global 540" />

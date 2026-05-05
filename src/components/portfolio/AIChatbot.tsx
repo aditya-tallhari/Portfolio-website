@@ -15,7 +15,7 @@ interface ChatMessage {
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'init-msg',
   role: 'ai',
-  content: "Hey! I'm Aditya's AI Assistant. Ask me about his projects, experience, skills, or anything else!"
+  content: "Hi! I'm Aditya AI, your personal guide to Aditya Tallare's portfolio. How can I help you today?"
 };
 
 const SUGGESTIONS = [
@@ -73,10 +73,11 @@ export const AIChatbot = () => {
       
       setMessages(prev => [...prev, aiMessage]);
     } catch (error: any) {
+      const errorMsg = error.message || "Sorry, I'm having trouble connecting right now. Please try again later.";
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'ai',
-        content: "Sorry, I'm having trouble connecting right now. Please try again later."
+        content: errorMsg
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -128,7 +129,7 @@ export const AIChatbot = () => {
                     </div>
                     <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-[var(--bg-primary)] rounded-full"></span>
                   </div>
-                  <h3 className="font-playfair font-bold text-sm tracking-tight">Aditya's AI</h3>
+                  <h3 className="font-playfair font-bold text-sm tracking-tight">Aditya AI Assistant</h3>
                 </div>
                 <div className="flex items-center gap-1">
                   <button 

@@ -38,7 +38,7 @@ export const SocialSidebar = () => {
   const socials = [
     { icon: MailIcon, href: "mailto:adityatallhari79@gmail.com", label: "Email" },
     { icon: LinkedinIcon, href: "https://www.linkedin.com/in/aditya-tallhari", label: "LinkedIn" },
-    { icon: LeetcodeIcon, href: "https://leetcode.com/u/aditya-tallhari/", label: "LeetCode" },
+    { icon: LeetcodeIcon, href: "https://leetcode.com/u/aditya_tallhari_", label: "LeetCode" },
     { icon: GithubIcon, href: "https://github.com/aditya-tallhari", label: "GitHub" },
     { icon: InstagramIcon, href: "https://www.instagram.com/aditya_tallare_", label: "Instagram" },
   ];

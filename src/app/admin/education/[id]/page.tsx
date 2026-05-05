@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Save, GraduationCap, Plus, X, Trash2 } from 'lucide-react';
+import { ChevronLeft, Save, GraduationCap, Plus, X, Trash2, Image as ImageIcon, Upload } from 'lucide-react';
 import Link from 'next/link';
 
 import { Toast, ToastContainer, createToastHelpers } from '../../components/Toast';
@@ -33,6 +33,8 @@ export default function EditEducationPage() {
     accent: 'var(--accent-primary)',
     order: 0
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [newTag, setNewTag] = useState('');
 
@@ -49,6 +51,9 @@ export default function EditEducationPage() {
       const edu = allEdu.find(e => e._id === educationId);
       if (edu) {
         setFormData(edu);
+        if (edu.imageUrl) {
+          setImagePreview(edu.imageUrl);
+        }
       } else {
         toast.error('Education record not found');
       }
@@ -73,13 +78,35 @@ export default function EditEducationPage() {
     setFormData(prev => ({ ...prev, tags: prev.tags?.filter(t => t !== tagToRemove) }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token || !id || typeof id !== 'string') return;
 
     setIsSaving(true);
     try {
-      await updateEducation(id, formData, token);
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'tags' && Array.isArray(value)) {
+          data.append(key, value.join(','));
+        } else if (key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt') {
+          data.append(key, String(value));
+        }
+      });
+      if (imageFile) {
+        data.append('image', imageFile);
+      }
+
+      await updateEducation(id, data, token);
       toast.success('Education record updated successfully!');
       setTimeout(() => router.push('/admin/education'), 1500);
     } catch (err: any) {
@@ -157,6 +184,48 @@ export default function EditEducationPage() {
                   <input required type="text" placeholder="CGPA: 8.47" value={formData.grade} onChange={e => setFormData({ ...formData, grade: e.target.value })} className="w-full px-5 py-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-primary)] focus:border-[var(--accent-primary)] outline-none text-sm font-jetbrains transition-all" />
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Image Upload Section */}
+        <div className="space-y-6 p-8 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
+          <div className="flex items-center gap-3 mb-2">
+            <ImageIcon size={18} className="text-[var(--accent-primary)]" />
+            <h2 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)]">Institution Image</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="relative group cursor-pointer overflow-hidden rounded-xl bg-[var(--bg-primary)] border-2 border-dashed border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 transition-all">
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={handleImageChange}
+                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+              />
+              {imagePreview ? (
+                <div className="relative aspect-video w-full">
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Upload size={24} className="text-white" />
+                  </div>
+                </div>
+              ) : (
+                <div className="p-10 flex flex-col items-center justify-center gap-3 text-[var(--text-primary)] opacity-40 group-hover:opacity-100 transition-opacity">
+                  <Upload size={32} />
+                  <p className="text-[10px] font-black uppercase tracking-widest">Click to upload image</p>
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-bold text-[var(--text-primary)]">Current Image Status</h3>
+              <p className="text-[10px] opacity-60 font-jetbrains">
+                {formData.imageUrl ? 'Existing image loaded from server.' : 'No image currently set for this milestone.'}
+              </p>
+              <ul className="text-[10px] space-y-1 opacity-60 list-disc ml-4 font-jetbrains pt-2">
+                <li>Uploading a new image will replace the old one.</li>
+                <li>Best aspect ratio: 16:9 or 3:2</li>
+              </ul>
             </div>
           </div>
         </div>

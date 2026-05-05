@@ -74,6 +74,31 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
     // The control point (Q) moves with the spring, creating the curve
     const stringPath = useTransform(springX, (x) => `M 0 0 Q ${x} 80 0 160`);
 
+    // ── Horizontal Rubber Band Logic (for Mobile) ──
+    const dragY = motionValue(0);
+    
+    const springY = useSpring(dragY, {
+      stiffness: 800,
+      damping: 10,
+      mass: 0.2
+    });
+    
+    const handleMouseMoveY = (e: React.MouseEvent) => {
+      const { clientY, currentTarget } = e;
+      const { top, height } = currentTarget.getBoundingClientRect();
+      const centerY = top + height / 2;
+      const deltaY = clientY - centerY;
+      
+      const pull = Math.max(Math.min(deltaY, 30), -30);
+      dragY.set(pull);
+    };
+
+    const handleMouseLeaveY = () => {
+      dragY.set(0);
+    };
+    
+    const stringPathY = useTransform(springY, (y) => `M 0 0 Q 80 ${y} 160 0`);
+
     useGSAP(() => {
       if (!ref || typeof ref === 'function') return;
 
@@ -103,12 +128,21 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
         });
       }
 
+      // Continuous floating animation for profile image
+      gsap.to('.hero-profile-float', {
+        y: -15,
+        duration: 2.5,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1
+      });
+
     }, { scope: ref as React.RefObject<HTMLDivElement> });
 
     return (
       <section
         ref={ref}
-        className="relative min-h-screen w-full flex flex-col items-center justify-center pt-35 pb-16 overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-1000"
+        className="relative min-h-screen w-full flex flex-col items-center justify-center pt-28 pb-16 overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-1000"
       >
         {/* ── Left Side: Socials Sidebar (Reverted) ── */}
         <div className="absolute left-6 md:left-10 lg:left-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-12 z-20 hidden md:flex">
@@ -162,11 +196,49 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
         </div>
 
         {/* Main Managed Content Area */}
-        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-16 lg:px-24">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
+        <div className="relative z-10 w-full max-w-[1400px] px-6 md:px-16 lg:px-24 mt-4 md:mt-0">
+          
+          {/* Horizontal Rubber Band (Mobile Only) */}
+          <div className="flex md:hidden w-full justify-center mb-8 z-20">
+            <div className="relative group py-6 px-10 h-[80px] w-[160px] flex items-center justify-center">
+              <svg 
+                width="160" 
+                height="80" 
+                viewBox="-5 -40 170 80" 
+                fill="none" 
+                className="text-[var(--accent-primary)] overflow-visible absolute pointer-events-none"
+              >
+                <motion.path 
+                  d={stringPathY} 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                />
+                <circle cx="0" cy="0" r="2.5" fill="currentColor" />
+                <circle cx="160" cy="0" r="2.5" fill="currentColor" />
+              </svg>
+
+              <motion.div
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={1}
+                onDrag={(e, info) => dragY.set(info.offset.y)}
+                onDragEnd={() => dragY.set(0)}
+                onMouseMove={handleMouseMoveY}
+                onMouseLeave={handleMouseLeaveY}
+                style={{ y: dragY }}
+                className="w-24 h-12 cursor-grab active:cursor-grabbing z-30 flex items-center justify-center"
+              >
+                {/* Invisible trigger area */}
+                <div className="w-16 h-2 bg-[var(--accent-primary)] opacity-0 group-hover:opacity-20 rounded-full" />
+              </motion.div>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
             
             {/* Left: Profile Section (Circular with Rotating Ring) */}
-            <div className="hero-profile-container relative w-72 h-72 md:w-[32vw] md:h-[32vw] max-w-[480px] max-h-[480px] flex-shrink-0 flex items-center justify-center">
+            <div className="hero-profile-container relative w-56 h-56 sm:w-72 sm:h-72 md:w-[32vw] md:h-[32vw] max-w-[480px] max-h-[480px] flex-shrink-0 flex items-center justify-center mx-auto lg:mx-0">
                {/* Simplified Minimalist Tech Ring */}
                <div className="absolute inset-x-[-15%] inset-y-[-15%] pointer-events-none select-none z-0">
                  <svg 
@@ -196,19 +268,19 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                    alt="Aditya Profile"
                    fill
                    sizes="(max-width: 768px) 70vw, (max-width: 1200px) 40vw, 30vw"
-                   className="object-contain object-bottom transition-all duration-700 scale-110 translate-y-4"
+                   className="hero-profile-float object-contain object-bottom transition-all duration-700 scale-110"
                    priority
                  />
                </div>
             </div>
 
             {/* Right: Content Stack (New Layout) */}
-            <div className="hero-text-content flex flex-col flex-1 text-left">
-              <div className="flex items-center gap-4 mb-6">
+            <div className="hero-text-content flex flex-col flex-1 text-center lg:text-left items-center lg:items-start w-full">
+              <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
                 <span className="font-jetbrains text-[10px] font-bold px-3 py-1 border border-[var(--text-primary)]/40 opacity-60">
                   &lt; Hello World /&gt;
                 </span>
-                <div className="w-12 h-px bg-[var(--text-primary)]/30" />
+                <div className="w-8 md:w-12 h-px bg-[var(--text-primary)]/30" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 font-jetbrains">
                   Full-Stack Developer
                 </span>
@@ -223,22 +295,22 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                 />
               </h1>
 
-              <p className="text-sm md:text-base lg:text-lg text-[var(--text-secondary)] max-w-xl mb-10 leading-relaxed font-jetbrains opacity-80">
+              <p className="text-sm md:text-base lg:text-lg text-[var(--text-secondary)] max-w-xl mb-10 leading-relaxed font-jetbrains opacity-80 px-4 lg:px-0">
                 Full-stack developer with a passion for building high-performance web applications. 
                 I specialize in crafting polished User Interfaces with React, Next.js, and modern backends.
               </p>
 
-              <div className="flex flex-wrap items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full sm:w-auto px-6 sm:px-0">
                 <Link 
                   href="#contact" 
-                  className="px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3"
+                  className="w-full sm:w-auto justify-center px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3"
                 >
                   Lets Connect <ArrowDownRight size={18} />
                 </Link>
                 <Link 
                   href="/resume.pdf" 
                   target="_blank"
-                  className="px-10 py-4 border border-[var(--text-primary)]/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all flex items-center gap-3"
+                  className="w-full sm:w-auto justify-center px-10 py-4 border border-[var(--text-primary)]/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all flex items-center gap-3"
                 >
                   Download resume
                 </Link>
