@@ -80,8 +80,8 @@ export const CompetitiveProgramming = () => {
     const loadData = async () => {
       try {
         const [leetcodeRes, codechefRes] = await Promise.allSettled([
-          fetchLeetCodeProfile('aditya_tallhari_'),
-          fetchCodeChefProfile('basic_spark_55')
+          fetchLeetCodeProfile(),
+          fetchCodeChefProfile()
         ]);
 
         console.log('🔄 Data Sync Status:', {
