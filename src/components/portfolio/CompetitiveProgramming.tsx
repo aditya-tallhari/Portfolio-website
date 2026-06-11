@@ -84,10 +84,7 @@ export const CompetitiveProgramming = () => {
           fetchCodeChefProfile()
         ]);
 
-        console.log('🔄 Data Sync Status:', {
-          leetcode: leetcodeRes.status,
-          codechef: codechefRes.status
-        });
+
 
         let leetcodeData = leetcodeRes.status === 'fulfilled' ? leetcodeRes.value.data : null;
         let codechefData = codechefRes.status === 'fulfilled' ? codechefRes.value.data : null;
@@ -99,7 +96,7 @@ export const CompetitiveProgramming = () => {
         setPlatforms(prev => prev.map(p => {
           if (p.name === 'LeetCode' && leetcodeData?.leetcode) {
             const data = leetcodeData.leetcode;
-            console.log('✅ Mapping LeetCode:', data);
+
             return {
               ...p,
               ratingValue: data.rating,
@@ -120,7 +117,7 @@ export const CompetitiveProgramming = () => {
           }
           if (p.name === 'CodeChef' && codechefData?.codechef) {
             const data = codechefData.codechef;
-            console.log('✅ Mapping CodeChef:', data);
+
             return {
               ...p,
               ratingValue: data.rating,

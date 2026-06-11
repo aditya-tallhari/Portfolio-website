@@ -26,21 +26,38 @@ export default function PortfolioPage() {
   const profileImageRef = useRef<HTMLDivElement>(null);
   const profileDestRef = useRef<HTMLDivElement>(null);
 
-  const handleLoaderComplete = (tl: gsap.core.Timeline) => {
+  const handleLoaderComplete = () => {
+    const heroTl = gsap.timeline({ defaults: { ease: "power4.out" }});
+
     // Entrance animations after loader
-    if (helloTextRef.current) {
-      tl.fromTo(helloTextRef.current,
-        { y: 100, opacity: 0, skewY: 10 },
-        { y: 0, opacity: 1, skewY: 0, duration: 1.5, ease: 'power3.out' },
-        '-=0.5'
+    if (navRef.current) {
+      heroTl.fromTo(navRef.current,
+        { y: -20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.2, ease: 'power2.out' }
       );
     }
 
-    if (navRef.current) {
-      tl.fromTo(navRef.current,
-        { y: -20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2, ease: 'power2.out' },
-        '-=1.2'
+    const scope = heroRef.current;
+    if (scope) {
+      // Animate profile container
+      heroTl.fromTo(scope.querySelector('.hero-profile-container'), 
+        { opacity: 0, scale: 0.85, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.5 },
+        '-=0.8'
+      );
+
+      // Animate text stack elements one after another
+      heroTl.fromTo(scope.querySelectorAll('.hero-animate-el'),
+        { opacity: 0, y: 40, skewY: 2 },
+        { opacity: 1, y: 0, skewY: 0, duration: 1.2, stagger: 0.15 },
+        "-=1.2"
+      );
+
+      // Animate stats cards staggered
+      heroTl.fromTo(scope.querySelectorAll('.hero-stat-card'),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, stagger: 0.1 },
+        "-=0.8"
       );
     }
   };

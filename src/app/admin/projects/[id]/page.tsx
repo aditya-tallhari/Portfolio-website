@@ -91,7 +91,7 @@ export default function EditProjectPage() {
       fd.append('links[live]', form.liveUrl);
       form.techStack.forEach(t => fd.append('techStack', t));
       
-      console.log('🚀 [DEBUG] Updating Project Data:', Object.fromEntries(fd.entries()));
+
       await updateProject(id, fd, token);
       toast.success('Project updated successfully!');
       setTimeout(() => router.push('/admin/projects'), 1200);

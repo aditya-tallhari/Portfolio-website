@@ -242,7 +242,7 @@ export const ConsoleScreen = () => {
       (window as any).__laptopSetNavigating?.();
       router.push("/portfolio");
     } else if (item === "resume") {
-      window.open("/resume.pdf", "_blank");
+      window.open("/Aditya_Tallhari_Resume.pdf", "_blank");
     }
   }, [activeScreen, router]);
 

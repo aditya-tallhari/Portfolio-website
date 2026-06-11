@@ -6,13 +6,14 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FolderKanban, Briefcase, Code2,
-  MessageSquare, BarChart3, LogOut, Menu, X, Terminal, ChevronRight, GraduationCap
+  MessageSquare, BarChart3, LogOut, Menu, X, Terminal, ChevronRight, GraduationCap, Trophy
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/admin/projects', icon: FolderKanban, label: 'Projects' },
+  { href: '/admin/hackathons', icon: Trophy, label: 'Hackathons' },
   { href: '/admin/experience', icon: Briefcase, label: 'Experience' },
   { href: '/admin/education', icon: GraduationCap, label: 'Education' },
   { href: '/admin/github', icon: Code2, label: 'GitHub Stats' },

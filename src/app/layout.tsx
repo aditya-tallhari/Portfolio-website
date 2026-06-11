@@ -18,8 +18,32 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Portfolio | Aditya Tallhari',
-  description: 'Interactive 3D Portfolio Experience',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aditya-tallhari.vercel.app'),
+  title: {
+    default: 'Aditya Tallhari | Full Stack Developer & Competitive Programmer',
+    template: '%s | Aditya Tallhari',
+  },
+  description: 'Explore the professional portfolio of Aditya Tallhari. Full Stack Developer specializing in MERN Stack, Next.js, and complex problem-solving.',
+  keywords: ['Aditya Tallhari', 'Full Stack Developer', 'Competitive Programmer', 'Software Engineer', 'MERN Stack', 'React', 'Next.js', 'Portfolio'],
+  authors: [{ name: 'Aditya Tallhari' }],
+  creator: 'Aditya Tallhari',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    title: 'Aditya Tallhari | Full Stack Developer',
+    description: 'Explore the professional portfolio of Aditya Tallhari. Full Stack Developer specializing in MERN Stack, Next.js, and complex problem-solving.',
+    siteName: 'Aditya Tallhari Portfolio',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Aditya Tallhari | Full Stack Developer',
+    description: 'Interactive 3D Portfolio Experience of Aditya Tallhari',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -42,6 +66,23 @@ export default function RootLayout({
                  } catch (e) {}
                })();
              `,
+           }}
+         />
+         <script
+           type="application/ld+json"
+           dangerouslySetInnerHTML={{
+             __html: JSON.stringify({
+               '@context': 'https://schema.org',
+               '@type': 'Person',
+               name: 'Aditya Tallhari',
+               jobTitle: 'Full Stack Developer',
+               url: 'https://aditya-tallhari.vercel.app',
+               sameAs: [
+                 'https://github.com/aditya_tallhari_', 
+                 'https://leetcode.com/u/aditya_tallhari_/',
+                 'https://www.codechef.com/users/basic_spark_55'
+               ]
+             })
            }}
          />
        </head>

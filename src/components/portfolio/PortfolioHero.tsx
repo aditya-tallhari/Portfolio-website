@@ -21,7 +21,7 @@ interface PortfolioHeroProps {
 }
 
 export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
-      ({ helloTextRef, profileImageRef }, ref) => {
+  ({ helloTextRef, profileImageRef }, ref) => {
     const [stats, setStats] = React.useState<PublicStats | null>(null);
 
     // ── Visitor Recording & Stats Fetching ──
@@ -46,21 +46,21 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
 
     // ── Rubber Band / Stretchy Line Logic ──
     const dragX = motionValue(0);
-    
+
     // High-oscillation spring for "more bounce"
     const springX = useSpring(dragX, {
       stiffness: 800,
       damping: 10,
       mass: 0.2
     });
-    
+
     const handleMouseMove = (e: React.MouseEvent) => {
       // Only apply hover pluck if not currently dragging
       const { clientX, currentTarget } = e;
       const { left, width } = currentTarget.getBoundingClientRect();
       const centerX = left + width / 2;
       const deltaX = clientX - centerX;
-      
+
       // Subtly deflection on hover (max 30px)
       const pull = Math.max(Math.min(deltaX, 30), -30);
       dragX.set(pull);
@@ -69,26 +69,26 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
     const handleMouseLeave = () => {
       dragX.set(0);
     };
-    
+
     // Transform spring value into a quadratic bezier path M [start] Q [control] [end]
     // The control point (Q) moves with the spring, creating the curve
     const stringPath = useTransform(springX, (x) => `M 0 0 Q ${x} 80 0 160`);
 
     // ── Horizontal Rubber Band Logic (for Mobile) ──
     const dragY = motionValue(0);
-    
+
     const springY = useSpring(dragY, {
       stiffness: 800,
       damping: 10,
       mass: 0.2
     });
-    
+
     const handleMouseMoveY = (e: React.MouseEvent) => {
       const { clientY, currentTarget } = e;
       const { top, height } = currentTarget.getBoundingClientRect();
       const centerY = top + height / 2;
       const deltaY = clientY - centerY;
-      
+
       const pull = Math.max(Math.min(deltaY, 30), -30);
       dragY.set(pull);
     };
@@ -96,24 +96,11 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
     const handleMouseLeaveY = () => {
       dragY.set(0);
     };
-    
+
     const stringPathY = useTransform(springY, (y) => `M 0 0 Q 80 ${y} 160 0`);
 
     useGSAP(() => {
       if (!ref || typeof ref === 'function') return;
-
-      // Smooth entrance for elements
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" }});
-      
-      tl.fromTo('.hero-profile-container', 
-        { opacity: 0, x: -60 },
-        { opacity: 1, x: 0, duration: 1.5, delay: 0.2 }
-      )
-      .fromTo('.hero-text-content',
-        { opacity: 0, x: 60 },
-        { opacity: 1, x: 0, duration: 1.5 },
-        "-=1.2"
-      );
 
       // Scroll parallax
       if (ref && typeof ref !== 'function' && ref.current) {
@@ -146,20 +133,20 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
       >
         {/* ── Left Side: Socials Sidebar (Reverted) ── */}
         <div className="absolute left-6 md:left-10 lg:left-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-12 z-20 hidden md:flex">
-          <div className="relative group py-10 px-6 -mx-6 h-[160px] flex items-center justify-center">
+          <div className="relative group py-10 px-6 h-[160px] flex items-center justify-center">
             {/* The SVG Line */}
-            <svg 
-              width="80" 
-              height="160" 
-              viewBox="-40 0 80 160" 
-              fill="none" 
-              className="text-[var(--accent-primary)] overflow-visible absolute pointer-events-none"
+            <svg
+              width="80"
+              height="160"
+              viewBox="-40 0 80 160"
+              fill="none"
+              className="text-[var(--accent-primary)] overflow-visible absolute left-1/2 -translate-x-1/2 pointer-events-none"
             >
-              <motion.path 
-                d={stringPath} 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
+              <motion.path
+                d={stringPath}
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
               />
               <circle cx="0" cy="2" r="2.5" fill="currentColor" />
               <circle cx="0" cy="158" r="2.5" fill="currentColor" />
@@ -181,7 +168,7 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
               <div className="w-1 h-8 bg-[var(--accent-primary)] opacity-0 group-hover:opacity-20 rounded-full" />
             </motion.div>
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center gap-8">
             <a href="https://www.linkedin.com/in/aditya-tallhari" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><CiLinkedin size={26} /></a>
             <a href="https://www.instagram.com/aditya_tallare_" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaInstagram size={24} /></a>
             <a href="https://github.com/aditya-tallhari" target='blank' className="text-[var(--text-secondary)] opacity-100 hover:text-[var(--accent-primary)] transition-all hover:scale-125"><FaGithub size={24} /></a>
@@ -190,93 +177,56 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
 
         {/* ── Right Side: Visual Badge (Reverted) ── */}
         <div className="absolute right-6 md:right-10 lg:right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-14 z-20 hidden md:flex">
-           <div className="[writing-mode:vertical-rl] rotate-180 uppercase tracking-[0.6em] text-[10px] font-bold text-[var(--accent-primary)] opacity-20 pointer-events-none">
-              Sophisticated / Timeless / Gold-Standard
-           </div>
+          <div className="[writing-mode:vertical-rl] rotate-180 uppercase tracking-[0.6em] text-[10px] font-bold text-[var(--accent-primary)] opacity-20 pointer-events-none">
+            Sophisticated / Timeless / Gold-Standard
+          </div>
         </div>
 
         {/* Main Managed Content Area */}
         <div className="relative z-10 w-full max-w-[1400px] px-6 md:px-16 lg:px-24 mt-4 md:mt-0">
-          
-          {/* Horizontal Rubber Band (Mobile Only) */}
-          <div className="flex md:hidden w-full justify-center mb-8 z-20">
-            <div className="relative group py-6 px-10 h-[80px] w-[160px] flex items-center justify-center">
-              <svg 
-                width="160" 
-                height="80" 
-                viewBox="-5 -40 170 80" 
-                fill="none" 
-                className="text-[var(--accent-primary)] overflow-visible absolute pointer-events-none"
-              >
-                <motion.path 
-                  d={stringPathY} 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                />
-                <circle cx="0" cy="0" r="2.5" fill="currentColor" />
-                <circle cx="160" cy="0" r="2.5" fill="currentColor" />
-              </svg>
-
-              <motion.div
-                drag="y"
-                dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={1}
-                onDrag={(e, info) => dragY.set(info.offset.y)}
-                onDragEnd={() => dragY.set(0)}
-                onMouseMove={handleMouseMoveY}
-                onMouseLeave={handleMouseLeaveY}
-                style={{ y: dragY }}
-                className="w-24 h-12 cursor-grab active:cursor-grabbing z-30 flex items-center justify-center"
-              >
-                {/* Invisible trigger area */}
-                <div className="w-16 h-2 bg-[var(--accent-primary)] opacity-0 group-hover:opacity-20 rounded-full" />
-              </motion.div>
-            </div>
-          </div>
 
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
-            
+
             {/* Left: Profile Section (Circular with Rotating Ring) */}
-            <div className="hero-profile-container relative w-56 h-56 sm:w-72 sm:h-72 md:w-[32vw] md:h-[32vw] max-w-[480px] max-h-[480px] flex-shrink-0 flex items-center justify-center mx-auto lg:mx-0">
-               {/* Simplified Minimalist Tech Ring */}
-               <div className="absolute inset-x-[-15%] inset-y-[-15%] pointer-events-none select-none z-0">
-                 <svg 
-                   viewBox="0 0 500 500" 
-                   className="w-full h-full opacity-30 animate-[spin_30s_linear_infinite]"
-                 >
-                   <g stroke="var(--accent-primary)" fill="none">
-                      <circle cx="250" cy="250" r="210" strokeWidth="0.5" opacity="0.3" />
-                      <circle cx="250" cy="250" r="190" strokeWidth="0.5" opacity="0.3" />
-                      <circle 
-                        cx="250" 
-                        cy="250" 
-                        r="235" 
-                        strokeWidth="1.5" 
-                        strokeDasharray="120 400" 
-                        strokeLinecap="round" 
-                        opacity="0.6" 
-                      />
-                   </g>
-                 </svg>
-               </div>
-               
-               {/* Circular Clipping Container */}
-               <div ref={profileImageRef} className="relative w-[85%] h-[85%] rounded-full overflow-hidden flex items-center justify-center border border-[var(--accent-primary)]/10 bg-black/5">
-                 <Image
-                   src="/profile.svg"
-                   alt="Aditya Profile"
-                   fill
-                   sizes="(max-width: 768px) 70vw, (max-width: 1200px) 40vw, 30vw"
-                   className="hero-profile-float object-contain object-bottom transition-all duration-700 scale-110"
-                   priority
-                 />
-               </div>
+            <div className="hero-profile-container opacity-0 relative w-56 h-56 sm:w-72 sm:h-72 md:w-[32vw] md:h-[32vw] max-w-[480px] max-h-[480px] flex-shrink-0 flex items-center justify-center mx-auto lg:mx-0">
+              {/* Simplified Minimalist Tech Ring */}
+              <div className="absolute inset-x-[-15%] inset-y-[-15%] pointer-events-none select-none z-0">
+                <svg
+                  viewBox="0 0 500 500"
+                  className="w-full h-full opacity-70 animate-[spin_30s_linear_infinite]"
+                >
+                  <g style={{ stroke: 'var(--accent-primary)' }} fill="none">
+                    <circle cx="250" cy="250" r="210" strokeWidth="0.8" opacity="0.4" />
+                    <circle cx="250" cy="250" r="190" strokeWidth="0.8" opacity="0.4" />
+                    <circle
+                      cx="250"
+                      cy="250"
+                      r="235"
+                      strokeWidth="2"
+                      strokeDasharray="120 400"
+                      strokeLinecap="round"
+                      opacity="0.8"
+                    />
+                  </g>
+                </svg>
+              </div>
+
+              {/* Circular Clipping Container */}
+              <div ref={profileImageRef} className="relative w-[85%] h-[85%] rounded-full overflow-hidden flex items-center justify-center border-2 border-[var(--text-primary)]/[0.15] bg-[var(--bg-secondary)]/30 backdrop-blur-md shadow-2xl">
+                <Image
+                  src="/profile.svg"
+                  alt="Aditya Profile"
+                  fill
+                  sizes="(max-width: 768px) 70vw, (max-width: 1200px) 40vw, 30vw"
+                  className="hero-profile-float object-contain object-bottom transition-all duration-700 scale-110"
+                  priority
+                />
+              </div>
             </div>
 
             {/* Right: Content Stack (New Layout) */}
             <div className="hero-text-content flex flex-col flex-1 text-center lg:text-left items-center lg:items-start w-full">
-              <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
+              <div className="hero-animate-el opacity-0 flex items-center justify-center lg:justify-start gap-4 mb-6">
                 <span className="font-jetbrains text-[10px] font-bold px-3 py-1 border border-[var(--text-primary)]/40 opacity-60">
                   &lt; Hello World /&gt;
                 </span>
@@ -286,7 +236,7 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                 </span>
               </div>
 
-              <h1 className="text-5xl sm:text-7xl md:text-[5vw] lg:text-[4.8vw] font-playfair font-black tracking-tighter leading-tight mb-6">
+              <h1 className="hero-animate-el opacity-0 text-4xl sm:text-6xl md:text-[5vw] lg:text-[4.5vw] font-playfair font-black tracking-tighter leading-tight mb-6">
                 Hey, I'm <span className="">Aditya</span>
                 <motion.span
                   animate={{ opacity: [1, 0] }}
@@ -295,20 +245,20 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
                 />
               </h1>
 
-              <p className="text-sm md:text-base lg:text-lg text-[var(--text-secondary)] max-w-xl mb-10 leading-relaxed font-jetbrains opacity-80 px-4 lg:px-0">
-                Full-stack developer with a passion for building high-performance web applications. 
+              <p className="hero-animate-el opacity-0 text-sm md:text-base lg:text-lg text-[var(--text-secondary)] max-w-xl mb-10 leading-relaxed font-jetbrains px-4 lg:px-0">
+                Full-stack developer with a passion for building high-performance web applications.
                 I specialize in crafting polished User Interfaces with React, Next.js, and modern backends.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full sm:w-auto px-6 sm:px-0">
-                <Link 
-                  href="#contact" 
+              <div className="hero-animate-el opacity-0 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 w-full sm:w-auto px-6 sm:px-0">
+                <Link
+                  href="#contact"
                   className="w-full sm:w-auto justify-center px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3"
                 >
                   Lets Connect <ArrowDownRight size={18} />
                 </Link>
-                <Link 
-                  href="/resume.pdf" 
+                <Link
+                  href="/resume.pdf"
                   target="_blank"
                   className="w-full sm:w-auto justify-center px-10 py-4 border border-[var(--text-primary)]/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all flex items-center gap-3"
                 >
@@ -320,27 +270,27 @@ export const PortfolioHero = forwardRef<HTMLDivElement, PortfolioHeroProps>(
           </div>
         </div>
 
-        <div className="w-full max-w-[1400px] px-8 md:px-16 lg:px-24 mt-30">
+        <div className="w-full max-w-[1400px] px-8 md:px-16 lg:px-24 mt-20 md:mt-28">
           <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-[var(--text-primary)]/10 pt-6 gap-8">
             {[
-              { 
-                num: stats ? `${stats.views.toLocaleString()}+` : '0+', 
-                label: 'Portfolio Views' 
+              {
+                num: stats ? `${stats.views.toLocaleString()}+` : '0+',
+                label: 'Portfolio Views'
               },
-              { 
-                num: stats ? `${stats.experience}+` : '0+', 
-                label: 'Years of Experience' 
+              {
+                num: stats ? `${stats.experience}+` : '0+',
+                label: 'Years of Experience'
               },
-              { 
-                num: stats ? `${stats.projects}+` : '0+', 
-                label: 'Projects Shipped' 
+              {
+                num: stats ? `${stats.projects}+` : '0+',
+                label: 'Projects Shipped'
               },
-              { 
-                num: stats ? `${stats.clients}+` : '0+', 
-                label: 'Happy Clients' 
+              {
+                num: stats ? `${stats.clients}+` : '0+',
+                label: 'Happy Clients'
               }
             ].map((stat, i) => (
-              <div key={i} className="flex flex-col items-center lg:items-start border-r border-[var(--text-primary)]/5 last:border-r-0">
+              <div key={i} className="hero-stat-card opacity-0 flex flex-col items-center lg:items-start border-r border-[var(--text-primary)]/5 last:border-r-0">
                 <span className="text-3xl md:text-4xl font-playfair font-black mb-1">{stat.num}</span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 font-jetbrains">{stat.label}</span>
               </div>

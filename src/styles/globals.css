@@ -121,6 +121,13 @@ html[data-color-mode="dark"] {
   .accent-gradient-text {
     color: var(--accent-primary);
   }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 @layer base {

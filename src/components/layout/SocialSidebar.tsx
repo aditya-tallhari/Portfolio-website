@@ -35,6 +35,7 @@ const LeetcodeIcon = ({ size = 24, className = "" }: { size?: number; className?
 
 
 export const SocialSidebar = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const socials = [
     { icon: MailIcon, href: "mailto:adityatallhari79@gmail.com", label: "Email" },
     { icon: LinkedinIcon, href: "https://www.linkedin.com/in/aditya-tallhari", label: "LinkedIn" },
@@ -42,8 +43,6 @@ export const SocialSidebar = () => {
     { icon: GithubIcon, href: "https://github.com/aditya-tallhari", label: "GitHub" },
     { icon: InstagramIcon, href: "https://www.instagram.com/aditya_tallare_", label: "Instagram" },
   ];
-
-
 
   const buttonRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -71,35 +70,51 @@ export const SocialSidebar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 bottom-0 w-24 flex flex-col items-center py-10 z-50 bg-transparent group/sidebar">
-      {/* Branding */}
-      <div className="mb-auto relative">
-         <h2 className="text-[var(--text-primary)] text-3xl font-black tracking-tighter select-none opacity-50 hover:opacity-100 transition-opacity cursor-default">
-            AT
-         </h2>
-         {/* Signal Pulse */}
-         <div className="absolute -top-1 -right-2 w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-ping opacity-75" />
-      </div>
+    <>
+      {/* Hamburger Toggle Button (Mobile Only) */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-10 left-6 sm:left-10 z-[60] lg:hidden flex items-center justify-center p-2.5 rounded-xl bg-[var(--bg-secondary)]/80 border border-[var(--border-primary)] shadow-md backdrop-blur-md focus:outline-none cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300"
+      >
+        <div className="w-5 h-4 flex flex-col justify-between items-center relative">
+          <span className={`w-full h-[2px] bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+          <span className={`w-full h-[2px] bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+          <span className={`w-full h-[2px] bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+        </div>
+      </button>
+ 
+      {/* Sidebar Container */}
+      <div className={`fixed left-0 top-0 bottom-0 w-24 flex flex-col items-center py-10 z-50 bg-[var(--bg-primary)]/95 border-r border-[var(--border-primary)]/10 backdrop-blur-md transition-transform duration-500 lg:translate-x-0 lg:bg-transparent lg:border-r-0 lg:backdrop-blur-none group/sidebar ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}`}>
+        {/* Branding */}
+        <div className="mb-auto mt-14 lg:mt-0 relative">
+           <h2 className="text-[var(--text-primary)] text-3xl font-black tracking-tighter select-none opacity-50 hover:opacity-100 transition-opacity cursor-default">
+              AT
+           </h2>
+           {/* Signal Pulse */}
+           <div className="absolute -top-1 -right-2 w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-ping opacity-75" />
+        </div>
 
-      {/* Social Links */}
-      <div className="flex flex-col gap-10 items-center mb-10 relative">
-        
-        {socials.map((social, index) => (
-          <Link
-            key={social.label}
-            href={social.href}
-            target="_blank"
-            ref={(el) => { buttonRefs.current[index] = el; }}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}
-            className="relative text-[var(--text-primary)] opacity-60 dark:opacity-30 transition-all block p-2 z-10 hover:opacity-100 hover:text-[var(--accent-primary)]"
-          >
-            <social.icon size={28} className="relative z-10 transition-colors" />
-          </Link>
-        ))}
-      </div>
+        {/* Social Links */}
+        <div className="flex flex-col gap-10 items-center mb-10 relative">
+          
+          {socials.map((social, index) => (
+            <Link
+              key={social.label}
+              href={social.href}
+              target="_blank"
+              ref={(el) => { buttonRefs.current[index] = el; }}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
+              onClick={() => setIsOpen(false)}
+              className="relative text-[var(--text-primary)] opacity-60 dark:opacity-30 transition-all block p-2 z-10 hover:opacity-100 hover:text-[var(--accent-primary)]"
+            >
+              <social.icon size={28} className="relative z-10 transition-colors" />
+            </Link>
+          ))}
+        </div>
 
-      <div className="relative w-[1px] h-32 invisible" />
-    </div>
+        <div className="relative w-[1px] h-32 invisible" />
+      </div>
+    </>
   );
 };

@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
-import { ExternalLink, Code, Layout, Sparkles, FolderKanban } from 'lucide-react';
+import { ExternalLink, Code, Layout, Sparkles, FolderKanban, ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
 import { FaGithub } from "react-icons/fa";
 import { useGSAP } from '@gsap/react';
@@ -23,6 +23,36 @@ export const Projects = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [projectsList, setProjectsList] = useState<ApiProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handlePrev = useCallback(() => {
+    if (pinTriggerRef.current) {
+      const el = pinTriggerRef.current;
+      const card = el.querySelector('.project-card');
+      const cardWidth = card ? card.clientWidth : 300;
+      
+      // Loop around to the end if we are at the beginning
+      if (el.scrollLeft <= 10) {
+        el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: -(cardWidth + 24), behavior: 'smooth' });
+      }
+    }
+  }, []);
+
+  const handleNext = useCallback(() => {
+    if (pinTriggerRef.current) {
+      const el = pinTriggerRef.current;
+      const card = el.querySelector('.project-card');
+      const cardWidth = card ? card.clientWidth : 300;
+      
+      // Loop around to the beginning if we are at the end
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 20) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: cardWidth + 24, behavior: 'smooth' });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -126,30 +156,71 @@ export const Projects = () => {
       ease: 'expo.out'
     }, '<0.2');
 
-    // ── Horizontal Pinning Logic (Global) ──
-    if (!gridRef.current || !containerRef.current) return;
+    // ── Project Cards Entrance Animation ──
+    gsap.fromTo('.project-card', 
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: pinTriggerRef.current,
+          start: 'top 85%',
+          toggleActions: "play none none none"
+        }
+      }
+    );
+
+    // ── Horizontal Pinning Logic (Only for Cards Container) ──
+    if (!gridRef.current || !pinTriggerRef.current) return;
 
     const getScrollAmount = () => {
       if (!gridRef.current) return 0;
-      // Calculate exact amount to show the last card fully
-      return gridRef.current.scrollWidth - window.innerWidth + (window.innerWidth * 0.1); 
+      const overflow = gridRef.current.scrollWidth - window.innerWidth;
+      return overflow > 0 ? overflow + (window.innerWidth * 0.1) : 0;
     };
 
-    gsap.to(gridRef.current, {
-      x: () => -getScrollAmount(),
-      ease: "none",
-      scrollTrigger: {
-        trigger: containerRef.current,
-        pin: true,
-        scrub: 1,
-        start: "top top",
-        end: () => `+=${getScrollAmount()}`,
-        invalidateOnRefresh: true,
-        anticipatePin: 1,
-      }
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      if (!gridRef.current || !pinTriggerRef.current) return;
+      gsap.to(gridRef.current, {
+        x: () => -getScrollAmount(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: pinTriggerRef.current,
+          pin: true,
+          scrub: 1,
+          start: "top 80px",
+          end: () => `+=${getScrollAmount()}`,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        }
+      });
     });
 
-    // ── Project Interactions ──
+    mm.add("(max-width: 767px)", () => {
+      if (!pinTriggerRef.current) return;
+      const cards = gsap.utils.toArray('.project-card');
+      cards.forEach((card: any) => {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: card,
+            scroller: pinTriggerRef.current,
+            horizontal: true,
+            start: "left 95%",
+            end: "right 5%",
+            scrub: 0.5,
+          }
+        })
+        .fromTo(card, { scale: 0.9, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power1.out" })
+        .to(card, { scale: 0.9, opacity: 0.5, duration: 0.5, ease: "power1.in" });
+      });
+    });
+
+    // ── Project Card Mousemove Interaction ──
     const sections = gsap.utils.toArray('.project-card');
     sections.forEach((card: any) => {
       card.addEventListener('mousemove', (e: any) => {
@@ -177,7 +248,7 @@ export const Projects = () => {
     <section
       ref={containerRef}
       id="projects"
-      className=" relative z-40 bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500 pt-10 pb-10 min-h-screen flex flex-col"
+      className=" relative z-40 bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500 pt-28 pb-10 min-h-screen block"
     >
       {/* Background Decorative Elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--accent-glow)] rounded-full blur-[150px] opacity-10 pointer-events-none" />
@@ -185,18 +256,21 @@ export const Projects = () => {
       <div className="w-full px-8 md:px-16 lg:px-24 relative z-10 mb-8">
         {/* Header Section */}
         <header ref={headerRef}>
-          <h2 className="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] font-playfair pt-15">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.85] font-playfair pt-4">
             <span className="title-word-left block opacity-0 -translate-x-10">Selected /</span>
             <span className="title-word-right block text-5xl md:text-8xl pt-1 md:pt-2 text-[var(--accent-primary)] opacity-0 translate-x-10">Projects</span>
           </h2>
         </header>
       </div>
 
-      {/* Horizontal Scroll Wrapper */}
-      <div className="relative flex-1 flex items-center md:items-end pb-2 overflow-hidden">
+      {/* Decoupled Pin Trigger Slider */}
+      <div 
+        ref={pinTriggerRef}
+        className="w-full min-h-[500px] md:min-h-[calc(100vh-80px)] relative flex items-center overflow-x-auto md:overflow-hidden snap-x snap-mandatory scrollbar-hide py-6 md:py-0"
+      >
         <div 
           ref={gridRef} 
-          className="flex flex-row items-center md:items-start px-6 md:px-16 lg:px-24 w-fit h-fit gap-6 sm:gap-8 md:gap-10"
+          className="flex flex-row items-center px-6 md:px-16 lg:px-24 w-fit h-fit gap-6 sm:gap-8 md:gap-10"
         >
           {isLoading ? (
             // Skeleton Loader
@@ -224,6 +298,24 @@ export const Projects = () => {
             ))
           )}
         </div>
+      </div>
+
+      {/* Mobile Navigation Arrows */}
+      <div className="flex md:hidden justify-center items-center gap-6 mt-4 pb-8 relative z-50">
+        <button 
+          onClick={handlePrev}
+          className="w-12 h-12 rounded-full border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] flex items-center justify-center backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+          aria-label="Previous Project"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button 
+          onClick={handleNext}
+          className="w-12 h-12 rounded-full border border-[var(--border-primary)] bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] flex items-center justify-center backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+          aria-label="Next Project"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
     </section>
   );

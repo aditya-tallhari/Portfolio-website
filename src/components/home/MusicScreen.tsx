@@ -163,7 +163,7 @@ export const MusicScreen: React.FC<MusicScreenProps> = ({ onBack }) => {
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
     >
       <img
-        src="/bg-image.jpg"
+        src="/bg-image3.jpg"
         alt="background"
         className="absolute inset-0 w-full h-full object-cover opacity-60"
       />

@@ -100,36 +100,31 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
                </h2>
             </div>
  
-            {/* Condensed Bio Card */}
+            {/* Condensed Bio Card (Borderless, dynamic layout) */}
             <div 
               ref={cardRef}
-              className="bg-[var(--text-primary)]/[0.04] backdrop-blur-3xl border border-[var(--border-primary)] rounded-[2rem] p-6 sm:p-10 md:p-14 w-full lg:max-w-2xl shadow-xl relative z-10 font-jetbrains transition-all duration-500"
+              className="relative z-10 font-jetbrains w-full lg:max-w-2xl transition-all duration-500 pl-6 border-l-2 border-[var(--accent-primary)] space-y-6 md:space-y-8 py-2"
             >
-              <div className="space-y-6 md:space-y-8">
-                <p className="text-lg sm:text-xl md:text-2xl text-[var(--text-primary)] opacity-90 leading-relaxed">
-                  I thrive on the intersection of <span className="text-[var(--accent-primary)] font-bold">Design</span> & 
-                  <span className="text-[var(--accent-primary)] font-bold"> Engineering</span>. 
-                  My goal is to create products that are as functional as they are beautiful.
-                </p>
-                <p className="text-sm sm:text-base md:text-lg text-[var(--text-primary)] opacity-60 leading-relaxed">
-                  With expertise in Next.js and high-end motion design, I transform complex technical 
-                  requirements into seamless user journeys. My approach is defined by precision, 
-                  performance, and an uncompromising commitment to aesthetic excellence.
-                </p>
-              </div>
+              <p className="text-lg sm:text-xl md:text-2xl text-[var(--text-primary)] opacity-90 leading-relaxed">
+                I thrive on the intersection of <span className="text-[var(--accent-primary)] font-bold">Design</span> & 
+                <span className="text-[var(--accent-primary)] font-bold"> Engineering</span>. 
+                My goal is to create products that are as functional as they are beautiful.
+              </p>
+              <p className="text-sm sm:text-base md:text-lg text-[var(--text-primary)] opacity-60 leading-relaxed">
+                With expertise in Next.js and high-end motion design, I transform complex technical 
+                requirements into seamless user journeys. My approach is defined by precision, 
+                performance, and an uncompromising commitment to aesthetic excellence.
+              </p>
             </div>
           </div>
  
-          {/* ── Right Column: Expanded Identity Card ── */}
-          <div ref={phoneRef} className="flex justify-center lg:justify-end mt-8 lg:mt-0">
-            <div className="relative w-[280px] h-[480px] sm:w-[400px] sm:h-[680px] bg-[var(--bg-primary)] rounded-[2.5rem] sm:rounded-[3.5rem] border border-[var(--border-primary)] shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-500 origin-center lg:origin-right">
+          {/* ── Right Column: Expanded Identity Card (Shadcn-Style Developer Card) ── */}
+          <div ref={phoneRef} className="flex justify-center lg:justify-end mt-8 lg:mt-0 z-20">
+            <div className="relative w-[280px] h-[480px] sm:w-[380px] sm:h-[620px] bg-[var(--bg-secondary)]/30 backdrop-blur-md rounded-3xl border border-[var(--border-primary)] shadow-2xl overflow-hidden transition-all duration-700 hover:scale-[1.02] flex flex-col">
               
-              {/* Profile Area (Expanded) */}
-              <div className="relative w-full h-[60%] sm:h-[65%] bg-[var(--bg-primary)] brightness-[0.95]">
-                <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay"
-                  style={{ backgroundImage: 'radial-gradient(circle, var(--text-primary) 1.2px, transparent 1.2px)', backgroundSize: '10px 10px' }}
-                />
-                <div ref={profileDestRef} className="absolute inset-5 sm:inset-8 rounded-[1.5rem] sm:rounded-3xl flex items-center justify-center bg-[var(--text-primary)]/10 overflow-hidden shadow-inner">
+              {/* Profile Area - Top of Card */}
+              <div className="relative w-full h-[60%] flex items-center justify-center p-6 sm:p-8 pb-2 sm:pb-3">
+                <div ref={profileDestRef} className="relative w-full h-full overflow-hidden flex items-center justify-center">
                    <Image 
                      src="/profile.svg" 
                      alt="Aditya" 
@@ -140,25 +135,43 @@ export const AboutSection = ({ profileDestRef }: AboutSectionProps) => {
                 </div>
               </div>
  
-              {/* Identity Detail (Expanded) */}
-              <div className="absolute bottom-0 inset-x-0 h-[40%] sm:h-[35%] bg-[var(--text-primary)] p-6 sm:p-10 flex flex-col justify-between">
+              {/* Identity Detail - Bottom of Card */}
+              <div className="p-6 sm:p-8 pt-3 sm:pt-4 flex flex-col justify-between flex-grow">
                 <div>
-                  <h3 className="text-2xl sm:text-4xl font-black tracking-tighter text-[var(--bg-primary)] uppercase">Aditya Tallhari</h3>
+                  <h3 className="text-lg sm:text-xl font-black tracking-tight text-[var(--text-primary)] uppercase font-sans">
+                    Aditya Tallhari
+                  </h3>
+                  <p className="text-[9px] text-[var(--text-secondary)] tracking-widest font-jetbrains mt-0.5 uppercase">
+                    // CREATIVE DEVELOPER
+                  </p>
                 </div>
  
-                <div className="flex flex-col gap-2 sm:gap-3">
-                  <div className="flex items-center gap-2 sm:gap-3 bg-[var(--bg-primary)] px-3 py-1.5 sm:px-4 sm:py-2 rounded-full self-start shadow-xl">
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[8px] sm:text-[10px] font-black text-[var(--text-primary)] uppercase tracking-wider">Operational</span>
+                <div className="space-y-8">
+                  <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-1.5 bg-[var(--text-primary)]/[0.04] px-2.5 py-1 rounded-full border border-[var(--border-primary)] self-start">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-[8px] font-bold text-[var(--text-primary)] uppercase tracking-wider font-jetbrains">Operational</span>
+                    </div>
+                    <div className="bg-[var(--accent-primary)]/10 px-2.5 py-1 rounded-full border border-[var(--accent-primary)]/20 self-start">
+                      <span className="text-[8px] font-bold text-[var(--accent-primary)] uppercase tracking-wider font-jetbrains text-nowrap">Full-Stack Architecture</span>
+                    </div>
                   </div>
-                  <div className="bg-[var(--bg-primary)]/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[var(--bg-primary)]/10 self-start">
-                    <span className="text-[8px] sm:text-[10px] font-black text-[var(--bg-primary)] opacity-50 uppercase tracking-wider text-nowrap">Full-Stack Architecture</span>
+ 
+                  <div className="border-t border-[var(--border-primary)] pt-3">
+                    <div className="grid grid-cols-2 gap-4 font-jetbrains text-[9px] text-[var(--text-secondary)] uppercase">
+                      <div>
+                        <span className="block opacity-40 text-[7px] tracking-widest">Specialty</span>
+                        <span className="font-bold text-[var(--text-primary)]">Scalable Development</span>
+                      </div>
+                      <div>
+                        <span className="block opacity-40 text-[7px] tracking-widest">Focus</span>
+                        <span className="font-bold text-[var(--text-primary)]">Frontend & Backend Arch </span>
+                        
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
- 
-              {/* Bezel (Scaled) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-32 h-4 sm:h-7 bg-[var(--bg-primary)] rounded-b-lg sm:rounded-b-2xl border-x border-b border-[var(--border-primary)] z-20" />
             </div>
           </div>
  

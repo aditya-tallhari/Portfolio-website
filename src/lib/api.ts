@@ -290,3 +290,37 @@ export const fetchLeetCodeProfile = async (): Promise<CodingProfileResponse> => 
 export const fetchCodeChefProfile = async (): Promise<CodingProfileResponse> => {
   return api.get("/coding-profile/codechef");
 };
+
+// ─── Hackathon APIs ──────────────────────────────────────────────
+
+export interface Hackathon {
+  _id?: string;
+  title: string;
+  achievement: string;
+  date: string;
+  description: string;
+  techStack: string[];
+  link?: string;
+  type: string;
+  status: 'WIN' | 'FINALIST' | 'PARTICIPANT';
+  image?: string;
+  order?: number;
+}
+
+export const fetchHackathons = async (): Promise<Hackathon[]> => {
+  const data = await api.get("/hackathons");
+  return data.data;
+};
+
+export const createHackathon = async (hackathonData: FormData | Partial<Hackathon>, token: string) => {
+  return api.post("/hackathons", hackathonData, { token });
+};
+
+export const updateHackathon = async (id: string, hackathonData: FormData | Partial<Hackathon>, token: string) => {
+  return api.put(`/hackathons/${id}`, hackathonData, { token });
+};
+
+export const deleteHackathon = async (id: string, token: string) => {
+  return api.delete(`/hackathons/${id}`, { token });
+};
+

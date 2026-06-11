@@ -9,7 +9,7 @@ interface PageLoaderProps {
 }
 
 const words = [
-  "Hello", "Namaste","Bonjour"
+  "Hello", "Namaste"
 ];
 
 export const PageLoader = ({ onComplete }: PageLoaderProps) => {
@@ -32,7 +32,7 @@ export const PageLoader = ({ onComplete }: PageLoaderProps) => {
           yPercent: -100,
           duration: 0.8,
           ease: 'power4.inOut',
-          onStart: () => {
+          onComplete: () => {
             // Signal completion to parent
             if (onComplete) onComplete(exitTl);
           }
