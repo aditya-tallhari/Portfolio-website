@@ -18,7 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aditya-tallhari.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://adityatallhari.dev'),
   title: {
     default: 'Aditya Tallhari | Full Stack Developer & Competitive Programmer',
     template: '%s | Aditya Tallhari',
@@ -77,7 +77,7 @@ export default function RootLayout({
                '@type': 'Person',
                name: 'Aditya Tallhari',
                jobTitle: 'Full Stack Developer',
-               url: 'https://aditya-tallhari.vercel.app',
+               url: 'https://adityatallhari.dev',
                sameAs: [
                  'https://github.com/aditya_tallhari_', 
                  'https://leetcode.com/u/aditya_tallhari_/',
