@@ -54,6 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${jetbrains.variable}`} suppressHydrationWarning>
        <head>
+        <meta name="google-site-verification" content="fEsc5BKcfc0nPsr6FjmSRJeo_kFN_3-F4F1JN4kLXb4" />
          <script
            dangerouslySetInnerHTML={{
              __html: `
