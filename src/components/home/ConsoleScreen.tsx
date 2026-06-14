@@ -146,7 +146,7 @@ const MainScreen: React.FC<{
         alt="background"
         fill
         priority
-        sizes="100vw"
+        sizes="(max-width: 768px) 100vw, 900px"
         className="object-cover"
       />
 
