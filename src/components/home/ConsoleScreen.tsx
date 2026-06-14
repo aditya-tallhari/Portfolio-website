@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { MusicScreen } from "./MusicScreen";
 import { TerminalScreen } from "./TerminalScreen";
 
@@ -140,14 +141,17 @@ const MainScreen: React.FC<{
       transition={{ duration: 0.3 }}
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
     >
-      <img
+      <Image
         src="/bg-image2.jpg"
         alt="background"
-        className="absolute inset-0 w-full h-full object-cover"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
       />
 
       <div className="relative z-10 w-full h-full flex flex-col items-end justify-end gap-1 p-2 pb-3 pr-3">
-        <SpeechBubble className="text-left max-w-[80px] border-[1px] shadow-[1px_1px_0_0_rgba(0,0,0,1)] px-1.5 py-1">
+        <SpeechBubble className="text-left min-w-[80px] max-w-[80px] min-h-[24px] border-[1px] shadow-[1px_1px_0_0_rgba(0,0,0,1)] px-1.5 py-1">
           <p className="text-[5px] font-black leading-tight tracking-tight">
             {dialogueText ?? (
               <>

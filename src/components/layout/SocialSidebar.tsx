@@ -75,6 +75,7 @@ export const SocialSidebar = () => {
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-10 left-6 sm:left-10 z-[60] lg:hidden flex items-center justify-center p-2.5 rounded-xl bg-[var(--bg-secondary)]/80 border border-[var(--border-primary)] shadow-md backdrop-blur-md focus:outline-none cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300"
+        aria-label="Toggle Social Menu"
       >
         <div className="w-5 h-4 flex flex-col justify-between items-center relative">
           <span className={`w-full h-[2px] bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
@@ -107,6 +108,7 @@ export const SocialSidebar = () => {
               onMouseLeave={() => handleMouseLeave(index)}
               onClick={() => setIsOpen(false)}
               className="relative text-[var(--text-primary)] opacity-60 dark:opacity-30 transition-all block p-2 z-10 hover:opacity-100 hover:text-[var(--accent-primary)]"
+              aria-label={social.label}
             >
               <social.icon size={28} className="relative z-10 transition-colors" />
             </Link>
