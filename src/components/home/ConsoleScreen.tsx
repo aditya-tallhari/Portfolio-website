@@ -230,6 +230,14 @@ export const ConsoleScreen = () => {
   const [activeScreen, setActiveScreen] = useState<"main" | "music" | "terminal">("main");
   const router = useRouter();
 
+  useEffect(() => {
+    if (activeScreen === "music") {
+      window.dispatchEvent(new CustomEvent("force-bg-music", { detail: { pause: true } }));
+    } else {
+      window.dispatchEvent(new CustomEvent("force-bg-music", { detail: { pause: false } }));
+    }
+  }, [activeScreen]);
+
   const handleArrowNav = useCallback((dir: ArrowKey) => {
     if (activeScreen !== "main") return;
     setSelectedItem((current) => getNextItem(current, dir));

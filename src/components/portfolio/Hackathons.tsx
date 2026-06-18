@@ -140,7 +140,7 @@ const Hackathons = () => {
         RECORDS ARENA BATTLEFIELD CHAMPIONSHIPS
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
         <div className="mb-12 md:mb-16">
@@ -156,7 +156,7 @@ const Hackathons = () => {
               ref={titleRef}
               className="text-4xl md:text-6xl font-playfair font-black tracking-tighter leading-[1.0] uppercase"
             >
-              HACKATHON <span className="text-[var(--accent-primary)]">RECORDS</span>
+              Achievements <span className="text-[var(--accent-primary)]">RECORDS</span>
             </h2>
             <p className="max-w-xs text-[11px] text-[var(--text-secondary)] opacity-50 font-jetbrains leading-relaxed">
               Technical milestones and competitive victories in rapid development.
@@ -167,14 +167,14 @@ const Hackathons = () => {
         {/* Expand-On-Hover Cards Layout */}
         <div 
           ref={cardsContainerRef}
-          className="flex flex-col lg:flex-row w-full gap-4 items-stretch min-h-[450px] mb-8"
+          className="flex flex-col lg:flex-row w-full gap-4 items-stretch min-h-[600px] mb-8"
         >
           {isLoading ? (
             // Skeleton placeholders while loading
             Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="flex-1 min-h-[200px] lg:h-[480px] rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] animate-pulse"
+                className="flex-1 min-h-[200px] lg:h-[600px] rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] animate-pulse"
               />
             ))
           ) : hackathons.length === 0 ? (
@@ -192,7 +192,7 @@ const Hackathons = () => {
                   key={event.id}
                   className={cn(
                     "relative cursor-pointer overflow-hidden rounded-3xl transition-all duration-700 ease-in-out border border-[var(--border-primary)]/80 hover:border-[var(--accent-primary)]/40 flex-1 group",
-                    isActive ? "flex-[2.5] lg:flex-[3] h-[350px] lg:h-[480px]" : "flex-[0.8] lg:flex-[0.8] h-[90px] lg:h-[480px]"
+                    isActive ? "flex-[2.5] lg:flex-[3] h-[400px] lg:h-[600px]" : "flex-[0.8] lg:flex-[0.8] h-[100px] lg:h-[600px]"
                   )}
                   onMouseEnter={() => setActiveIdx(idx)}
                   onClick={() => setActiveIdx(idx)}

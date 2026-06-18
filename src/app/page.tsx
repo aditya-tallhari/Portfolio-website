@@ -113,13 +113,21 @@ const StatusTerminal = () => {
 
 import { useTheme } from "@/providers/ColorModeProvider";
 
+const VolumeOnIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+);
+
+const VolumeOffIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+);
+
 const ThemeToggle = () => {
   const { mode, toggleMode, isDark } = useTheme();
   
   return (
     <button 
       onClick={toggleMode}
-      className="fixed top-10 right-10 z-50 flex items-center gap-3 px-4 py-2 transition-all group bg-transparent border-none outline-none"
+      className="flex items-center gap-3 px-4 py-2 transition-all group bg-transparent border-none outline-none"
     >
       <div className="relative w-3 h-3">
          <motion.div
@@ -135,7 +143,62 @@ const ThemeToggle = () => {
         {isDark ? "Dark Protocol" : "Light System"}
       </span>
     </button>
+  );
+};
 
+const TopRightControls = () => {
+  const [isSoundOn, setIsSoundOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isSoundOn) {
+        audioRef.current.volume = 0.3;
+        audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isSoundOn]);
+
+  useEffect(() => {
+    const handleForceAudio = (e: any) => {
+      if (audioRef.current) {
+        if (e.detail?.pause) {
+          audioRef.current.pause();
+        } else if (isSoundOn) {
+          audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+        }
+      }
+    };
+    window.addEventListener("force-bg-music", handleForceAudio);
+    return () => window.removeEventListener("force-bg-music", handleForceAudio);
+  }, [isSoundOn]);
+
+  return (
+    <div className="fixed top-10 right-10 z-50 flex items-center gap-1">
+      <ThemeToggle />
+      <audio ref={audioRef} src="/bg-music.mp3" loop />
+      <button 
+        onClick={() => setIsSoundOn(!isSoundOn)}
+        className={`relative group p-2 rounded-full overflow-hidden hover:bg-[var(--accent-glow)] transition-all active:scale-95 ${
+          isSoundOn ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)]/60 hover:text-[var(--accent-primary)]'
+        }`}
+        aria-label="Toggle Sound"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isSoundOn ? 'on' : 'off'}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {isSoundOn ? <VolumeOnIcon size={20} /> : <VolumeOffIcon size={20} />}
+          </motion.div>
+        </AnimatePresence>
+      </button>
+    </div>
   );
 };
 
@@ -259,7 +322,7 @@ export default function Home() {
         <StatusTerminal />
       </div>
       
-      <ThemeToggle />
+      <TopRightControls />
       
       <div className="hidden sm:block">
         <QuickMetricsBento />

@@ -67,7 +67,7 @@ export const ContactSection = () => {
               </div>
             </div>
 
-            <div className="pt-6 sm:pt-8 border-t border-[var(--border-primary)] flex gap-6 sm:gap-8">
+            {/* <div className="pt-6 sm:pt-8 border-t border-[var(--border-primary)] flex gap-6 sm:gap-8">
               {[
                 { icon: FaGithub, href: 'https://github.com/adityatallhari', label: 'GitHub' },
                 { icon: FaLinkedin, href: 'https://linkedin.com/in/adityatallhari', label: 'LinkedIn' }
@@ -77,7 +77,7 @@ export const ContactSection = () => {
                    <span className="text-[10px] font-bold uppercase tracking-widest">{social.label}</span>
                 </a>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right: Simple Form */}

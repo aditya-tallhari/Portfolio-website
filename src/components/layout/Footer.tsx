@@ -124,7 +124,7 @@ export const Footer = () => {
           <div className="footer-reveal-item space-y-8">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-20 font-jetbrains">Navigation</span>
             <ul className="grid grid-cols-1 gap-4">
-               {['About', 'Projects', 'Experience', 'CP', 'Contact'].map(item => (
+               {['About', 'Projects', 'Experience', 'Contact'].map(item => (
                  <li key={item}>
                    <Link href={`#${item.toLowerCase()}`} className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all duration-300 flex items-center gap-2 group/nav">
                       <span className="w-0 group-hover/nav:w-4 h-[1px] bg-[var(--accent-primary)] transition-all duration-300" />
@@ -139,10 +139,9 @@ export const Footer = () => {
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] opacity-20 font-jetbrains">Connected</span>
             <ul className="grid grid-cols-1 gap-5">
                {[
-                 { name: 'Github', icon: FaGithub, href: 'https://github.com/adityatallhari' },
-                 { name: 'LinkedIn', icon: FaLinkedinIn, href: '#' },
-                 { name: 'Twitter', icon: FaTwitter, href: '#' },
-                 { name: 'Whatsapp', icon: FaWhatsapp, href: '#' }
+                 { name: 'Github', icon: FaGithub, href: 'https://github.com/aditya-tallhari',target:"_blank" },
+                 { name: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/aditya-tallhari/',target:"_blank" },
+                 { name: 'Whatsapp', icon: FaWhatsapp, href: 'https://wa.me/917972163624' }
                ].map(social => (
                  <li key={social.name}>
                    <a href={social.href} className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-all duration-300 flex items-center gap-4 group/soc">
