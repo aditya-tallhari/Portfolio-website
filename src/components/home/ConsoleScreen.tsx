@@ -141,14 +141,27 @@ const MainScreen: React.FC<{
       transition={{ duration: 0.3 }}
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
     >
-      <Image
-        src="/bg-image2.jpg"
+      {/* Background Image (Commented out) */}
+      {/* <Image
+        src="/bg-image3.jpg"
         alt="background"
         fill
         priority
         sizes="(max-width: 768px) 100vw, 900px"
         className="object-cover"
-      />
+      /> */}
+
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://res.cloudinary.com/dhavg3hov/video/upload/v1788549666/video1_itachi_pss7h2.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
 
       <div className="relative z-10 w-full h-full flex flex-col items-end justify-end gap-1 p-2 pb-3 pr-3">
         <SpeechBubble className="text-left min-w-[80px] max-w-[80px] min-h-[24px] border-[1px] shadow-[1px_1px_0_0_rgba(0,0,0,1)] px-1.5 py-1">
@@ -245,7 +258,7 @@ export const ConsoleScreen = () => {
 
   const executeItem = useCallback((item: MenuItem) => {
     if (activeScreen !== "main") return;
-    
+
     if (item === "music") {
       setActiveScreen("music");
     } else if (item === "terminal") {

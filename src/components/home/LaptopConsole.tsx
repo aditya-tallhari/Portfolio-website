@@ -91,43 +91,36 @@ export const LaptopConsole: React.FC<LaptopConsoleProps> = ({
         className="w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* ── BASE AND KEYBOARD (SVG BACKGROUND) ── */}
-        <g id="laptop-base">
-          {/* Base structure */}
-          <linearGradient id="base-grad" gradientUnits="userSpaceOnUse" x1="130.5053" y1="134.4774" x2="130.5053" y2="203.2668">
-            <stop offset="0" style={{ stopColor: "#D9D9D9" }} />
-            <stop offset="0.5" style={{ stopColor: "#4F4F4F" }} />
-            <stop offset="1" style={{ stopColor: "#000000" }} />
-          </linearGradient>
-          <path fill="url(#base-grad)" d="M237.393,169.921c-1.78-1.219-5.49-1.682-5.49-1.682h-15.065h-78.798h-0.001h-15.065l0,0H44.175H29.11c0,0-3.711,0.463-5.492,1.682L4.217,182.782l2.382,3.249c0.58,0.551,1.181,1.261,2.18,1.261h15.066h60.842h30.795h30.048h30.797h60.842h15.064c0.999,0,1.601-0.71,2.18-1.261l2.382-3.249L237.393,169.921z" />
-          
-          <linearGradient id="base-edge" gradientUnits="userSpaceOnUse" x1="130.5067" y1="159.5566" x2="130.5067" y2="196.4097">
-            <stop offset="0" style={{ stopColor: "#D9D9D9" }} />
-            <stop offset="1" style={{ stopColor: "#000000" }} />
-          </linearGradient>
-          <path fill="url(#base-edge)" d="M257.076,182.095c0.02-0.151,0.022-0.304,0-0.457v-4.458l-17.532-12.759c-1.954-1.338-6.026-1.847-6.026-1.847H130.506l0,0H27.494c0,0-4.071,0.509-6.026,1.847L3.942,177.232v4.361c-0.027,0.185-0.027,0.368,0,0.551v0.003h0.002c0.083,0.512,0.424,0.994,1.238,1.338h150.078h33.798h66.771c0.837-0.354,1.173-0.85,1.245-1.375h0.001V182.095z" />
+        <defs>
+          <filter id="power-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="webcam-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-          {/* Power Button Simulation Area (Top right of keyboard) */}
-          <g className="cursor-pointer" onClick={togglePower}>
-            <polygon fill={isPowerOn ? "#c2410c" : "#404040"} points="208.101,161.96 206.68,160.069 197.204,160.069 198.448,161.96" />
-          </g>
-
-          {/* Trackpad area */}
-          <polygon fill="#333" points="176.046,170.634 84.639,170.634 81.376,175.428 179.143,175.428" opacity="0.5" />
-        </g>
+        {/* ── FULL LAPTOP VECTOR (CHASSIS, FULL KEYBOARD, TRACKPAD & BEZEL) ── */}
+        <image
+          href="/laptop.svg"
+          xlinkHref="/laptop.svg"
+          x="0"
+          y="0"
+          width="261.012"
+          height="190.145"
+          preserveAspectRatio="xMidYMid meet"
+        />
 
         {/* ── LID AND SCREEN (REACTIVE GROUP) ── */}
         <g id="laptop-lid" ref={lidRef}>
-          {/* Outer Lid Frame */}
-          <linearGradient id="lid-grad" gradientUnits="userSpaceOnUse" x1="130.5058" y1="-17.9674" x2="130.5058" y2="181.5536">
-            <stop offset="0" style={{ stopColor: "#333333" }} />
-            <stop offset="0.5" style={{ stopColor: "#575757" }} />
-            <stop offset="1" style={{ stopColor: "#111" }} />
-          </linearGradient>
-          <path fill="url(#lid-grad)" d="M240.458,152.208V83.544v-6.45V8.428c0,0,0.057-5.576-5.637-5.576h-27.697h-16.547H26.191c-5.692,0-5.638,5.576-5.638,5.576v68.666v6.45v68.664c0,0-0.055,5.575,5.638,5.575h164.386h5.16h39.084C240.515,157.783,240.458,152.208,240.458,152.208z" />
-          
-          <path fill="#0a0a0a" d="M238.685,150.367V83.461v-6.283V10.271c0,0,0.056-5.434-5.547-5.434h-27.25h-16.281H27.873c-5.601,0-5.546,5.434-5.546,5.434v66.907v6.283v66.906c0,0-0.055,5.432,5.546,5.432h161.734h5.077h38.454C238.741,155.799,238.685,150.367,238.685,150.367z" />
-
           {/* Embedded Screen via foreignObject */}
           <foreignObject
             x="26.835"
@@ -137,7 +130,7 @@ export const LaptopConsole: React.FC<LaptopConsoleProps> = ({
             requiredExtensions="http://www.w3.org/1999/xhtml"
           >
             <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}>
-               <AnimatePresence>
+               <AnimatePresence mode="wait">
                   {isPowerOn ? (
                     <motion.div
                       key="screen-content"
@@ -157,8 +150,96 @@ export const LaptopConsole: React.FC<LaptopConsoleProps> = ({
             </div>
           </foreignObject>
 
-          {/* Screen Glare (from SVG) */}
-          <path style={{ opacity: 0.05, fill: "#FFFFFF" }} pointerEvents="none" d="M191.121,4.814l-40.555,0.208L110.013,5.11L69.459,5.196L28.905,5.121h-0.008l-0.022-0.002c-1.389-0.09-2.892,0.16-4.056,0.926c-1.191,0.754-1.834,2.125-1.941,3.539c-0.072,2.902-0.025,5.886-0.045,8.825l-0.018,17.697l-0.037,35.396l-0.193,70.791l-0.193-70.791l-0.037-35.396l-0.02-17.697c0.014-2.959-0.039-5.878,0.025-8.871c0.068-0.758,0.246-1.525,0.608-2.219c0.359-0.693,0.899-1.297,1.55-1.727c1.317-0.862,2.883-1.126,4.417-1.037l-0.029-0.003l40.554-0.086l40.554,0.075l40.554,0.078L191.121,4.814z"/>
+          {/* ── REALISTIC WEBCAM & SENSORS MODULE (TOP BEZEL CENTER) ── */}
+          <g id="laptop-webcam" className="pointer-events-none select-none">
+            {/* Sleek Camera Bezel Housing Pill */}
+            <rect
+              x="122.5"
+              y="5.4"
+              width="16"
+              height="3.3"
+              rx="1.65"
+              fill="#0a0a0e"
+              stroke="#1f1f26"
+              strokeWidth="0.15"
+            />
+
+            {/* Left Microphone Pinhole */}
+            <circle cx="125.2" cy="7.05" r="0.28" fill="#030303" stroke="#18181b" strokeWidth="0.06" />
+
+            {/* Ambient Light Sensor */}
+            <circle cx="127.8" cy="7.05" r="0.32" fill="#060810" stroke="#18181b" strokeWidth="0.06" />
+
+            {/* Center Camera Outer Metal Ring */}
+            <circle cx="130.5" cy="7.05" r="1.1" fill="#08080c" stroke="#27272a" strokeWidth="0.12" />
+
+            {/* Deep Optical Glass Lens */}
+            <circle cx="130.5" cy="7.05" r="0.68" fill="#0b132b" />
+            
+            {/* Inner Aperture */}
+            <circle cx="130.5" cy="7.05" r="0.36" fill="#020617" />
+
+            {/* Glass Specular Glint Highlight */}
+            <circle cx="130.32" cy="6.88" r="0.16" fill="#93c5fd" opacity="0.9" />
+
+            {/* Camera Status Green LED Indicator */}
+            <circle
+              cx="133.4"
+              cy="7.05"
+              r="0.34"
+              fill={isPowerOn ? "#22c55e" : "#0f2316"}
+              opacity={isPowerOn ? 1 : 0.4}
+              filter={isPowerOn ? "url(#webcam-glow)" : undefined}
+              className="transition-all duration-300"
+            />
+            {isPowerOn && (
+              <circle cx="133.4" cy="7.05" r="0.12" fill="#bbf7d0" />
+            )}
+
+            {/* Right Microphone Pinhole */}
+            <circle cx="135.8" cy="7.05" r="0.28" fill="#030303" stroke="#18181b" strokeWidth="0.06" />
+          </g>
+
+
+
+          {/* Interactive Power Button (Top right of keyboard) */}
+          <g
+            className="cursor-pointer group"
+            onClick={togglePower}
+          >
+            {/* Tactile Keycap Surface */}
+            <polygon
+              points="208.101,161.96 206.68,160.069 197.204,160.069 198.448,161.96"
+              fill={isPowerOn ? "#dc2626" : "#1e1e1e"}
+              stroke={isPowerOn ? "#f87171" : "#ef4444"}
+              strokeWidth={isPowerOn ? "0.3" : "0.4"}
+              className="transition-colors duration-200 group-hover:brightness-125"
+            />
+
+            {/* Standby / Active Center Power LED */}
+            <circle
+              cx="202.608"
+              cy="161.014"
+              r="0.5"
+              fill={isPowerOn ? "#ffffff" : "#ef4444"}
+              filter={isPowerOn ? "url(#power-glow)" : undefined}
+              className="transition-all duration-200"
+            />
+
+            {/* Power Ring Arc */}
+            <circle
+              cx="202.608"
+              cy="161.014"
+              r="0.8"
+              fill="none"
+              stroke={isPowerOn ? "#fecaca" : "#ef4444"}
+              strokeWidth="0.16"
+              strokeDasharray="3.2, 1"
+              opacity={isPowerOn ? 0.95 : 0.8}
+            />
+
+            <title>{isPowerOn ? "Turn off laptop (ESC)" : "Turn on laptop (ENTER)"}</title>
+          </g>
         </g>
       </svg>
     </div>
