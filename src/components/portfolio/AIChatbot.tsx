@@ -2,8 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BotMessageSquare, X, Send, User, RefreshCw, Copy, Check } from 'lucide-react';
+import { X, Send, RefreshCw, Copy, Check } from 'lucide-react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 import { sendAIChat } from '@/lib/api';
 
 interface ChatMessage {
@@ -50,7 +51,7 @@ export const AIChatbot = () => {
   }, [isOpen]);
 
   const handleSend = async (text: string = input) => {
-    if (!text.trim()) return;
+    if (!text.trim() || isTyping) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -63,7 +64,10 @@ export const AIChatbot = () => {
     setIsTyping(true);
 
     try {
-      const data = await sendAIChat(text.trim());
+      const conversation = [...messages.filter(message => message.id !== 'init-msg'), userMessage]
+        .slice(-12)
+        .map(({ role, content }) => ({ role: role === 'ai' ? 'assistant' as const : 'user' as const, content }));
+      const data = await sendAIChat(conversation);
       
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -103,7 +107,7 @@ export const AIChatbot = () => {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end pointer-events-none">
+      <div className="fixed bottom-3 right-3 z-[9999] flex flex-col items-end pointer-events-none sm:bottom-6 sm:right-6">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -111,38 +115,40 @@ export const AIChatbot = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="pointer-events-auto w-[calc(100vw-48px)] sm:w-[300px] h-[420px] max-h-[calc(100vh-80px)] glass-card flex flex-col overflow-hidden mb-4 rounded-xl shadow-2xl border border-[var(--text-primary)]/10"
+              className="pointer-events-auto w-[calc(100vw-24px)] sm:w-[380px] md:w-[440px] h-[min(76dvh,680px)] sm:h-[min(72dvh,680px)] max-h-[calc(100dvh-84px)] glass-card flex flex-col overflow-hidden mb-3 sm:mb-4 rounded-2xl shadow-2xl border border-[var(--text-primary)]/15"
               style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 95%, transparent)' }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--text-primary)]/10 shrink-0 bg-[var(--bg-primary)]/50">
-                <div className="flex items-center gap-2">
-                  <div className="relative w-7 h-7 rounded-full bg-[var(--text-primary)]/10 flex items-center justify-center p-[1px] shadow-sm">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--text-primary)]/10 shrink-0 bg-[var(--bg-primary)]/50">
+                <div className="flex items-center gap-3">
+                  <div className="relative w-9 h-9 rounded-full bg-[var(--text-primary)]/10 flex items-center justify-center p-[1px] shadow-sm">
                     <div className="relative w-full h-full rounded-full overflow-hidden bg-[var(--bg-primary)]">
                        <Image 
                          src="/fly.svg" 
                          alt="Aditya AI" 
                          fill 
-                         sizes="28px"
+                         sizes="36px"
                          className="object-cover scale-110" 
                        />
                     </div>
                     <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border border-[var(--bg-primary)] rounded-full"></span>
                   </div>
-                  <h3 className="font-playfair font-bold text-sm tracking-tight">Aditya AI Assistant</h3>
+                  <h3 className="font-playfair font-bold text-base tracking-tight">Aditya AI Assistant</h3>
                 </div>
                 <div className="flex items-center gap-1">
                   <button 
                     onClick={handleClear} 
-                    className="p-1 rounded-full hover:bg-[var(--text-primary)]/10 transition-colors text-[var(--text-primary)]/60 hover:text-[var(--text-primary)]"
+                    aria-label="Clear conversation"
+                    className="p-2 rounded-full hover:bg-[var(--text-primary)]/10 transition-colors text-[var(--text-primary)]/60 hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                   >
-                    <RefreshCw className="w-3 h-3" />
+                    <RefreshCw className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => setIsOpen(false)}
-                    className="p-1 rounded-full hover:bg-[var(--text-primary)]/10 transition-colors text-[var(--text-primary)]/60 hover:text-[var(--text-primary)]"
+                    aria-label="Close chat"
+                    className="p-2 rounded-full hover:bg-[var(--text-primary)]/10 transition-colors text-[var(--text-primary)]/60 hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -150,28 +156,46 @@ export const AIChatbot = () => {
               {/* Chat Area */}
               <div 
                 data-lenis-prevent={true}
-                className="flex-1 overflow-y-auto overscroll-contain p-3 py-2 flex flex-col gap-3 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[var(--text-primary)]/10 [&::-webkit-scrollbar-thumb]:rounded-full"
+                className="flex-1 overflow-y-auto overscroll-contain p-4 flex flex-col gap-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[var(--text-primary)]/15 [&::-webkit-scrollbar-thumb]:rounded-full"
               >
                 {messages.map((msg) => (
                   <motion.div
                     key={msg.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`flex flex-col max-w-[90%] ${msg.role === 'user' ? 'self-end items-end' : 'self-start items-start'} group relative`}
+                    className={`flex flex-col max-w-[96%] sm:max-w-[92%] ${msg.role === 'user' ? 'self-end items-end' : 'self-start items-start'} group relative`}
                   >
                     <div 
-                      className={`px-3 py-2 rounded-xl text-[12px] leading-relaxed shadow-sm ${
+                      className={`px-4 py-3 rounded-2xl text-sm leading-6 font-sans shadow-sm break-words ${
                         msg.role === 'user' 
                           ? 'bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--bg-primary)]/10 rounded-br-sm' 
                           : 'bg-[var(--text-primary)]/5 text-[var(--text-primary)] border border-[var(--text-primary)]/10 rounded-bl-sm'
                       }`}
                     >
-                      {msg.content}
+                      {msg.role === 'ai' ? (
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                            h1: ({ children }) => <h1 className="mb-2 text-lg font-bold leading-snug">{children}</h1>,
+                            h2: ({ children }) => <h2 className="mb-2 text-base font-bold leading-snug">{children}</h2>,
+                            h3: ({ children }) => <h3 className="mb-2 text-sm font-bold leading-snug">{children}</h3>,
+                            ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-5 last:mb-0">{children}</ol>,
+                            li: ({ children }) => <li className="pl-0.5">{children}</li>,
+                            strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                            a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer" className="underline underline-offset-2 decoration-[var(--accent-primary)]">{children}</a>,
+                            pre: ({ children }) => <pre className="my-2 overflow-x-auto rounded-lg bg-black/20 p-3 text-xs leading-5">{children}</pre>,
+                            code: ({ children, className }) => <code className={`${className || ''} rounded bg-black/15 px-1 py-0.5 font-mono text-[0.9em]`}>{children}</code>,
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      ) : msg.content}
                     </div>
                     {msg.role === 'ai' && msg.id !== 'init-msg' && (
                       <button
                         onClick={() => handleCopy(msg.id, msg.content)}
-                        className="absolute -right-6 top-1 p-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--bg-primary)] rounded-md border border-[var(--text-primary)]/10 text-[var(--text-primary)]/60 hover:text-[var(--text-primary)]"
+                        className="absolute -right-2 top-1 p-1 opacity-100 sm:-right-6 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-[var(--bg-primary)] rounded-md border border-[var(--text-primary)]/10 text-[var(--text-primary)]/60 hover:text-[var(--text-primary)]"
                       >
                         {copiedId === msg.id ? <Check className="w-2.5 h-2.5 text-green-500" /> : <Copy className="w-2.5 h-2.5" />}
                       </button>
@@ -201,7 +225,7 @@ export const AIChatbot = () => {
                     <button
                       key={i}
                       onClick={() => handleSend(suggestion)}
-                      className="text-[9px] px-2 py-0.5 rounded-full border border-[var(--text-primary)]/20 text-[var(--text-primary)]/70 hover:bg-[var(--text-primary)]/10 transition-all"
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-[var(--text-primary)]/20 text-[var(--text-primary)]/70 hover:bg-[var(--text-primary)]/10 transition-all"
                     >
                       {suggestion}
                     </button>
@@ -210,23 +234,25 @@ export const AIChatbot = () => {
               )}
 
               {/* Input Area */}
-              <div className="p-3 border-t border-[var(--text-primary)]/10 bg-[var(--bg-primary)]/80 backdrop-blur-md shrink-0">
+              <div className="p-4 border-t border-[var(--text-primary)]/10 bg-[var(--bg-primary)]/80 backdrop-blur-md shrink-0">
                 <div className="relative flex items-center shadow-sm">
                   <input
                     ref={inputRef}
                     type="text"
+                    maxLength={1200}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask..."
-                    className="w-full pl-3 pr-8 py-2 rounded-full bg-[var(--text-primary)]/5 border border-[var(--text-primary)]/20 text-[12px] focus:outline-none focus:border-[var(--text-primary)]/50 transition-colors font-jetbrains"
+                    className="w-full pl-4 pr-12 py-3 rounded-full bg-[var(--text-primary)]/5 border border-[var(--text-primary)]/20 text-sm focus:outline-none focus:border-[var(--text-primary)]/50 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 transition-colors"
                   />
                   <button
                     onClick={() => handleSend()}
+                    aria-label="Send message"
                     disabled={!input.trim() || isTyping}
-                    className="absolute right-1 p-1 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] hover:scale-105 active:scale-95 disabled:opacity-50 transition-all"
+                    className="absolute right-1.5 p-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] hover:scale-105 active:scale-95 disabled:opacity-50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                   >
-                    <Send className="w-3 h-3" />
+                    <Send className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -237,7 +263,8 @@ export const AIChatbot = () => {
         {/* Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="pointer-events-auto relative w-10 h-10 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 overflow-hidden group border border-[var(--bg-primary)]/20"
+          aria-label={isOpen ? 'Close chat' : 'Open chat'}
+          className="pointer-events-auto relative w-12 h-12 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 overflow-hidden group border border-[var(--bg-primary)]/20"
         >
           <div className="absolute inset-0 bg-[#D4AF37]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <AnimatePresence mode="wait">
@@ -266,7 +293,7 @@ export const AIChatbot = () => {
                   src="/fly.svg" 
                   alt="Chat" 
                   fill 
-                  sizes="40px"
+                  sizes="48px"
                   className="object-cover scale-[1.1] rounded-full drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" 
                 />
                 {/* Notification Ping */}

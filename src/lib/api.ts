@@ -234,8 +234,13 @@ export const fetchPublicStats = async (): Promise<PublicStats> => {
   return data.data;
 };
 
-export const sendAIChat = async (question: string) => {
-  return api.post("/ai/chat", { question });
+export interface AIChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export const sendAIChat = async (messages: AIChatMessage[]) => {
+  return api.post("/ai/chat", { messages });
 };
 
 export const fetchAdminMessages = async (token: string) => {
@@ -323,4 +328,3 @@ export const updateHackathon = async (id: string, hackathonData: FormData | Part
 export const deleteHackathon = async (id: string, token: string) => {
   return api.delete(`/hackathons/${id}`, { token });
 };
-
