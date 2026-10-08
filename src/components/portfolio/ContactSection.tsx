@@ -53,10 +53,10 @@ export const ContactSection = () => {
           {/* Left: Contact Info */}
           <div className="lg:col-span-5 space-y-8 md:space-y-10 lg:space-y-12">
             <div className="space-y-8">
-              <a href="mailto:adityatallhari@gmail.com" className="group block space-y-2 overflow-hidden">
+              <a href="mailto:adityatallhari79@gmail.com" className="group block space-y-2 overflow-hidden">
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 text-[var(--text-primary)]">Email</p>
                 <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                  <span className="text-base sm:text-lg md:text-xl lg:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors break-all sm:break-normal">adityatallhari@gmail.com</span>
+                  <span className="text-base sm:text-lg md:text-xl lg:text-3xl font-black font-playfair group-hover:text-[var(--accent-primary)] transition-colors break-all sm:break-normal">adityatallhari79@gmail.com</span>
                   <ArrowRight size={20} className="hidden xs:block text-[var(--accent-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all shrink-0" />
                 </div>
               </a>
